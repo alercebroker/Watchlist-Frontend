@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="3">
+      <v-col xs="12" lg="3">
         <my-watchlists />
       </v-col>
-      <v-col cols="9">
+      <v-col xs="12" lg="9">
         <watchlist-details />
       </v-col>
     </v-row>
