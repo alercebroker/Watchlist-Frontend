@@ -5,7 +5,7 @@
       <v-list-item-group v-model="selectedItem" color="primary">
         <v-list-item v-for="(item, i) in items" :key="i">
           <v-list-item-content>
-            <v-list-item-title v-text="item.text"></v-list-item-title>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -18,15 +18,16 @@
 
 <script>
 import Vue from "vue";
+import { ActionTypes } from "@/ui/store/Watchlist/actions";
 export default Vue.extend({
   data: () => ({
     selectedItem: 1,
-    items: [
-      { text: "All SN" },
-      { text: "Galaxy 123" },
-      { text: "Camilo's Targets" },
-    ],
+    items: [],
   }),
+  async mounted() {
+    await this.$store.dispatch("watchlists/" + ActionTypes.getAllWatchlists);
+    this.items = this.$store.state.watchlists.watchlists;
+  },
 });
 </script>
 

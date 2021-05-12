@@ -29,6 +29,10 @@ export interface IHttpService {
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
   initService(baseUrl: string): void;
+  post<T, M>(
+    request: IHttpRequest,
+    parser: Parser<T, M>
+  ): Promise<Result<M, ParseError | HttpError>>;
 }
 
 export interface IAxiosCreator {
@@ -71,6 +75,18 @@ export class HttpService implements IHttpService {
     }
   }
 
+  public async post<T, M>(
+    { url, data, config }: IHttpRequest,
+    parser: Parser<T, M>
+  ): Promise<Result<M, ParseError | HttpError>> {
+    try {
+      const response = await this.axiosService.post<T>(url, data, config);
+      return this._parseFailable<T, M>(response.data, parser.parseTo);
+    } catch (error) {
+      return err(error);
+    }
+  }
+
   private _parseFailable<T, M>(
     data: T,
     parser: FailableParser<T, M>
@@ -98,6 +114,8 @@ export class HttpService implements IHttpService {
   }
 
   private _handleRequest(config: AxiosRequestConfig) {
+    // TODO Add authentication token to request headers
+    // Read token from local storage
     return config;
   }
 

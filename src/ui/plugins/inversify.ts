@@ -12,6 +12,9 @@ import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
 import { UseCaseInteractor } from "@/shared/usecase/UseCaseInteractor.types";
 import { IStoreCreator, StoreCreator } from "../store/StoreCreator";
 import { Modules, modules } from "../store/RegisterModules";
+import { IUserRepository } from "@/app/user/domain/User.types";
+import { AuthService } from "@/app/user/infrastructure/AuthService";
+import { RegisterUser } from "@/app/user/use_case/RegisterUser";
 
 export function containerBuilder() {
   container.addTransient<IAxiosCreator>(AxiosCreator);
@@ -20,6 +23,8 @@ export function containerBuilder() {
   container.addTransient<UseCaseInteractor>(GetAllWatchlists);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
+  container.addSingleton<IUserRepository>(AuthService);
+  container.addTransient<UseCaseInteractor>(RegisterUser);
 }
 
 containerBuilder();
