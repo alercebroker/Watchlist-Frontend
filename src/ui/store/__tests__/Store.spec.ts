@@ -16,6 +16,7 @@ describe("Store", () => {
       const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
       const store = storeCreator.create();
       expect(store).toHaveProperty("_modulesNamespaceMap.watchlists/");
+      expect(store).toHaveProperty("_modulesNamespaceMap.users/");
     });
   });
 });

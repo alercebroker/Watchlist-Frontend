@@ -1,4 +1,5 @@
-import { WatchlistModule } from "./Watchlist";
+import { UserModule } from "./user";
+import { WatchlistModule } from "./watchlist";
 
 export type Modules = {
   modules: any;
@@ -7,5 +8,6 @@ export type Modules = {
 export const modules: Modules = {
   modules: {
     watchlists: WatchlistModule,
+    users: UserModule,
   },
 };

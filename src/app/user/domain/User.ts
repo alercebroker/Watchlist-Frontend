@@ -20,10 +20,10 @@ export class User implements IUser {
     this.role = data.role;
   }
   storeToken(): void {
-    throw new Error("Method not implemented.");
+    localStorage.setItem("token", this.token as string);
   }
 
   deleteToken(): void {
-    throw new Error("Method not implemented.");
+    localStorage.removeItem("token");
   }
 }

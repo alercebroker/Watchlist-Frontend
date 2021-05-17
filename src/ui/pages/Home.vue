@@ -1,6 +1,19 @@
 <template>
-  <v-container>
-    <v-row>
+  <v-container fill-height>
+    <v-row
+      v-if="!logged"
+      align="center"
+      align-content="center"
+      justify="center"
+    >
+      <v-col cols="4">
+        <login @registerClick="dialog = true" />
+        <v-dialog v-model="dialog" max-width="500">
+          <register-user @registered="dialog = false" />
+        </v-dialog>
+      </v-col>
+    </v-row>
+    <v-row v-else>
       <v-col xs="12" lg="3">
         <my-watchlists />
       </v-col>
@@ -11,12 +24,26 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
-import MyWatchlists from "@/ui/components/MyWatchlists";
-import WatchlistDetails from "../components/WatchlistDetails.vue";
+import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
+import WatchlistDetails from "../components/watchlist/WatchlistDetails.vue";
+import Login from "../components/users/Login.vue";
+import RegisterUser from "../components/users/RegisterUser.vue";
 export default Vue.extend({
-  components: { MyWatchlists, WatchlistDetails },
+  components: { MyWatchlists, WatchlistDetails, Login, RegisterUser },
+  data() {
+    return {
+      dialog: false,
+    };
+  },
+  computed: {
+    logged() {
+      const token = localStorage.getItem("token");
+      const user = this.$store.state.users.userData;
+      return token != null && user.username !== "";
+    },
+  },
 });
 </script>
 

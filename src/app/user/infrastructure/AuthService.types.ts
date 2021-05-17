@@ -19,5 +19,18 @@ export interface RegisterUserApiResponse {
 
 export interface LoginUserApiRequestModel {
   username: string;
-  password: string;
+  [password: string]: string;
+}
+
+export interface LoginApiResponse {
+  token: string;
+}
+
+export interface UsersApiResponse {
+  username: string;
+  email: string;
+  name: string;
+  last_name: string;
+  institution: string;
+  role: string;
 }

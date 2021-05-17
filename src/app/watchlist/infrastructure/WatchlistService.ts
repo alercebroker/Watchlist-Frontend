@@ -30,7 +30,7 @@ export class WatchlistService implements IWatchlistRepository {
     return await this.httpService.get({ url: "/watchlist" }, { parseTo });
   }
   getOneWatchlist(
-    id: Number
+    id: number
   ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
     throw new Error("Method not implemented.");
   }

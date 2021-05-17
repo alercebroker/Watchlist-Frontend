@@ -2,7 +2,11 @@ import axios, { AxiosInstance } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { inject } from "inversify-props";
 import { IAxiosCreator } from ".";
-import { mockRegisterUser } from "./mocks/user.mocks";
+import {
+  mockLoginResponse,
+  mockRegisterUser,
+  mockUsersResponse,
+} from "./mocks/user.mocks";
 import { mockApiWatchlists } from "./mocks/watchlist.mocks";
 
 export type TestActions =
@@ -38,13 +42,25 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = mockRegisterUser;
       return [201, JSON.stringify(response)];
     });
+    this.mock.onPost("/users/login").reply((_config: any) => {
+      const response = mockLoginResponse;
+      return [201, JSON.stringify(response)];
+    });
+    this.mock.onGet("/users").reply((_config: any) => {
+      const response = mockUsersResponse;
+      return [200, JSON.stringify(response)];
+    });
   }
   setErrorActions() {
     this.mock.onGet("/watchlist").networkError();
     this.mock.onPost("/users").networkError();
+    this.mock.onPost("/users/login").networkError();
+    this.mock.onGet("/users").networkError();
   }
   setTimeoutActions() {
     this.mock.onGet("/watchlist").timeout();
     this.mock.onPost("/users").timeout();
+    this.mock.onPost("/users/login").timeout();
+    this.mock.onGet("/users").timeout();
   }
 }

@@ -1,6 +1,8 @@
-import { WatchlistState } from "./Watchlist/state";
+import { UserState } from "./user/state";
+import { WatchlistState } from "./watchlist/state";
 export interface IRootState {
   watchlists: WatchlistState;
+  users: UserState;
 }
 
 export interface IStoreModule {

@@ -8,6 +8,7 @@ beforeEach(() => {
   resetContainer();
   containerBuilder();
   mockTransient<IAxiosCreator>(cid.AxiosCreator, MockAxiosCreator);
+  localStorage.clear();
 });
 
 describe("AuthService", () => {
@@ -75,6 +76,41 @@ describe("AuthService", () => {
       result.mapErr((error) => {
         expect(error.message).toContain("timeout");
       });
+    });
+  });
+  describe("Login", () => {
+    it("should get user and save token if response success", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const request = {
+        username: "test",
+        password: "test",
+      };
+      const result = await service.login(request);
+      expect(result.isOk()).toBeTruthy();
+      expect(localStorage.getItem("token")).toBe("token");
+    });
+    it("should return error if http has error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const request = {
+        username: "test",
+        password: "test",
+      };
+      const result = await service.login(request);
+      expect(result.isErr()).toBeTruthy();
+      expect(localStorage.getItem("token")).toBeNull();
+    });
+    it("should return error if timeout", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const request = {
+        username: "test",
+        password: "test",
+      };
+      const result = await service.login(request);
+      expect(result.isErr()).toBeTruthy();
+      expect(localStorage.getItem("token")).toBeNull();
     });
   });
 });

@@ -5,17 +5,17 @@ import { Result } from "neverthrow";
 import { WatchlistRequestModel } from "../infrastructure/WatchlistService.types";
 
 export interface IWatchlistData {
-    title: string;
-    owner: string;
+  title: string;
+  owner: string;
 }
 
 export interface IWatchlistRepository {
-    getAllWatchlists(): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
-    getOneWatchlist(
-        id: Number
-    ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
-    createWatchlist(
-        params: WatchlistRequestModel,
-        targets: TargetRequestModel[] | null
-    ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
+  getAllWatchlists(): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
+  getOneWatchlist(
+    id: number
+  ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
+  createWatchlist(
+    params: WatchlistRequestModel,
+    targets: TargetRequestModel[] | null
+  ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
 }
