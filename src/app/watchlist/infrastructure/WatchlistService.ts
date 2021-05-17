@@ -36,8 +36,9 @@ export class WatchlistService implements IWatchlistRepository {
   }
   createWatchlist(
     params: WatchlistRequestModel,
-    targets: any[] | null
+    targets: any[] | null,
   ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
+    // SE RECIBEN TARGETS PARSEADOS
     throw new Error("Method not implemented.");
   }
 }

@@ -43,4 +43,5 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
     };
     interactor.execute(null, callbacks);
   },
+  //action createWatchilist
 };

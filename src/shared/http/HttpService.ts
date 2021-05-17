@@ -116,6 +116,10 @@ export class HttpService implements IHttpService {
   private _handleRequest(config: AxiosRequestConfig) {
     // TODO Add authentication token to request headers
     // Read token from local storage
+    const token = localStorage.getItem("token");
+    if(token != null){
+      config.headers = { Authorization: "Bearer " + token };
+    }
     return config;
   }
 

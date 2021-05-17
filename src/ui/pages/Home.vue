@@ -15,7 +15,7 @@
     </v-row>
     <v-row v-else>
       <v-col xs="12" lg="3">
-        <my-watchlists />
+        <my-watchlists @createWatchlist="watchlist_dialog = true"/>
       </v-col>
       <v-col xs="12" lg="9">
         <watchlist-details />
@@ -30,11 +30,13 @@ import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
 import WatchlistDetails from "../components/watchlist/WatchlistDetails.vue";
 import Login from "../components/users/Login.vue";
 import RegisterUser from "../components/users/RegisterUser.vue";
+
 export default Vue.extend({
-  components: { MyWatchlists, WatchlistDetails, Login, RegisterUser },
+  components: { MyWatchlists, WatchlistDetails, Login, RegisterUser},
   data() {
     return {
       dialog: false,
+      watchlist_dialog: false
     };
   },
   computed: {
