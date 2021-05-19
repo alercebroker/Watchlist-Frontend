@@ -7,7 +7,7 @@ import {
   mockRegisterUser,
   mockUsersResponse,
 } from "./mocks/user.mocks";
-import { mockApiWatchlists } from "./mocks/watchlist.mocks";
+import { mockApiWatchlists, mockCreateWatchlistResponse } from "./mocks/watchlist.mocks";
 
 export type TestActions =
   | "ok"
@@ -50,17 +50,32 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = mockUsersResponse;
       return [200, JSON.stringify(response)];
     });
+    this.mock.onPost("/watchlists").reply((_config: any) => {
+
+      const watchlistJSON = JSON.parse(_config.data);
+      const response = mockCreateWatchlistResponse;
+      mockApiWatchlists.results.push(
+        {
+        url: "watchlist/3",
+        title: watchlistJSON.title,
+        targets: "watchlist/3/targets",
+        },
+      )
+      return [201, JSON.stringify(response)]
+    })
   }
   setErrorActions() {
     this.mock.onGet("/watchlist").networkError();
     this.mock.onPost("/users").networkError();
     this.mock.onPost("/users/login").networkError();
     this.mock.onGet("/users").networkError();
+    this.mock.onPost("/watchlists").networkError();
   }
   setTimeoutActions() {
     this.mock.onGet("/watchlist").timeout();
     this.mock.onPost("/users").timeout();
     this.mock.onPost("/users/login").timeout();
     this.mock.onGet("/users").timeout();
+    this.mock.onPost("/watchlists").timeout();
   }
 }

@@ -4,7 +4,7 @@ import { HttpError, TestActions } from "@/shared/http";
 import { inject } from "inversify-props";
 import { err, ok, Result } from "neverthrow";
 import { IWatchlistData, IWatchlistRepository } from "../../domain";
-import { WatchlistRequestModel } from "../WatchlistService.types";
+import { CreateWatchlistRequestModel } from "../WatchlistService.types";
 
 const watchlistArray: IWatchlistData[] = [
   {
@@ -16,6 +16,11 @@ const watchlistArray: IWatchlistData[] = [
     owner: "owner 1",
   },
 ];
+
+const watchlist: IWatchlistData = {
+  title: "watchlist 3",
+  owner: "owner 1"
+}
 
 export class MockWatchlistService implements IWatchlistRepository {
   actionType: TestActions;
@@ -55,9 +60,34 @@ export class MockWatchlistService implements IWatchlistRepository {
     throw new Error("Method not implemented.");
   }
   createWatchlist(
-    params: WatchlistRequestModel,
-    targets: TargetRequestModel[] | null
-  ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
-    throw new Error("Method not implemented.");
+    params: CreateWatchlistRequestModel,
+    //targets: TargetRequestModel[] | null
+  ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
+    if (this.actionType === "ok") {
+      console.log("PARAMS", params);
+      return new Promise((resolve) => {
+        const copy = [...watchlistArray];
+        copy.push(watchlist); 
+        resolve(ok(copy));
+      });
+    } else if (
+      this.actionType === "error" ||
+      this.actionType === "serverError"
+    ) {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(500, "Server Error")));
+      });
+    } else if (this.actionType === "clientError") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(400, "Client Error")));
+      });
+    } else if (this.actionType === "timeout") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(502, "Gateway Timeout")));
+      });
+    }
+    return new Promise((resolve) => {
+      resolve(err(new ParseError("Parse Error")));
+    });
   }
 }

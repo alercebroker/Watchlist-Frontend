@@ -1,19 +1,22 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, IHttpService } from "@/shared/http";
-import { combine, Result } from "neverthrow";
-import { IWatchlistData, IWatchlistRepository } from "../domain";
+import { combine, err, Result } from "neverthrow";
+import { IWatchlistData, IWatchlistRepository, Watchlist } from "../domain";
 import { inject } from "inversify-props";
 import {
   WatchlistApiResponse,
-  WatchlistRequestModel,
+  CreateWatchlistRequestModel,
+  CreateWatchlistApiResponse,
 } from "./WatchlistService.types";
-import { WatchlistApiParser } from "./WatchlistParser";
+import { WatchlistApiParser, WatchlistCreateApiParser } from "./WatchlistParser";
 
 export class WatchlistService implements IWatchlistRepository {
   httpService: IHttpService;
   parser: WatchlistApiParser;
+  parserCreate: WatchlistCreateApiParser;
   constructor(@inject() httpService: IHttpService) {
     this.parser = new WatchlistApiParser();
+    this.parserCreate = new WatchlistCreateApiParser();
     this.httpService = httpService;
     this.httpService.initService("");
   }
@@ -34,11 +37,22 @@ export class WatchlistService implements IWatchlistRepository {
   ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
     throw new Error("Method not implemented.");
   }
-  createWatchlist(
-    params: WatchlistRequestModel,
-    targets: any[] | null,
-  ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
-    // SE RECIBEN TARGETS PARSEADOS
-    throw new Error("Method not implemented.");
+  async createWatchlist(
+    params: CreateWatchlistRequestModel,
+    //targets: any[] | null,
+  ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
+    console.log("WATCHLIST SERVICE", params)
+    const parseTo = (response: CreateWatchlistApiResponse) => {
+      return this.parserCreate.parseCreateWatchlistApiResponse(response);
+    }
+    const result = await this.httpService.post(
+      { url: "/watchlists", data: params },
+      { parseTo }
+    );
+    if(result.isOk()){
+      return this.getAllWatchlists();
+    } else {
+      return err(result.error);
+    }
   }
 }

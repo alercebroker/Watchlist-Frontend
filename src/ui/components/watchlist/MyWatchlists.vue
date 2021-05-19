@@ -15,15 +15,15 @@
       </v-btn>
     </v-list>
     <v-dialog v-model="watchlist_dialog" max-width="500">
-      <create-watchlist @canceled="watchlist_dialog = false"/>
+      <create-watchlist @created="watchlist_dialog = false" @canceled="watchlist_dialog = false"/>
     </v-dialog>
   </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist.vue";
 import { ActionTypes } from "@/ui/store/watchlist/actions";
-import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist"
 export default Vue.extend({
   components: { CreateWatchlist },
   data: () => ({

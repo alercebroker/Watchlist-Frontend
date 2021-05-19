@@ -2,11 +2,11 @@ import { TargetRequestModel } from "@/app/target/infrastructure/TargetService.ty
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError } from "@/shared/http";
 import { Result } from "neverthrow";
-import { WatchlistRequestModel } from "../infrastructure/WatchlistService.types";
+import { CreateWatchlistRequestModel } from "../infrastructure/WatchlistService.types";
 
 export interface IWatchlistData {
   title: string;
-  owner: string;
+  owner: string | null;
 }
 
 export interface IWatchlistRepository {
@@ -15,7 +15,7 @@ export interface IWatchlistRepository {
     id: number
   ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
   createWatchlist(
-    params: WatchlistRequestModel,
-    targets: TargetRequestModel[] | null
-  ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
+    params: CreateWatchlistRequestModel,
+    //targets: TargetRequestModel[] | null
+  ): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
 }
