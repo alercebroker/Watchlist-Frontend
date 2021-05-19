@@ -6,7 +6,8 @@ import { CreateWatchlistRequestModel } from "../infrastructure/WatchlistService.
 
 export interface IWatchlistData {
   title: string;
-  owner: string | null;
+  owner: string;
+  targets: string | null; // url to targets
 }
 
 export interface IWatchlistRepository {

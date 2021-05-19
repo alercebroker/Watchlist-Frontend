@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { inject } from "inversify-props";
 import { IAxiosCreator } from ".";
+import { mockTargetsByWatchlist } from "./mocks/target.mocks";
 import {
   mockLoginResponse,
   mockRegisterUser,
@@ -28,8 +29,14 @@ export class MockAxiosCreator implements IAxiosCreator {
     const instance = axios.create({ baseURL: _baseUrl });
     this.mock = new MockAdapter(instance);
     if (this.actionType === "ok") this.setMockActions();
-    if (this.actionType === "error") this.setErrorActions();
+    if (
+      this.actionType === "error" ||
+      this.actionType === "serverError" ||
+      this.actionType === "clientError"
+    )
+      this.setErrorActions();
     if (this.actionType === "timeout") this.setTimeoutActions();
+    if (this.actionType === "parseError") this.setParseErrorActions();
     return instance;
   }
 
@@ -63,6 +70,10 @@ export class MockAxiosCreator implements IAxiosCreator {
       )
       return [201, JSON.stringify(response)]
     })
+    this.mock.onGet("/watchlists/123/targets").reply((_config: any) => {
+      const response = mockTargetsByWatchlist;
+      return [200, JSON.stringify(response)];
+    });
   }
   setErrorActions() {
     this.mock.onGet("/watchlist").networkError();
@@ -70,6 +81,7 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onPost("/users/login").networkError();
     this.mock.onGet("/users").networkError();
     this.mock.onPost("/watchlists").networkError();
+    this.mock.onGet("/watchlists/123/targets").networkError();
   }
   setTimeoutActions() {
     this.mock.onGet("/watchlist").timeout();
@@ -77,5 +89,12 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onPost("/users/login").timeout();
     this.mock.onGet("/users").timeout();
     this.mock.onPost("/watchlists").timeout();
+    this.mock.onGet("/watchlists/123/targets").timeout();
+  }
+  setParseErrorActions() {
+    this.mock.onGet("/watchlists/123/targets").reply((_config: any) => {
+      const response = {};
+      return [200, JSON.stringify(response)];
+    });
   }
 }
