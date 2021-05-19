@@ -13,6 +13,9 @@ export class WatchlistApiParser {
         title: apiResponse.title,
         owner: owner,
         targets: apiResponse.targets,
+        nTargets: apiResponse.n_targets,
+        lastMatch: apiResponse.last_match,
+        url: apiResponse.url,
       };
       const watchlist = new Watchlist(watchlistData);
       return ok(watchlist);
@@ -27,11 +30,14 @@ export class WatchlistCreateApiParser {
         response: CreateWatchlistApiResponse,
     ): Result<Watchlist, ParseError> {
         try {
-            // CREAR TARGETS
             return ok(
                 new Watchlist({
                     title: response.title,
-                    owner: "owner"
+                    owner: "owner",
+                    targets: "",
+                    url: "",
+                    nTargets: "",
+                    lastMatch: ""
                 })
             );
         } catch (error) {
@@ -39,4 +45,3 @@ export class WatchlistCreateApiParser {
         } 
     }
 }
-

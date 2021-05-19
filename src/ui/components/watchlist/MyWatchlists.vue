@@ -42,6 +42,11 @@ export default Vue.extend({
     clickCreateWatchlist() {
       this.watchlist_dialog = true;
     }
+  },
+  watch: {
+    selectedItem: function (newSelectedItem){
+      this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, newSelectedItem);
+    }
   }
 });
 </script>

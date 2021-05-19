@@ -6,7 +6,9 @@ export interface WatchlistRequestModel {
 export interface WatchlistApiResult {
     url: string,
     title: string,
-    targets: string
+    targets: string,
+    n_targets: string,
+    last_match: string
 }
 
 export interface WatchlistApiResponse {
@@ -31,6 +33,15 @@ export interface CreateWatchlistApiResponse {
     title: string,
     owner: string,
     targets: CreateWatchlistTargetApiResult[]
+}
+
+export interface OneWatchlistApiResponse {
+    url: string,
+    title: string,
+    owner: string,
+    targets: string,
+    n_targets: number,
+    last_match: string,
 }
 
 export interface CreateWatchlistTargetApiResult 

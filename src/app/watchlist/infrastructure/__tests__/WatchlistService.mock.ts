@@ -10,16 +10,19 @@ const watchlistArray: IWatchlistData[] = [
   {
     title: "watchlist 1",
     owner: "owner 1",
+    targets: "test"
   },
   {
     title: "watchlist 2",
     owner: "owner 1",
+    targets: "test"
   },
 ];
 
 const watchlist: IWatchlistData = {
   title: "watchlist 3",
-  owner: "owner 1"
+  owner: "owner 1",
+  targets: "test"
 }
 
 export class MockWatchlistService implements IWatchlistRepository {
@@ -64,7 +67,6 @@ export class MockWatchlistService implements IWatchlistRepository {
     //targets: TargetRequestModel[] | null
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
     if (this.actionType === "ok") {
-      console.log("PARAMS", params);
       return new Promise((resolve) => {
         const copy = [...watchlistArray];
         copy.push(watchlist); 

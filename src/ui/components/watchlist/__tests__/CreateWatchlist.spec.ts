@@ -44,15 +44,7 @@ describe("CreateWatchlist Component", () => {
       button.trigger("click");
       await flushPromises();
       //console.log(store.state.watchlists.watchlists)
-      expect(store.state.watchlists.watchlists[-1]).toStrictEqual({
-          title: "title",
-          targets: [{
-            name: "Target 0",
-            radius: 1.0,
-            ra: 1.0,
-            dec: 1.0
-            }]
-      });
+      expect(store.state.watchlists.watchlists[-1].title).toEqual("title");
     });
     
   });

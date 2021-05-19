@@ -65,7 +65,9 @@ export class MockAxiosCreator implements IAxiosCreator {
         {
         url: "watchlist/3",
         title: watchlistJSON.title,
-        targets: "watchlist/3/targets",
+        targets: "test",
+        n_targets: "test",
+        last_match: "test"
         },
       )
       return [201, JSON.stringify(response)]

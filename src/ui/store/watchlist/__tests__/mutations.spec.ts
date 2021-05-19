@@ -39,6 +39,7 @@ describe("SET_WATCHLISTS", () => {
       {
         title: "titulo",
         owner: "owner",
+        targets: "test",
       },
     ];
     store.commit("watchlists/SET_WATCHLISTS", data);

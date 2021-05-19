@@ -7,6 +7,7 @@ import {
   WatchlistApiResponse,
   CreateWatchlistRequestModel,
   CreateWatchlistApiResponse,
+  OneWatchlistApiResponse,
 } from "./WatchlistService.types";
 import { WatchlistApiParser, WatchlistCreateApiParser } from "./WatchlistParser";
 
@@ -32,16 +33,19 @@ export class WatchlistService implements IWatchlistRepository {
     };
     return await this.httpService.get({ url: "/watchlist" }, { parseTo });
   }
-  getOneWatchlist(
-    id: number
+  async getOneWatchlist(
+    url: string
   ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
-    throw new Error("Method not implemented.");
+    const parseTo = (response: OneWatchlistApiResponse) => {
+      const owner = "owner";
+      return this.parser.toDomain(response, owner);
+    };
+    return await this.httpService.get({url}, {parseTo});
   }
+
   async createWatchlist(
     params: CreateWatchlistRequestModel,
-    //targets: any[] | null,
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
-    console.log("WATCHLIST SERVICE", params)
     const parseTo = (response: CreateWatchlistApiResponse) => {
       return this.parserCreate.parseCreateWatchlistApiResponse(response);
     }

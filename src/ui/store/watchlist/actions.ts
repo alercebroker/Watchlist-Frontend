@@ -16,7 +16,8 @@ import { ParseError } from "@/shared/error/ParseError";
 
 export enum ActionTypes {
   getAllWatchlists = "getAllWatchlists",
-  createWatchlist = "createWatchlist"
+  createWatchlist = "createWatchlist",
+  selectWatchlist = "selectWatchlist",
 }
 
 function throwExpression(errorMessage: string) {
@@ -57,7 +58,6 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
   },
   async [ActionTypes.createWatchlist]({ commit }, watchlistInput: WatchlistInput) {
     commit(MutationTypes.SET_LOADING, true);
-    console.log("ACTION", watchlistInput)
     const interactor = container.get<UseCaseInteractor>(cid.CreateWatchlist);
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlists: IWatchlistData[]) => {
@@ -94,4 +94,49 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       commit(MutationTypes.SET_LOADING, false);
     }
   },
+  async [ActionTypes.selectWatchlist]({ commit, dispatch, state }, index: number) {
+    commit(MutationTypes.SET_LOADING, true);
+    const watchlist = state.watchlists[index];
+    console.log(watchlist)
+    //url
+    //title
+    //targets
+    //n_matches
+    //last_match
+    const interactor = container.get<UseCaseInteractor>(cid.SelectWatchlist);
+    const callbacks: Callbacks = {
+      respondWithSuccess: (watchlist: IWatchlistData) => {
+        //setear datos de watchlist (otro modulo) (COMMIT)
+        //dispatch getTargets (url | watchlist_id)(otro modulo) -> 
+        // MUTATIONTYPE DE WATCHLIST SINGULAR
+        //commit(MutationTypes.SET_TITLE)
+        commit(MutationTypes.SET_WATCHLISTS, [watchlist]);
+        commit(MutationTypes.SET_ERROR, null);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithClientError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_WATCHLISTS, []);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_WATCHLISTS, []);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_WATCHLISTS, []);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    };
+    try {
+      interactor.execute(watchlist.url, callbacks);
+    } catch (error) {
+      commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
+      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_LOADING, false);
+    }
+  }
+  
 };

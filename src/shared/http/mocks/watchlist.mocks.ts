@@ -8,12 +8,16 @@ export const mockApiWatchlists: WatchlistApiResponse = {
     {
       url: "watchlist/1",
       title: "Test1",
-      targets: "watchlist/1/targets",
+      targets: "test",
+      n_targets: "test",
+      last_match: "test"
     },
     {
       url: "watchlist/2",
       title: "Test2",
-      targets: "watchlist/2/targets",
+      targets: "test",
+      n_targets: "test",
+      last_match: "test"
     },
   ],
 };
@@ -36,7 +40,7 @@ export const mockCreateWatchlistResponse: CreateWatchlistApiResponse = {
   owner: "owner",
   targets: [
     {
-      url: "watchlists/3/targets/1",
+      url: "test",
       name: "target",
       radius: 1.0,
       ra: 1.0,

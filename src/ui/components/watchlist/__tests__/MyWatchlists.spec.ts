@@ -7,11 +7,15 @@ import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import Vue from "vue";
 import Vuetify from "vuetify";
 import Vuex from "vuex";
-import MyWatchlists from "@/ui/components/MyWatchlists.vue";
+import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
 import flushPromises from "flush-promises";
 import { IStoreCreator } from "@/ui/store/StoreCreator";
+import { mockActions } from "@/ui/store/watchlist/__tests__/actions.mock";
+import { Modules } from "@/ui/store/RegisterModules";
+import { ActionTypes } from "@/ui/store/watchlist/actions";
 
 describe("List Watchlist", () => {
+  containerBuilder();
   const localVue = createLocalVue();
   localVue.use(Vuex);
   Vue.use(Vuetify);
@@ -52,4 +56,35 @@ describe("List Watchlist", () => {
       expect(item.text()).toEqual(expected[index].title);
     });
   });
+  it("should call actions when selectedItem changes", async () => {
+    const modules = {
+      modules: {
+        watchlists: {
+          namespaced: true,
+          actions: mockActions,
+          mutations: {},
+          state: {},
+          getters: {},
+        },
+      },
+    };
+    container.unbind("Modules");
+    container.bind<Modules>("Modules").toConstantValue(modules);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    const store = storeCreator.create();
+    container.bind<TestActions>("ActionType").toConstantValue("ok");
+    const wrapper = mount(MyWatchlists, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    wrapper.setData({
+      selectedItem: 2,
+    })
+    await flushPromises();
+    const mock = mockActions[ActionTypes.selectWatchlist] as jest.Mock;
+    expect(mock.mock.calls[0][1]).toBe(2);
+
+  })
 });

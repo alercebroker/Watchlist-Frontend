@@ -5,6 +5,9 @@ import { Result } from "neverthrow";
 import { CreateWatchlistRequestModel } from "../infrastructure/WatchlistService.types";
 
 export interface IWatchlistData {
+  url: string;
+  nTargets: string;
+  lastMatch: string;
   title: string;
   owner: string;
   targets: string | null; // url to targets
@@ -13,7 +16,7 @@ export interface IWatchlistData {
 export interface IWatchlistRepository {
   getAllWatchlists(): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
   getOneWatchlist(
-    id: number
+    url: string
   ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
   createWatchlist(
     params: CreateWatchlistRequestModel,
