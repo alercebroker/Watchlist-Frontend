@@ -2,7 +2,7 @@
   <v-card>
     <v-list>
       <v-subheader>My Watchlists</v-subheader>
-      <v-list-item-group v-model="selectedItem" color="primary">
+      <v-list-item-group v-model="watchlist" color="primary">
         <v-list-item v-for="(item, i) in watchlists" :key="i">
           <v-list-item-content>
             <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -37,6 +37,18 @@ export default Vue.extend({
     watchlists() {
       return this.$store.state.watchlists.watchlists;
     },
+    watchlist: {
+      get: function(){
+        const index = this.watchlists.map(x => x.url).indexOf(this.$store.state.singleWatchlist.url)
+        if(index === -1){
+          this.watchlist = 0;
+        }
+        return index;
+      },
+      set: function(newWatchlistIndex){
+        this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, newWatchlistIndex);
+      }
+    }
   },
   methods: {
     clickCreateWatchlist() {

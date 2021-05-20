@@ -31,12 +31,11 @@ export class WatchlistService implements IWatchlistRepository {
       );
       return combine(watchlists);
     };
-    return await this.httpService.get({ url: "/watchlist" }, { parseTo });
+    return await this.httpService.get({ url: "/watchlists" }, { parseTo });
   }
   async getOneWatchlist(
     url: string
   ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
-    console.log('getoneWatchlist Service', url)
     const parseTo = (response: OneWatchlistApiResponse) => {
       const owner = "owner";
       return this.parser.toDomain(response, owner);

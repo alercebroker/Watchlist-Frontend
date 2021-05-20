@@ -25,8 +25,8 @@ describe("WatchlistService", () => {
       const result = await service.getAllWatchlists();
       expect(result.isOk()).toBeTruthy();
       const expected = [
-        new Watchlist({ owner: "owner", title: "Test1", targets: "test" }),
-        new Watchlist({ owner: "owner", title: "Test2", targets: "test" }),
+        new Watchlist({ owner: "owner", title: "Test1", targets: "test", nTargets: "test", url: "watchlists/1", lastMatch: "test" }),
+        new Watchlist({ owner: "owner", title: "Test2", targets: "test", nTargets: "test", url: "watchlists/2", lastMatch: "test" }),
       ];
       result.map((watchlists) => {
         expect(watchlists).toStrictEqual(expected);
@@ -66,11 +66,10 @@ describe("WatchlistService", () => {
         const result = await service.createWatchlist(request);
         expect(result.isOk()).toBeTruthy();
         const expected = [
-            new Watchlist({ owner: "owner", title: "Test1", targets: "test" }),
-            new Watchlist({ owner: "owner", title: "Test2", targets: "test" }),
-            new Watchlist({ owner: "owner", title: "Test3", targets: "test" })
+            new Watchlist({ owner: "owner", title: "Test1", targets: "test", nTargets: "test", url: "watchlists/1", lastMatch: "test" }),
+            new Watchlist({ owner: "owner", title: "Test2", targets: "test", nTargets: "test", url: "watchlists/2", lastMatch: "test" }),
+            new Watchlist({ owner: "owner", title: "Test3", targets: "test", nTargets: "test", url: "watchlists/3", lastMatch: "test" })
         ]
-        // console.log(result)
         result.map(watchlists => {
             expect(watchlists).toStrictEqual(expected)
         })
@@ -116,6 +115,34 @@ describe("WatchlistService", () => {
         result.mapErr((error) => {
           expect(error.message).toContain("timeout");
         });
+    });
+  });
+
+  describe("GetOneWatchlist", () => {
+    it("should return onewatchlists", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const httpService = container.get<IHttpService>(cid.HttpService);
+      const service = new WatchlistService(httpService);
+      const result = await service.getOneWatchlist("watchlists/1");
+      expect(result.isOk()).toBeTruthy();
+      const expected = new Watchlist({ owner: "owner", title: "title", targets: "watchlists/1/targets", nTargets: "test", url: "watchlists/1", lastMatch: "test" });
+      result.map((watchlist) => {
+        expect(watchlist).toStrictEqual(expected);
+      });
+    }),
+    it("should return errored result", async () => {
+        container.bind<TestActions>("ActionType").toConstantValue("error");
+        const httpService = container.get<IHttpService>(cid.HttpService);
+        const service = new WatchlistService(httpService);
+        const result = await service.getOneWatchlist("watchlists/1");
+        expect(result.isOk()).toBeFalsy();
+    });
+    it("should return errored result", async () => {
+        container.bind<TestActions>("ActionType").toConstantValue("timeout");
+        const httpService = container.get<IHttpService>(cid.HttpService);
+        const service = new WatchlistService(httpService);
+        const result = await service.getOneWatchlist("watchlists/1");
+        expect(result.isOk()).toBeFalsy();
     });
   });
 });

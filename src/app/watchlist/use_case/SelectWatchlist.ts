@@ -6,7 +6,6 @@ import { IWatchlistRepository } from "../domain";
 export class SelectWatchlist implements UseCaseInteractor {
     @inject() watchlistService!: IWatchlistRepository;
     async execute(params: any, callbacks: Callbacks): Promise<void> {
-        console.log('usaecase execute', params)
         const result = await this.watchlistService.getOneWatchlist(params);
         result
             .map((watchlist) => {

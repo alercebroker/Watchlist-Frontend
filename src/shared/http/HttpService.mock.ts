@@ -45,7 +45,7 @@ export class MockAxiosCreator implements IAxiosCreator {
   }
 
   setMockActions() {
-    this.mock.onGet("/watchlist").reply((_config: any) => {
+    this.mock.onGet("/watchlists").reply((_config: any) => {
       const response = mockApiWatchlists;
       return [200, JSON.stringify(response)];
     });
@@ -67,7 +67,7 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = mockCreateWatchlistResponse;
       mockApiWatchlists.results.push(
         {
-        url: "watchlist/3",
+        url: "watchlists/3",
         title: watchlistJSON.title,
         targets: "test",
         n_targets: "test",
@@ -76,23 +76,23 @@ export class MockAxiosCreator implements IAxiosCreator {
       )
       return [201, JSON.stringify(response)]
     })
-    this.mock.onGet("/watchlist/1/targets").reply((_config: any) => {
+    this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {
       const response = mockTargetsByWatchlist;
       return [200, JSON.stringify(response)];
     });
-    this.mock.onGet("/watchlist/1").reply((_config: any) => {
+    this.mock.onGet("/watchlists/1").reply((_config: any) => {
       const response = mockSingleWatchlist;
-      console.log('response httpService', response)
       return [200, JSON.stringify(response)];
     });
   }
   setErrorActions() {
-    this.mock.onGet("/watchlist").networkError();
+    this.mock.onGet("/watchlists").networkError();
     this.mock.onPost("/users").networkError();
     this.mock.onPost("/users/login").networkError();
     this.mock.onGet("/users").networkError();
     this.mock.onPost("/watchlists").networkError();
-    this.mock.onGet("/watchlists/123/targets").networkError();
+    this.mock.onGet("/watchlists/1/targets").networkError();
+    this.mock.onGet("/watchlists/1").networkError();
   }
   setTimeoutActions() {
     this.mock.onGet("/watchlist").timeout();
@@ -100,10 +100,11 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onPost("/users/login").timeout();
     this.mock.onGet("/users").timeout();
     this.mock.onPost("/watchlists").timeout();
-    this.mock.onGet("/watchlists/123/targets").timeout();
+    this.mock.onGet("/watchlists/1/targets").timeout();
+    this.mock.onGet("/watchlists/1").timeout();
   }
   setParseErrorActions() {
-    this.mock.onGet("/watchlists/123/targets").reply((_config: any) => {
+    this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {
       const response = {};
       return [200, JSON.stringify(response)];
     });

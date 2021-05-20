@@ -97,21 +97,9 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
   async [ActionTypes.selectWatchlist]({ commit, dispatch, state }, index: number) {
     commit(MutationTypes.SET_LOADING, true);
     const watchlist = state.watchlists[index];
-    // console.log('Watlist action selectwatchlist', watchlist)
-    // console.log('store', store)
-    //url
-    //title
-    //targets
-    //n_matches
-    //last_match
     const interactor = container.get<UseCaseInteractor>(cid.SelectWatchlist);
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlist: IWatchlistData) => {
-        //setear datos de watchlist (otro modulo) (COMMIT)
-        //dispatch getTargets (url | watchlist_id)(otro modulo) ->
-        // MUTATIONTYPE DE WATCHLIST SINGULAR
-        //commit(MutationTypes.SET_TITLE)
-        console.log("Watchlist Action", watchlist.url)
         dispatch("targets/" + ActionTypes.getTargets, watchlist.targets, { root: true });
         commit("singleWatchlist/" + SingleWatchlistMutationType.SET_TITLE, watchlist.title, { root: true });
         commit("singleWatchlist/" + SingleWatchlistMutationType.SET_LAST_MATCH, watchlist.lastMatch, { root: true });

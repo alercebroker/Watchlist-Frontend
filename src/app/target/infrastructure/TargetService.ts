@@ -18,7 +18,6 @@ export class TargetService implements ITargetRepository {
     if (typeof args[0] === "number") {
       return this.getTargetsFromWatchlistId(args[0]);
     } else if (typeof args[0] === "string") {
-      console.log('getAll', args[0])
       return this.getTargetsFromUrl(args[0]);
     }
   }
@@ -44,7 +43,6 @@ export class TargetService implements ITargetRepository {
       const targets = response.results.map((x) => {
         return this.parser.toDomain(x);
       });
-      console.log("getTargetFromUrl Target Service", targets)
       return combine(targets);
     };
     return await this.httpService.get({ url }, { parseTo });

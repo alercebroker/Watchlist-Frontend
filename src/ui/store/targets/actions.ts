@@ -26,12 +26,10 @@ export enum ActionTypes {
 
 export const actions: ActionTree<TargetsState, IRootState> = {
   async [ActionTypes.getTargets]({ commit, state }, url: string) {
-    console.log('getTargets target action', url)
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(cid.GetTargets);
     const callbacks: Callbacks = {
       respondWithSuccess: (targets: ITargetData[]) => {
-        console.log('respondWithSuccess', targets)
         commit(MutationTypes.SET_TARGETS, targets);
         commit(MutationTypes.SET_ERROR, null);
         commit(MutationTypes.SET_LOADING, false);

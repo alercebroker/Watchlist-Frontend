@@ -7,18 +7,18 @@ import {
 
 export const mockApiWatchlists: WatchlistApiResponse = {
   count: 2,
-  next: "watchlist/?page=1",
+  next: "watchlists/?page=1",
   previous: "",
   results: [
     {
-      url: "watchlist/1",
+      url: "watchlists/1",
       title: "Test1",
       targets: "test",
       n_targets: "test",
       last_match: "test"
     },
     {
-      url: "watchlist/2",
+      url: "watchlists/2",
       title: "Test2",
       targets: "test",
       n_targets: "test",
@@ -40,7 +40,7 @@ export const mockCreateWatchlistRequestModel: CreateWatchlistRequestModel = {
 }
 
 export const mockCreateWatchlistResponse: CreateWatchlistApiResponse = {
-  url: "watchlist/3",
+  url: "watchlists/3",
   title: "title",
   owner: "owner",
   targets: [
@@ -56,10 +56,10 @@ export const mockCreateWatchlistResponse: CreateWatchlistApiResponse = {
 }
 
 export const mockSingleWatchlist: OneWatchlistApiResponse = {
-  url: "watchlist/1",
+  url: "watchlists/1",
   title: "title",
   owner: "owner",
-  targets: "watchlist/1/targets",
+  targets: "watchlists/1/targets",
   n_targets: "test",
   last_match: "test",
 }

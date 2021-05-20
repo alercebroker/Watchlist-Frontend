@@ -9,15 +9,15 @@ import {
 } from "@/shared/usecase/UseCaseInteractor.types";
 
 beforeEach(() => {
-  resetContainer();
-  containerBuilder();
-  mockTransient<IWatchlistRepository>(
-    cid.WatchlistService,
-    MockWatchlistService
-  );
-});
+    resetContainer();
+    containerBuilder();
+    mockTransient<IWatchlistRepository>(
+      cid.WatchlistService,
+      MockWatchlistService
+    );
+  });
 
-describe("GetAllWatchlists", () => {
+describe("SelectWatchlist", () => {
   const callbacks: Callbacks = {
     respondWithSuccess: jest.fn(),
     respondWithClientError: jest.fn(),
@@ -26,26 +26,26 @@ describe("GetAllWatchlists", () => {
   };
   it("should call success callback", async () => {
     container.bind<TestActions>("ActionType").toConstantValue("ok");
-    const use_case = container.get<UseCaseInteractor>(cid.GetAllWatchlists);
-    await use_case.execute(null, callbacks);
+    const use_case = container.get<UseCaseInteractor>(cid.SelectWatchlist);
+    await use_case.execute("watchlists/1", callbacks);
     expect(callbacks.respondWithSuccess).toHaveBeenCalledTimes(1);
   });
   it("should call server error callback", async () => {
     container.bind<TestActions>("ActionType").toConstantValue("serverError");
-    const use_case = container.get<UseCaseInteractor>(cid.GetAllWatchlists);
-    await use_case.execute(null, callbacks);
+    const use_case = container.get<UseCaseInteractor>(cid.SelectWatchlist);
+    await use_case.execute("watchlists/1", callbacks);
     expect(callbacks.respondWithServerError).toHaveBeenCalledTimes(1);
   });
   it("should call client error callback", async () => {
     container.bind<TestActions>("ActionType").toConstantValue("clientError");
-    const use_case = container.get<UseCaseInteractor>(cid.GetAllWatchlists);
-    await use_case.execute(null, callbacks);
+    const use_case = container.get<UseCaseInteractor>(cid.SelectWatchlist);
+    await use_case.execute("watchlists/1", callbacks);
     expect(callbacks.respondWithClientError).toHaveBeenCalledTimes(1);
   });
   it("should call parse error callback", async () => {
     container.bind<TestActions>("ActionType").toConstantValue("parseError");
-    const use_case = container.get<UseCaseInteractor>(cid.GetAllWatchlists);
-    await use_case.execute(null, callbacks);
+    const use_case = container.get<UseCaseInteractor>(cid.SelectWatchlist);
+    await use_case.execute("watchlists/1", callbacks);
     expect(callbacks.respondWithParseError).toHaveBeenCalledTimes(1);
   });
 });

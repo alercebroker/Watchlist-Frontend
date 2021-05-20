@@ -1,6 +1,5 @@
-import { ITargetData } from "@/app/target/domain/Target.types";
-import {SingleWatchlistState} from "@/ui/store/singleWatchlist/state";
-import {MutationTree} from "vuex";
+import { MutationTree } from "vuex";
+import { SingleWatchlistState } from "./state";
 
 
 export enum MutationTypes {
@@ -8,10 +7,11 @@ export enum MutationTypes {
     SET_ERROR = "SET_ERROR",
     SET_TITLE = "SET_TITLE",
     SET_URL = "SET_URL",
+    SET_TARGETS = "SET_TARGETS",
     SET_N_TARGETS = "SET_N_TARGETS",
     SET_LAST_MATCH = "SET_LAST_MATCH"
   }
-
+  
 export const mutations: MutationTree<SingleWatchlistState> = {
     [MutationTypes.SET_TITLE](state, title: string) {
         state.title = title;

@@ -47,7 +47,6 @@ export default Vue.extend({
   },
   methods: {
     onItemClick(item) {
-      // console.log(item.target.innerText);
       this.items.map((x) => {
         console.log(x.name !== item.target.innerText);
         if (x.name !== item.target.innerText) {
