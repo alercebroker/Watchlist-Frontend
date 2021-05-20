@@ -1,4 +1,9 @@
-import { CreateWatchlistApiResponse, CreateWatchlistRequestModel, WatchlistApiResponse } from "@/app/watchlist/infrastructure/WatchlistService.types";
+import {
+  CreateWatchlistApiResponse,
+  CreateWatchlistRequestModel,
+  OneWatchlistApiResponse,
+  WatchlistApiResponse
+} from "@/app/watchlist/infrastructure/WatchlistService.types";
 
 export const mockApiWatchlists: WatchlistApiResponse = {
   count: 2,
@@ -48,4 +53,13 @@ export const mockCreateWatchlistResponse: CreateWatchlistApiResponse = {
       n_matches: 1,
     }
   ]
+}
+
+export const mockSingleWatchlist: OneWatchlistApiResponse = {
+  url: "watchlist/1",
+  title: "title",
+  owner: "owner",
+  targets: "watchlist/1/targets",
+  n_targets: "test",
+  last_match: "test",
 }

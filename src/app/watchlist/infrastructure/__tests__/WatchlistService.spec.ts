@@ -70,7 +70,7 @@ describe("WatchlistService", () => {
             new Watchlist({ owner: "owner", title: "Test2", targets: "test" }),
             new Watchlist({ owner: "owner", title: "Test3", targets: "test" })
         ]
-        console.log(result)
+        // console.log(result)
         result.map(watchlists => {
             expect(watchlists).toStrictEqual(expected)
         })

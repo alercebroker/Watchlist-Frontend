@@ -36,6 +36,7 @@ export class WatchlistService implements IWatchlistRepository {
   async getOneWatchlist(
     url: string
   ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
+    console.log('getoneWatchlist Service', url)
     const parseTo = (response: OneWatchlistApiResponse) => {
       const owner = "owner";
       return this.parser.toDomain(response, owner);

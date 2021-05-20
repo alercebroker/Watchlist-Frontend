@@ -3,14 +3,13 @@ import {
   Callbacks,
   UseCaseInteractor,
 } from "@/shared/usecase/UseCaseInteractor.types";
-import { 
-  CreateWatchlistRequestModel 
-} from "@/app/watchlist/infrastructure/WatchlistService.types"
+import { CreateWatchlistRequestModel } from "@/app/watchlist/infrastructure/WatchlistService.types"
 import { ActionTree } from "vuex";
 import { IRootState } from "../Store.types";
 import { WatchlistState } from "./state";
 import { IWatchlistData } from "@/app/watchlist/domain";
 import { MutationTypes } from "./mutations";
+import { MutationTypes as SingleWatchlistMutationType } from "../singleWatchlist/mutations";
 import { HttpError } from "@/shared/http";
 import { ParseError } from "@/shared/error/ParseError";
 
@@ -18,6 +17,7 @@ export enum ActionTypes {
   getAllWatchlists = "getAllWatchlists",
   createWatchlist = "createWatchlist",
   selectWatchlist = "selectWatchlist",
+  getTargets = "getTargets"
 }
 
 function throwExpression(errorMessage: string) {
@@ -86,7 +86,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         title: watchlistInput.title ?? throwExpression("title required"),
         targets: watchlistInput.targets,
       };
-    
+
       interactor.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
@@ -97,7 +97,8 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
   async [ActionTypes.selectWatchlist]({ commit, dispatch, state }, index: number) {
     commit(MutationTypes.SET_LOADING, true);
     const watchlist = state.watchlists[index];
-    console.log(watchlist)
+    // console.log('Watlist action selectwatchlist', watchlist)
+    // console.log('store', store)
     //url
     //title
     //targets
@@ -107,36 +108,53 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlist: IWatchlistData) => {
         //setear datos de watchlist (otro modulo) (COMMIT)
-        //dispatch getTargets (url | watchlist_id)(otro modulo) -> 
+        //dispatch getTargets (url | watchlist_id)(otro modulo) ->
         // MUTATIONTYPE DE WATCHLIST SINGULAR
         //commit(MutationTypes.SET_TITLE)
-        commit(MutationTypes.SET_WATCHLISTS, [watchlist]);
-        commit(MutationTypes.SET_ERROR, null);
-        commit(MutationTypes.SET_LOADING, false);
+        console.log("Watchlist Action", watchlist.url)
+        dispatch("targets/" + ActionTypes.getTargets, watchlist.targets);
+        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_TITLE, watchlist.title);
+        commit(SingleWatchlistMutationType.SET_LAST_MATCH, watchlist.lastMatch);
+        commit(SingleWatchlistMutationType.SET_N_TARGETS, watchlist.nTargets);
+        commit(SingleWatchlistMutationType.SET_URL, watchlist.url);
+        commit(SingleWatchlistMutationType.SET_ERROR, null);
+        commit(SingleWatchlistMutationType.SET_LOADING, false);
       },
       respondWithClientError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_WATCHLISTS, []);
-        commit(MutationTypes.SET_LOADING, false);
+        commit(SingleWatchlistMutationType.SET_TITLE, "");
+        commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
+        commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
+        commit(SingleWatchlistMutationType.SET_URL, "");
+        commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+        commit(SingleWatchlistMutationType.SET_LOADING, false);
       },
       respondWithServerError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_WATCHLISTS, []);
-        commit(MutationTypes.SET_LOADING, false);
+        commit(SingleWatchlistMutationType.SET_TITLE, "");
+        commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
+        commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
+        commit(SingleWatchlistMutationType.SET_URL, "");
+        commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+        commit(SingleWatchlistMutationType.SET_LOADING, false);
       },
       respondWithParseError: (error: ParseError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_WATCHLISTS, []);
-        commit(MutationTypes.SET_LOADING, false);
+        commit(SingleWatchlistMutationType.SET_TITLE, "");
+        commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
+        commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
+        commit(SingleWatchlistMutationType.SET_URL, "");
+        commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+        commit(SingleWatchlistMutationType.SET_LOADING, false);
       },
     };
     try {
       interactor.execute(watchlist.url, callbacks);
     } catch (error) {
-      commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
-      commit(MutationTypes.SET_ERROR, error.message);
-      commit(MutationTypes.SET_LOADING, false);
+        commit(SingleWatchlistMutationType.SET_TITLE, "");
+        commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
+        commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
+        commit(SingleWatchlistMutationType.SET_URL, "");
+        commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+        commit(SingleWatchlistMutationType.SET_LOADING, false);
     }
   }
-  
+
 };

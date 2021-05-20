@@ -19,6 +19,8 @@ import { Login } from "@/app/user/use_case/Login";
 import { CreateWatchlist } from "@/app/watchlist/use_case/CreateWatchlist";
 import { ITargetRepository } from "@/app/target/domain/Target.types";
 import { TargetService } from "@/app/target/infrastructure/TargetService";
+import { GetTargets } from "@/app/target/use_case/GetTargets";
+import {SelectWatchlist} from "@/app/watchlist/use_case/SelectWatchlist";
 
 export function containerBuilder() {
   container.addTransient<IAxiosCreator>(AxiosCreator);
@@ -32,4 +34,6 @@ export function containerBuilder() {
   container.addTransient<UseCaseInteractor>(Login);
   container.addTransient<UseCaseInteractor>(CreateWatchlist);
   container.addSingleton<ITargetRepository>(TargetService);
+  container.addTransient<UseCaseInteractor>(GetTargets);
+  container.addTransient<UseCaseInteractor>(SelectWatchlist);
 }

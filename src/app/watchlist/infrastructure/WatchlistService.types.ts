@@ -40,11 +40,11 @@ export interface OneWatchlistApiResponse {
     title: string,
     owner: string,
     targets: string,
-    n_targets: number,
+    n_targets: string,
     last_match: string,
 }
 
-export interface CreateWatchlistTargetApiResult 
+export interface CreateWatchlistTargetApiResult
 {
     url: string,
     name: string,

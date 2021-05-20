@@ -8,7 +8,11 @@ import {
   mockRegisterUser,
   mockUsersResponse,
 } from "./mocks/user.mocks";
-import { mockApiWatchlists, mockCreateWatchlistResponse } from "./mocks/watchlist.mocks";
+import {
+  mockApiWatchlists,
+  mockCreateWatchlistResponse,
+  mockSingleWatchlist
+} from "./mocks/watchlist.mocks";
 
 export type TestActions =
   | "ok"
@@ -74,6 +78,11 @@ export class MockAxiosCreator implements IAxiosCreator {
     })
     this.mock.onGet("/watchlists/123/targets").reply((_config: any) => {
       const response = mockTargetsByWatchlist;
+      return [200, JSON.stringify(response)];
+    });
+    this.mock.onGet("/watchlist/1").reply((_config: any) => {
+      const response = mockSingleWatchlist;
+      console.log('response httpService', response)
       return [200, JSON.stringify(response)];
     });
   }

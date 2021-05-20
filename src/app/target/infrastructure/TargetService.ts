@@ -18,6 +18,7 @@ export class TargetService implements ITargetRepository {
     if (typeof args[0] === "number") {
       return this.getTargetsFromWatchlistId(args[0]);
     } else if (typeof args[0] === "string") {
+      console.log('getAll', args[0])
       return this.getTargetsFromUrl(args[0]);
     }
   }
