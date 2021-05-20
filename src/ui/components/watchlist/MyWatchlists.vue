@@ -10,7 +10,7 @@
         </v-list-item>
       </v-list-item-group>
       <v-btn @click="clickCreateWatchlist" color="primary" absolute bottom right fab>
-      
+
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-list>
@@ -41,7 +41,7 @@ export default Vue.extend({
   methods: {
     clickCreateWatchlist() {
       this.watchlist_dialog = true;
-    }
+    },
   },
   watch: {
     selectedItem: function (newSelectedItem){

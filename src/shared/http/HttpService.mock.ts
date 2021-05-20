@@ -76,7 +76,7 @@ export class MockAxiosCreator implements IAxiosCreator {
       )
       return [201, JSON.stringify(response)]
     })
-    this.mock.onGet("/watchlists/123/targets").reply((_config: any) => {
+    this.mock.onGet("/watchlist/1/targets").reply((_config: any) => {
       const response = mockTargetsByWatchlist;
       return [200, JSON.stringify(response)];
     });

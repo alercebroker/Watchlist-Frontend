@@ -112,13 +112,13 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         // MUTATIONTYPE DE WATCHLIST SINGULAR
         //commit(MutationTypes.SET_TITLE)
         console.log("Watchlist Action", watchlist.url)
-        dispatch("targets/" + ActionTypes.getTargets, watchlist.targets);
-        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_TITLE, watchlist.title);
-        commit(SingleWatchlistMutationType.SET_LAST_MATCH, watchlist.lastMatch);
-        commit(SingleWatchlistMutationType.SET_N_TARGETS, watchlist.nTargets);
-        commit(SingleWatchlistMutationType.SET_URL, watchlist.url);
-        commit(SingleWatchlistMutationType.SET_ERROR, null);
-        commit(SingleWatchlistMutationType.SET_LOADING, false);
+        dispatch("targets/" + ActionTypes.getTargets, watchlist.targets, { root: true });
+        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_TITLE, watchlist.title, { root: true });
+        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_LAST_MATCH, watchlist.lastMatch, { root: true });
+        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_N_TARGETS, watchlist.nTargets, { root: true });
+        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_URL, watchlist.url, { root: true });
+        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_ERROR, null, { root: true });
+        commit("singleWatchlist/" + SingleWatchlistMutationType.SET_LOADING, false, { root: true });
       },
       respondWithClientError: (error: HttpError) => {
         commit(SingleWatchlistMutationType.SET_TITLE, "");

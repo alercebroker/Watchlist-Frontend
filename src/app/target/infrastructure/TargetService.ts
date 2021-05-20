@@ -44,6 +44,7 @@ export class TargetService implements ITargetRepository {
       const targets = response.results.map((x) => {
         return this.parser.toDomain(x);
       });
+      console.log("getTargetFromUrl Target Service", targets)
       return combine(targets);
     };
     return await this.httpService.get({ url }, { parseTo });
