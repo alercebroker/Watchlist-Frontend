@@ -27,7 +27,7 @@ import { ActionTypes } from "@/ui/store/watchlist/actions";
 export default Vue.extend({
   components: { CreateWatchlist },
   data: () => ({
-    selectedItem: 1,
+    selectedItem: 0,
     watchlist_dialog: false,
   }),
   async mounted() {
@@ -38,14 +38,18 @@ export default Vue.extend({
       return this.$store.state.watchlists.watchlists;
     },
     watchlist: {
-      get: function(){
-        const index = this.watchlists.map(x => x.url).indexOf(this.$store.state.singleWatchlist.url)
-        if(index === -1){
-          this.watchlist = 0;
+      get: function () {
+        const singleWatchlist = this.$store.state.singleWatchlist;
+        const index = this.watchlists
+          .map((x) => x.url)
+          .indexOf(singleWatchlist.url);
+        if (index === -1 && this.watchlists.length >= 1) {
+          this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, 0);
+          return 0;
         }
         return index;
       },
-      set: function(newWatchlistIndex){
+      set: function (newWatchlistIndex) {
         this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, newWatchlistIndex);
       }
     }

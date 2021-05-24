@@ -11,8 +11,10 @@ import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
 import flushPromises from "flush-promises";
 import { IStoreCreator } from "@/ui/store/StoreCreator";
 import { mockActions } from "@/ui/store/watchlist/__tests__/actions.mock";
+import { mockActions as mockTargetActions} from "@/ui/store/targets/__tests__/actions.mock";
 import { Modules } from "@/ui/store/RegisterModules";
 import { ActionTypes } from "@/ui/store/watchlist/actions";
+import { ActionTypes as TargetActionTypes} from "@/ui/store/targets/actions";
 
 describe("List Watchlist", () => {
   containerBuilder();
@@ -66,6 +68,13 @@ describe("List Watchlist", () => {
           state: {},
           getters: {},
         },
+        targets: {
+          namespaced: true,
+          actions: mockTargetActions,
+          mutations: {},
+          state: {},
+          getters: {},
+        }
       },
     };
     container.unbind("Modules");
@@ -85,6 +94,8 @@ describe("List Watchlist", () => {
     await flushPromises();
     const mock = mockActions[ActionTypes.selectWatchlist] as jest.Mock;
     expect(mock.mock.calls[0][1]).toBe(2);
+    //const mockTarget = mockTargetActions[TargetActionTypes.getTargets] as jest.Mock;
+    //console.log(mockTarget.mock.calls);
 
   })
 });

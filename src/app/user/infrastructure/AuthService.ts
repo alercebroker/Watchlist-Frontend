@@ -19,7 +19,7 @@ export class AuthService implements IUserRepository {
   constructor(@inject() httpService: IHttpService) {
     this.httpService = httpService;
     this.parser = new UserParser();
-    this.httpService.initService("");
+    this.httpService.initService(process.env.VUE_APP_USER_API);
   }
 
   async login(

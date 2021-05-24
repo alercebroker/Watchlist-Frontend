@@ -19,7 +19,7 @@ export class WatchlistService implements IWatchlistRepository {
     this.parser = new WatchlistApiParser();
     this.parserCreate = new WatchlistCreateApiParser();
     this.httpService = httpService;
-    this.httpService.initService("");
+    this.httpService.initService(process.env.VUE_APP_USER_API);
   }
   async getAllWatchlists(): Promise<
     Result<IWatchlistData[], ParseError | HttpError>

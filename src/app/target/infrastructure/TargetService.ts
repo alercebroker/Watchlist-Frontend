@@ -11,7 +11,7 @@ export class TargetService implements ITargetRepository {
   parser: TargetParser;
   constructor(@inject() httpService: IHttpService) {
     this.httpService = httpService;
-    this.httpService.initService("");
+    this.httpService.initService(process.env.VUE_APP_USER_API);
     this.parser = new TargetParser();
   }
   getAllTargets(...args: [watchlistId: number] | [targetsUrl: string]): any {

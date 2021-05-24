@@ -96,6 +96,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
   },
   async [ActionTypes.selectWatchlist]({ commit, dispatch, state }, index: number) {
     commit(MutationTypes.SET_LOADING, true);
+    //commit("singleWatchlist/" + SingleWatchlistMutationType.SET_LOADING, true, { root: true });
     const watchlist = state.watchlists[index];
     const interactor = container.get<UseCaseInteractor>(cid.SelectWatchlist);
     const callbacks: Callbacks = {
@@ -107,6 +108,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit("singleWatchlist/" + SingleWatchlistMutationType.SET_URL, watchlist.url, { root: true });
         commit("singleWatchlist/" + SingleWatchlistMutationType.SET_ERROR, null, { root: true });
         commit("singleWatchlist/" + SingleWatchlistMutationType.SET_LOADING, false, { root: true });
+        commit(MutationTypes.SET_LOADING, false);
       },
       respondWithClientError: (error: HttpError) => {
         commit(SingleWatchlistMutationType.SET_TITLE, "");
@@ -115,6 +117,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(SingleWatchlistMutationType.SET_URL, "");
         commit(SingleWatchlistMutationType.SET_ERROR, error.message);
         commit(SingleWatchlistMutationType.SET_LOADING, false);
+        commit(MutationTypes.SET_LOADING, false);
       },
       respondWithServerError: (error: HttpError) => {
         commit(SingleWatchlistMutationType.SET_TITLE, "");
@@ -123,6 +126,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(SingleWatchlistMutationType.SET_URL, "");
         commit(SingleWatchlistMutationType.SET_ERROR, error.message);
         commit(SingleWatchlistMutationType.SET_LOADING, false);
+        commit(MutationTypes.SET_LOADING, false);
       },
       respondWithParseError: (error: ParseError) => {
         commit(SingleWatchlistMutationType.SET_TITLE, "");
@@ -131,6 +135,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(SingleWatchlistMutationType.SET_URL, "");
         commit(SingleWatchlistMutationType.SET_ERROR, error.message);
         commit(SingleWatchlistMutationType.SET_LOADING, false);
+        commit(MutationTypes.SET_LOADING, false);
       },
     };
     try {
@@ -142,6 +147,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(SingleWatchlistMutationType.SET_URL, "");
         commit(SingleWatchlistMutationType.SET_ERROR, error.message);
         commit(SingleWatchlistMutationType.SET_LOADING, false);
+        commit(MutationTypes.SET_LOADING, false);
     }
   }
 
