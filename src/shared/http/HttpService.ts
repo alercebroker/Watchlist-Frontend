@@ -4,7 +4,7 @@ import axios, {
   AxiosRequestConfig,
   AxiosError,
 } from "axios";
-import { err, Result } from "neverthrow";
+import {err, ok, okAsync, Result} from "neverthrow";
 import { ParseError } from "../error/ParseError";
 import { HttpError } from "./HttpError";
 import { inject } from "inversify-props";
@@ -33,6 +33,9 @@ export interface IHttpService {
     request: IHttpRequest,
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
+  delete<T, M>(
+    request: IHttpRequest,
+  ): Promise<Result<AxiosResponse<T>, ParseError | HttpError>>;
 }
 
 export interface IAxiosCreator {
@@ -82,6 +85,18 @@ export class HttpService implements IHttpService {
     try {
       const response = await this.axiosService.post<T>(url, data, config);
       return this._parseFailable<T, M>(response.data, parser.parseTo);
+    } catch (error) {
+      return err(error);
+    }
+  }
+
+  public async delete<T, M>(
+    { url, config }: IHttpRequest,
+    // hardcoding form M to AxiosResponse<T>. problem of usage of return okAsync(response);
+  ): Promise<Result<AxiosResponse<T>, HttpError>> {
+    try {
+      const response = await this.axiosService.delete<T>(url, config);
+      return okAsync(response);
     } catch (error) {
       return err(error);
     }

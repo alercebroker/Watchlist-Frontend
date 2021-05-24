@@ -21,6 +21,7 @@ import { ITargetRepository } from "@/app/target/domain/Target.types";
 import { TargetService } from "@/app/target/infrastructure/TargetService";
 import { GetTargets } from "@/app/target/use_case/GetTargets";
 import {SelectWatchlist} from "@/app/watchlist/use_case/SelectWatchlist";
+import {DeleteWatchlist} from "@/app/watchlist/use_case/DeleteWatchlist";
 
 export function containerBuilder() {
   container.addTransient<IAxiosCreator>(AxiosCreator);
@@ -36,4 +37,5 @@ export function containerBuilder() {
   container.addSingleton<ITargetRepository>(TargetService);
   container.addTransient<UseCaseInteractor>(GetTargets);
   container.addTransient<UseCaseInteractor>(SelectWatchlist);
+  container.addTransient<UseCaseInteractor>(DeleteWatchlist);
 }

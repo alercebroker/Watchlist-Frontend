@@ -1,8 +1,8 @@
-import axios, { AxiosInstance } from "axios";
+import axios, {AxiosInstance} from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { inject } from "inversify-props";
-import { IAxiosCreator } from ".";
-import { mockTargetsByWatchlist } from "./mocks/target.mocks";
+import {inject} from "inversify-props";
+import {IAxiosCreator} from ".";
+import {mockTargetsByWatchlist} from "./mocks/target.mocks";
 import {
   mockLoginResponse,
   mockRegisterUser,
@@ -25,12 +25,13 @@ export type TestActions =
 export class MockAxiosCreator implements IAxiosCreator {
   mock!: MockAdapter;
   actionType: TestActions;
+
   constructor(@inject("ActionType") actionType: TestActions) {
     this.actionType = actionType;
   }
 
   createAxiosInstance(_baseUrl: string): AxiosInstance {
-    const instance = axios.create({ baseURL: _baseUrl });
+    const instance = axios.create({baseURL: _baseUrl});
     this.mock = new MockAdapter(instance);
     if (this.actionType === "ok") this.setMockActions();
     if (
@@ -67,15 +68,15 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = mockCreateWatchlistResponse;
       mockApiWatchlists.results.push(
         {
-        url: "watchlists/3",
-        title: watchlistJSON.title,
-        targets: "test",
-        n_targets: "test",
-        last_match: "test"
+          url: "watchlists/3",
+          title: watchlistJSON.title,
+          targets: "test",
+          n_targets: "test",
+          last_match: "test"
         },
       )
       return [201, JSON.stringify(response)]
-    })
+    });
     this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {
       const response = mockTargetsByWatchlist;
       return [200, JSON.stringify(response)];
@@ -84,7 +85,11 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = mockSingleWatchlist;
       return [200, JSON.stringify(response)];
     });
+    this.mock.onDelete("/watchlists/1").reply((_config: any) => {
+      return [204];
+    });
   }
+
   setErrorActions() {
     this.mock.onGet("/watchlists").networkError();
     this.mock.onPost("/users").networkError();
@@ -94,6 +99,7 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onGet("/watchlists/1/targets").networkError();
     this.mock.onGet("/watchlists/1").networkError();
   }
+
   setTimeoutActions() {
     this.mock.onGet("/watchlist").timeout();
     this.mock.onPost("/users").timeout();
@@ -103,6 +109,7 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onGet("/watchlists/1/targets").timeout();
     this.mock.onGet("/watchlists/1").timeout();
   }
+
   setParseErrorActions() {
     this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {
       const response = {};

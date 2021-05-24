@@ -16,6 +16,7 @@ import { ParseError } from "@/shared/error/ParseError";
 export enum ActionTypes {
   getAllWatchlists = "getAllWatchlists",
   createWatchlist = "createWatchlist",
+  deleteWatchlist = "deleteWatchlist",
   selectWatchlist = "selectWatchlist",
   getTargets = "getTargets"
 }
@@ -88,6 +89,41 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       };
 
       interactor.execute(requestModel, callbacks);
+    } catch (error) {
+      commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
+      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_LOADING, false);
+    }
+  },
+  async [ActionTypes.deleteWatchlist]({ commit, dispatch, state, rootState }) {
+    commit(MutationTypes.SET_LOADING, true);
+    const interactor = container.get<UseCaseInteractor>(cid.DeleteWatchlist);
+    const watchlist = rootState.singleWatchlist;
+    console.log('Action deleteWatchlist', watchlist)
+    const callbacks: Callbacks = {
+      respondWithSuccess: (watchlists: IWatchlistData[]) => {
+        commit(MutationTypes.SET_WATCHLISTS, watchlists);
+        commit(MutationTypes.SET_ERROR, null);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithClientError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_WATCHLISTS, []);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_WATCHLISTS, []);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_WATCHLISTS, []);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    };
+    try {
+      interactor.execute(watchlist.url, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
       commit(MutationTypes.SET_ERROR, error.message);
