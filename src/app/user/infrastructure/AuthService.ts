@@ -35,6 +35,7 @@ export class AuthService implements IUserRepository {
       },
       { parseTo: parseToken }
     );
+    console.log(tokenResult);
     if (tokenResult.isOk()) {
       const token = tokenResult.value;
       const parseUser = (response: UsersApiResponse) => {
@@ -43,10 +44,11 @@ export class AuthService implements IUserRepository {
       const userResult = await this.httpService.get(
         {
           url: "/users",
-          config: { headers: { Bearer: token } },
+          config: { headers: { 'Authorization': `Bearer ${token}` } },
         },
         { parseTo: parseUser }
       );
+      console.log(userResult);
       return userResult.map((user: User) => {
         user.storeToken();
         return {
