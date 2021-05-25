@@ -30,12 +30,11 @@ export class AuthService implements IUserRepository {
     };
     const tokenResult = await this.httpService.post(
       {
-        url: "/users/login",
+        url: "/users/login/",
         data: params,
       },
       { parseTo: parseToken }
     );
-    console.log(tokenResult);
     if (tokenResult.isOk()) {
       const token = tokenResult.value;
       const parseUser = (response: UsersApiResponse) => {
@@ -43,12 +42,11 @@ export class AuthService implements IUserRepository {
       };
       const userResult = await this.httpService.get(
         {
-          url: "/users",
+          url: "/users/current/",
           config: { headers: { Authorization: `Bearer ${token}` } },
         },
         { parseTo: parseUser }
       );
-      console.log(userResult);
       return userResult.map((user: User) => {
         user.storeToken();
         return {
@@ -74,7 +72,7 @@ export class AuthService implements IUserRepository {
     };
     // result with User entity
     const result = await this.httpService.post(
-      { url: "/users", data: params },
+      { url: "/users/", data: params },
       { parseTo }
     );
     return result.map((user: User) => {

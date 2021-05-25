@@ -46,13 +46,13 @@ describe("WatchlistService", () => {
         expect(watchlists).toStrictEqual(expected);
       });
     }),
-      it("should return errored result", async () => {
-        container.bind<TestActions>("ActionType").toConstantValue("error");
-        const httpService = container.get<IHttpService>(cid.HttpService);
-        const service = new WatchlistService(httpService);
-        const result = await service.getAllWatchlists();
-        expect(result.isOk()).toBeFalsy();
-      });
+    it("should return errored result", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const httpService = container.get<IHttpService>(cid.HttpService);
+      const service = new WatchlistService(httpService);
+      const result = await service.getAllWatchlists();
+      expect(result.isOk()).toBeFalsy();
+    });
     it("should return errored result", async () => {
       container.bind<TestActions>("ActionType").toConstantValue("timeout");
       const httpService = container.get<IHttpService>(cid.HttpService);
@@ -95,14 +95,6 @@ describe("WatchlistService", () => {
           targets: "test",
           nTargets: "test",
           url: "watchlists/2",
-          lastMatch: "test",
-        }),
-        new Watchlist({
-          owner: "owner",
-          title: "Test3",
-          targets: "test",
-          nTargets: "test",
-          url: "watchlists/3",
           lastMatch: "test",
         }),
       ];
@@ -173,13 +165,13 @@ describe("WatchlistService", () => {
         expect(watchlist).toStrictEqual(expected);
       });
     }),
-      it("should return errored result", async () => {
-        container.bind<TestActions>("ActionType").toConstantValue("error");
-        const httpService = container.get<IHttpService>(cid.HttpService);
-        const service = new WatchlistService(httpService);
-        const result = await service.getOneWatchlist("watchlists/1");
-        expect(result.isOk()).toBeFalsy();
-      });
+    it("should return errored result", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const httpService = container.get<IHttpService>(cid.HttpService);
+      const service = new WatchlistService(httpService);
+      const result = await service.getOneWatchlist("watchlists/1");
+      expect(result.isOk()).toBeFalsy();
+    });
     it("should return errored result", async () => {
       container.bind<TestActions>("ActionType").toConstantValue("timeout");
       const httpService = container.get<IHttpService>(cid.HttpService);
@@ -188,4 +180,52 @@ describe("WatchlistService", () => {
       expect(result.isOk()).toBeFalsy();
     });
   });
+  
+  describe("DeleteWatchlist", () => {
+    it("should return list of watchlists", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const httpService = container.get<IHttpService>(cid.HttpService);
+      const service = new WatchlistService(httpService);
+      const result = await service.deleteWatchlist("watchlists/1");
+      expect(result.isOk()).toBeTruthy();
+      const expected = [
+        new Watchlist({
+          owner: "owner",
+          title: "Test1",
+          targets: "test",
+          nTargets: "test",
+          url: "watchlists/1",
+          lastMatch: "test",
+        }),
+        new Watchlist({
+          owner: "owner",
+          title: "Test2",
+          targets: "test",
+          nTargets: "test",
+          url: "watchlists/2",
+          lastMatch: "test",
+        }),
+      ];
+      result.map((watchlists) => {
+        expect(watchlists).toStrictEqual(expected);
+      });
+    });
+
+    it("should return errored result", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const httpService = container.get<IHttpService>(cid.HttpService);
+      const service = new WatchlistService(httpService);
+      const result = await service.deleteWatchlist("watchlists/1");
+      expect(result.isOk()).toBeFalsy();
+    });
+
+    it("should return errored result", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const httpService = container.get<IHttpService>(cid.HttpService);
+      const service = new WatchlistService(httpService);
+      const result = await service.deleteWatchlist("watchlists/1");
+      expect(result.isOk()).toBeFalsy();
+    });
+  });
+  
 });

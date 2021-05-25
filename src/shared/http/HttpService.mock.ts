@@ -63,15 +63,7 @@ export class MockAxiosCreator implements IAxiosCreator {
       return [200, JSON.stringify(response)];
     });
     this.mock.onPost("/watchlists").reply((_config: any) => {
-      const watchlistJSON = JSON.parse(_config.data);
       const response = mockCreateWatchlistResponse;
-      mockApiWatchlists.results.push({
-        url: "watchlists/3",
-        title: watchlistJSON.title,
-        targets: "test",
-        n_targets: "test",
-        last_match: "test",
-      });
       return [201, JSON.stringify(response)];
     });
     this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {

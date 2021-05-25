@@ -36,7 +36,7 @@ export class WatchlistService implements IWatchlistRepository {
       );
       return combine(watchlists);
     };
-    return await this.httpService.get({ url: "/watchlists" }, { parseTo });
+    return await this.httpService.get({ url: "/watchlists/" }, { parseTo });
   }
 
   async getOneWatchlist(
@@ -56,7 +56,7 @@ export class WatchlistService implements IWatchlistRepository {
       return this.parserCreate.parseCreateWatchlistApiResponse(response);
     };
     const result = await this.httpService.post(
-      { url: "/watchlists", data: params },
+      { url: "/watchlists/", data: params },
       { parseTo }
     );
     if (result.isOk()) {
@@ -70,9 +70,7 @@ export class WatchlistService implements IWatchlistRepository {
     url: string
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
     const result = await this.httpService.delete({ url: url });
-    console.log("usecase", result);
     if (result.isOk()) {
-      console.log("usecase isOk", result);
       return this.getAllWatchlists();
     } else {
       return err(result.error);

@@ -10,7 +10,6 @@ export class DeleteWatchlist implements UseCaseInteractor {
   @inject() watchlistService!: IWatchlistRepository;
 
   async execute(params: any, callbacks: Callbacks): Promise<void> {
-    console.log("usecase", params);
     const result = await this.watchlistService.deleteWatchlist(params);
     result
       .map((watchlists) => {

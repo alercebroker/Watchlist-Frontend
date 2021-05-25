@@ -102,7 +102,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(cid.DeleteWatchlist);
     const watchlist = rootState.singleWatchlist;
-    console.log("Action deleteWatchlist", watchlist);
+    console.log("action deletewatchlist", watchlist);
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlists: IWatchlistData[]) => {
         commit(MutationTypes.SET_WATCHLISTS, watchlists);
