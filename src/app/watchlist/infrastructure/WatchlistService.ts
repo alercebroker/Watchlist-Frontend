@@ -1,15 +1,18 @@
-import {ParseError} from "@/shared/error/ParseError";
-import {HttpError, IHttpService} from "@/shared/http";
-import {combine, err, Result} from "neverthrow";
-import {IWatchlistData, IWatchlistRepository, Watchlist} from "../domain";
-import {inject} from "inversify-props";
+import { ParseError } from "@/shared/error/ParseError";
+import { HttpError, IHttpService } from "@/shared/http";
+import { combine, err, Result } from "neverthrow";
+import { IWatchlistData, IWatchlistRepository, Watchlist } from "../domain";
+import { inject } from "inversify-props";
 import {
   WatchlistApiResponse,
   CreateWatchlistRequestModel,
   CreateWatchlistApiResponse,
   OneWatchlistApiResponse,
 } from "./WatchlistService.types";
-import {WatchlistApiParser, WatchlistCreateApiParser} from "./WatchlistParser";
+import {
+  WatchlistApiParser,
+  WatchlistCreateApiParser,
+} from "./WatchlistParser";
 
 export class WatchlistService implements IWatchlistRepository {
   httpService: IHttpService;
@@ -23,7 +26,9 @@ export class WatchlistService implements IWatchlistRepository {
     this.httpService.initService(process.env.VUE_APP_USER_API);
   }
 
-  async getAllWatchlists(): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
+  async getAllWatchlists(): Promise<
+    Result<IWatchlistData[], ParseError | HttpError>
+  > {
     const parseTo = (response: WatchlistApiResponse) => {
       const owner = "owner";
       const watchlists = response.results.map((x) =>
@@ -31,7 +36,7 @@ export class WatchlistService implements IWatchlistRepository {
       );
       return combine(watchlists);
     };
-    return await this.httpService.get({url: "/watchlists"}, {parseTo});
+    return await this.httpService.get({ url: "/watchlists" }, { parseTo });
   }
 
   async getOneWatchlist(
@@ -41,18 +46,18 @@ export class WatchlistService implements IWatchlistRepository {
       const owner = "owner";
       return this.parser.toDomain(response, owner);
     };
-    return await this.httpService.get({url}, {parseTo});
+    return await this.httpService.get({ url }, { parseTo });
   }
 
   async createWatchlist(
-    params: CreateWatchlistRequestModel,
+    params: CreateWatchlistRequestModel
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
     const parseTo = (response: CreateWatchlistApiResponse) => {
       return this.parserCreate.parseCreateWatchlistApiResponse(response);
-    }
+    };
     const result = await this.httpService.post(
-      {url: "/watchlists", data: params},
-      {parseTo}
+      { url: "/watchlists", data: params },
+      { parseTo }
     );
     if (result.isOk()) {
       return this.getAllWatchlists();
@@ -62,14 +67,12 @@ export class WatchlistService implements IWatchlistRepository {
   }
 
   async deleteWatchlist(
-    url: string,
+    url: string
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
-    const result = await this.httpService.delete(
-      {url: url},
-    );
-    console.log('usecase', result)
+    const result = await this.httpService.delete({ url: url });
+    console.log("usecase", result);
     if (result.isOk()) {
-      console.log('usecase isOk', result)
+      console.log("usecase isOk", result);
       return this.getAllWatchlists();
     } else {
       return err(result.error);

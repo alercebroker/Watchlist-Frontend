@@ -5,9 +5,9 @@ import { state } from "./state";
 import { IStoreModule } from "../Store.types";
 
 export const SingleWatchlistModule: IStoreModule = {
-    namespaced: true,
-    state,
-    mutations,
-    actions,
-    getters,
-  };
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+  getters,
+};

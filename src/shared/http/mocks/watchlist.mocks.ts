@@ -2,7 +2,7 @@ import {
   CreateWatchlistApiResponse,
   CreateWatchlistRequestModel,
   OneWatchlistApiResponse,
-  WatchlistApiResponse
+  WatchlistApiResponse,
 } from "@/app/watchlist/infrastructure/WatchlistService.types";
 
 export const mockApiWatchlists: WatchlistApiResponse = {
@@ -15,14 +15,14 @@ export const mockApiWatchlists: WatchlistApiResponse = {
       title: "Test1",
       targets: "test",
       n_targets: "test",
-      last_match: "test"
+      last_match: "test",
     },
     {
       url: "watchlists/2",
       title: "Test2",
       targets: "test",
       n_targets: "test",
-      last_match: "test"
+      last_match: "test",
     },
   ],
 };
@@ -36,8 +36,8 @@ export const mockCreateWatchlistRequestModel: CreateWatchlistRequestModel = {
       ra: 1.0,
       dec: 1.0,
     },
-  ]
-}
+  ],
+};
 
 export const mockCreateWatchlistResponse: CreateWatchlistApiResponse = {
   url: "watchlists/3",
@@ -51,9 +51,9 @@ export const mockCreateWatchlistResponse: CreateWatchlistApiResponse = {
       ra: 1.0,
       dec: 1.0,
       n_matches: 1,
-    }
-  ]
-}
+    },
+  ],
+};
 
 export const mockSingleWatchlist: OneWatchlistApiResponse = {
   url: "watchlists/1",
@@ -62,4 +62,4 @@ export const mockSingleWatchlist: OneWatchlistApiResponse = {
   targets: "watchlists/1/targets",
   n_targets: "test",
   last_match: "test",
-}
+};

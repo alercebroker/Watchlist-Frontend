@@ -9,13 +9,13 @@ import {
 } from "@/shared/usecase/UseCaseInteractor.types";
 
 beforeEach(() => {
-    resetContainer();
-    containerBuilder();
-    mockTransient<IWatchlistRepository>(
-      cid.WatchlistService,
-      MockWatchlistService
-    );
-  });
+  resetContainer();
+  containerBuilder();
+  mockTransient<IWatchlistRepository>(
+    cid.WatchlistService,
+    MockWatchlistService
+  );
+});
 
 describe("SelectWatchlist", () => {
   const callbacks: Callbacks = {

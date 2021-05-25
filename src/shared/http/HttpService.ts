@@ -4,7 +4,7 @@ import axios, {
   AxiosRequestConfig,
   AxiosError,
 } from "axios";
-import {err, ok, okAsync, Result} from "neverthrow";
+import { err, ok, okAsync, Result } from "neverthrow";
 import { ParseError } from "../error/ParseError";
 import { HttpError } from "./HttpError";
 import { inject } from "inversify-props";
@@ -34,7 +34,7 @@ export interface IHttpService {
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
   delete<T, M>(
-    request: IHttpRequest,
+    request: IHttpRequest
   ): Promise<Result<AxiosResponse<T>, ParseError | HttpError>>;
 }
 
@@ -91,10 +91,11 @@ export class HttpService implements IHttpService {
     }
   }
 
-  public async delete<T, M>(
-    { url, config }: IHttpRequest,
-    // hardcoding form M to AxiosResponse<T>. problem of usage of return okAsync(response);
-  ): Promise<Result<AxiosResponse<T>, HttpError>> {
+  public async delete<T, M>({
+    url,
+    config,
+  }: IHttpRequest): // hardcoding form M to AxiosResponse<T>. problem of usage of return okAsync(response);
+  Promise<Result<AxiosResponse<T>, HttpError>> {
     try {
       const response = await this.axiosService.delete<T>(url, config);
       return okAsync(response);
@@ -133,7 +134,7 @@ export class HttpService implements IHttpService {
     // TODO Add authentication token to request headers
     // Read token from local storage
     const token = localStorage.getItem("token");
-    if(token != null){
+    if (token != null) {
       config.headers = { Authorization: "Bearer " + token };
     }
     return config;

@@ -1,8 +1,8 @@
-import axios, {AxiosInstance} from "axios";
+import axios, { AxiosInstance } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import {inject} from "inversify-props";
-import {IAxiosCreator} from ".";
-import {mockTargetsByWatchlist} from "./mocks/target.mocks";
+import { inject } from "inversify-props";
+import { IAxiosCreator } from ".";
+import { mockTargetsByWatchlist } from "./mocks/target.mocks";
 import {
   mockLoginResponse,
   mockRegisterUser,
@@ -11,7 +11,7 @@ import {
 import {
   mockApiWatchlists,
   mockCreateWatchlistResponse,
-  mockSingleWatchlist
+  mockSingleWatchlist,
 } from "./mocks/watchlist.mocks";
 
 export type TestActions =
@@ -31,7 +31,7 @@ export class MockAxiosCreator implements IAxiosCreator {
   }
 
   createAxiosInstance(_baseUrl: string): AxiosInstance {
-    const instance = axios.create({baseURL: _baseUrl});
+    const instance = axios.create({ baseURL: _baseUrl });
     this.mock = new MockAdapter(instance);
     if (this.actionType === "ok") this.setMockActions();
     if (
@@ -63,19 +63,16 @@ export class MockAxiosCreator implements IAxiosCreator {
       return [200, JSON.stringify(response)];
     });
     this.mock.onPost("/watchlists").reply((_config: any) => {
-
       const watchlistJSON = JSON.parse(_config.data);
       const response = mockCreateWatchlistResponse;
-      mockApiWatchlists.results.push(
-        {
-          url: "watchlists/3",
-          title: watchlistJSON.title,
-          targets: "test",
-          n_targets: "test",
-          last_match: "test"
-        },
-      )
-      return [201, JSON.stringify(response)]
+      mockApiWatchlists.results.push({
+        url: "watchlists/3",
+        title: watchlistJSON.title,
+        targets: "test",
+        n_targets: "test",
+        last_match: "test",
+      });
+      return [201, JSON.stringify(response)];
     });
     this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {
       const response = mockTargetsByWatchlist;

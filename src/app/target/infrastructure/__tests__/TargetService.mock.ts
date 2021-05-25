@@ -10,26 +10,25 @@ const targetArray: ITargetData[] = [
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
-    nMatches: 0
+    nMatches: 0,
   },
   {
     name: "target 2",
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
-    nMatches: 0
+    nMatches: 0,
   },
-]
-
+];
 
 export class MockTargetService implements ITargetRepository {
   actionType: TestActions;
   constructor(@inject("ActionType") actionType: TestActions) {
     this.actionType = actionType;
   }
-  getAllTargets(params: any): Promise<
-    Result<ITargetData[], ParseError | HttpError>
-  > {
+  getAllTargets(
+    params: any
+  ): Promise<Result<ITargetData[], ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
         resolve(ok(targetArray));
@@ -54,5 +53,4 @@ export class MockTargetService implements ITargetRepository {
       resolve(err(new ParseError("Parse Error")));
     });
   }
-    
 }

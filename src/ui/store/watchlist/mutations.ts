@@ -2,7 +2,6 @@ import { IWatchlistData } from "@/app/watchlist/domain";
 import { MutationTree } from "vuex";
 import { WatchlistState } from "./state";
 
-
 export enum MutationTypes {
   SET_LOADING = "SET_LOADING",
   SET_ERROR = "SET_ERROR",

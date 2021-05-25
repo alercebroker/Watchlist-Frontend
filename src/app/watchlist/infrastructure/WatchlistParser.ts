@@ -1,7 +1,10 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { err, ok, Result } from "neverthrow";
 import { IWatchlistData, Watchlist } from "../domain";
-import { CreateWatchlistApiResponse, WatchlistApiResult } from "./WatchlistService.types";
+import {
+  CreateWatchlistApiResponse,
+  WatchlistApiResult,
+} from "./WatchlistService.types";
 
 export class WatchlistApiParser {
   toDomain(
@@ -26,22 +29,22 @@ export class WatchlistApiParser {
 }
 
 export class WatchlistCreateApiParser {
-    parseCreateWatchlistApiResponse(
-        response: CreateWatchlistApiResponse,
-    ): Result<Watchlist, ParseError> {
-        try {
-            return ok(
-                new Watchlist({
-                    title: response.title,
-                    owner: "owner",
-                    targets: "",
-                    url: "",
-                    nTargets: "",
-                    lastMatch: ""
-                })
-            );
-        } catch (error) {
-            return err(new ParseError(error.message));
-        } 
+  parseCreateWatchlistApiResponse(
+    response: CreateWatchlistApiResponse
+  ): Result<Watchlist, ParseError> {
+    try {
+      return ok(
+        new Watchlist({
+          title: response.title,
+          owner: "owner",
+          targets: "",
+          url: "",
+          nTargets: "",
+          lastMatch: "",
+        })
+      );
+    } catch (error) {
+      return err(new ParseError(error.message));
     }
+  }
 }

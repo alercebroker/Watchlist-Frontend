@@ -9,13 +9,13 @@ export enum MutationTypes {
 }
 
 export const mutations: MutationTree<TargetsState> = {
-    [MutationTypes.SET_TARGETS](state, targets: ITargetData[]) {
-        state.targets = targets;
-    },
-    [MutationTypes.SET_ERROR](state, error: string) {
-        state.error = error;
-    },
-    [MutationTypes.SET_LOADING](state, loading: boolean) {
-        state.loading = loading;
-    },
+  [MutationTypes.SET_TARGETS](state, targets: ITargetData[]) {
+    state.targets = targets;
+  },
+  [MutationTypes.SET_ERROR](state, error: string) {
+    state.error = error;
+  },
+  [MutationTypes.SET_LOADING](state, loading: boolean) {
+    state.loading = loading;
+  },
 };

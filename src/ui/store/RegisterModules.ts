@@ -1,7 +1,7 @@
 import { UserModule } from "./user";
 import { WatchlistModule } from "./watchlist";
-import {TargetsModule} from "@/ui/store/targets";
-import {SingleWatchlistModule} from "@/ui/store/singleWatchlist";
+import { TargetsModule } from "@/ui/store/targets";
+import { SingleWatchlistModule } from "@/ui/store/singleWatchlist";
 
 export type Modules = {
   modules: any;

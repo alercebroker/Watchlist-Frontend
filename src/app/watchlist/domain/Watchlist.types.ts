@@ -19,7 +19,7 @@ export interface IWatchlistRepository {
     url: string
   ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
   createWatchlist(
-    params: CreateWatchlistRequestModel,
+    params: CreateWatchlistRequestModel
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
   deleteWatchlist(
     url: string

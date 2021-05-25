@@ -4,5 +4,5 @@ import { ActionTypes } from "../actions";
 import { TargetsState } from "../state";
 
 export const mockActions: ActionTree<IRootState, TargetsState> = {
-    [ActionTypes.getTargets]: jest.fn(),
-}
+  [ActionTypes.getTargets]: jest.fn(),
+};

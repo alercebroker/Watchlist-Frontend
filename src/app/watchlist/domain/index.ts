@@ -1,2 +1,2 @@
-export * from './Watchlist'
-export * from './Watchlist.types'
+export * from "./Watchlist";
+export * from "./Watchlist.types";

@@ -1,4 +1,4 @@
-import {ITargetData} from "@/app/target/domain/Target.types";
+import { ITargetData } from "@/app/target/domain/Target.types";
 
 export const state = () => ({
   loading: false,

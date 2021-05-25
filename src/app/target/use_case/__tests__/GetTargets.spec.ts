@@ -2,19 +2,16 @@ import { containerBuilder } from "@/ui/plugins/inversify";
 import { TestActions } from "@/shared/http";
 import { cid, container, mockTransient, resetContainer } from "inversify-props";
 import {
-    Callbacks,
-    UseCaseInteractor,
-  } from "@/shared/usecase/UseCaseInteractor.types";
+  Callbacks,
+  UseCaseInteractor,
+} from "@/shared/usecase/UseCaseInteractor.types";
 import { ITargetRepository } from "../../domain/Target.types";
 import { MockTargetService } from "../../infrastructure/__tests__/TargetService.mock";
 
 beforeEach(() => {
   resetContainer();
   containerBuilder();
-  mockTransient<ITargetRepository>(
-      cid.TargetService,
-      MockTargetService,
-  );
+  mockTransient<ITargetRepository>(cid.TargetService, MockTargetService);
 });
 
 describe("GetTargets", () => {

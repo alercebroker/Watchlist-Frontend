@@ -1,31 +1,31 @@
-import {isHttpError} from "@/shared/http";
+import { isHttpError } from "@/shared/http";
 import {
   Callbacks,
   UseCaseInteractor,
 } from "@/shared/usecase/UseCaseInteractor.types";
-import {inject} from "inversify-props";
-import {IWatchlistRepository} from "../domain";
+import { inject } from "inversify-props";
+import { IWatchlistRepository } from "../domain";
 
 export class DeleteWatchlist implements UseCaseInteractor {
   @inject() watchlistService!: IWatchlistRepository;
 
   async execute(params: any, callbacks: Callbacks): Promise<void> {
-    console.log("usecase", params)
+    console.log("usecase", params);
     const result = await this.watchlistService.deleteWatchlist(params);
     result
-    .map((watchlists) => {
-      callbacks.respondWithSuccess(watchlists);
-    })
-    .mapErr((error) => {
-      if (isHttpError(error)) {
-        if (error.isClientError()) {
-          callbacks.respondWithClientError(error);
+      .map((watchlists) => {
+        callbacks.respondWithSuccess(watchlists);
+      })
+      .mapErr((error) => {
+        if (isHttpError(error)) {
+          if (error.isClientError()) {
+            callbacks.respondWithClientError(error);
+          } else {
+            callbacks.respondWithServerError(error);
+          }
         } else {
-          callbacks.respondWithServerError(error);
+          callbacks.respondWithParseError(error);
         }
-      } else {
-        callbacks.respondWithParseError(error);
-      }
-    });
+      });
   }
 }

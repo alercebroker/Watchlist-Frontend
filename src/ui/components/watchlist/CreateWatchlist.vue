@@ -14,13 +14,14 @@
               ></v-text-field>
             </v-col>
             <v-col cols="12">
-                <v-card-subtitle>
-                    <v-file-input 
-                      accept=".csv" 
-                      label="Upload  CSV"
-                      @change="onFilePicked">
-                    </v-file-input>
-                </v-card-subtitle>
+              <v-card-subtitle>
+                <v-file-input
+                  accept=".csv"
+                  label="Upload  CSV"
+                  @change="onFilePicked"
+                >
+                </v-file-input>
+              </v-card-subtitle>
             </v-col>
           </v-row>
         </v-container>
@@ -58,11 +59,10 @@ export default Vue.extend({
       const form: any = this.$refs.form;
       if (form.validate()) {
         this.targetList = this.parseCSVToList(this.csvData);
-        const watchlistInput: WatchlistInput = 
-        {
+        const watchlistInput: WatchlistInput = {
           title: this.title,
           targets: this.targetList,
-        }
+        };
         await this.$store.dispatch(
           "watchlists/" + ActionTypes.createWatchlist,
           watchlistInput
@@ -71,7 +71,7 @@ export default Vue.extend({
       }
     },
     onCancelClick() {
-        this.$emit("canceled");
+      this.$emit("canceled");
     },
     onFilePicked(file: any) {
       const fr = new FileReader();
@@ -81,7 +81,7 @@ export default Vue.extend({
       });
     },
     parseCSVToList(csvData: string) {
-      const targetList = []
+      const targetList = [];
       let lines = csvData.split("\n");
       let headers = lines[0].split(",").map((x) => x.trim());
       let body = lines.slice(1, -1);
@@ -90,10 +90,10 @@ export default Vue.extend({
         elem.split(",").forEach((item, index) => {
           line[headers[index]] = item.trim();
         });
-        
+
         return line;
       });
-    }
+    },
   },
 });
 </script>

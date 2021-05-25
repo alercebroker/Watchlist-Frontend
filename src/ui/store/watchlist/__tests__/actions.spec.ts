@@ -50,12 +50,12 @@ describe("getAllWatchlists", () => {
       {
         title: "watchlist 1",
         owner: "owner 1",
-        targets: "test"
+        targets: "test",
       },
       {
         title: "watchlist 2",
         owner: "owner 1",
-        targets: "test"
+        targets: "test",
       },
     ];
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(

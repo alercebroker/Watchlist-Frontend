@@ -13,7 +13,7 @@ const watchlistArray: IWatchlistData[] = [
     targets: "test",
     url: "test",
     nTargets: "test",
-    lastMatch: "test"
+    lastMatch: "test",
   },
   {
     title: "watchlist 2",
@@ -21,7 +21,7 @@ const watchlistArray: IWatchlistData[] = [
     targets: "test",
     url: "test",
     nTargets: "test",
-    lastMatch: "test"
+    lastMatch: "test",
   },
 ];
 
@@ -31,8 +31,8 @@ const watchlist: IWatchlistData = {
   targets: "test",
   url: "test",
   nTargets: "test",
-  lastMatch: "test"
-}
+  lastMatch: "test",
+};
 
 export class MockWatchlistService implements IWatchlistRepository {
   actionType: TestActions;
@@ -94,13 +94,13 @@ export class MockWatchlistService implements IWatchlistRepository {
     });
   }
   createWatchlist(
-    params: CreateWatchlistRequestModel,
+    params: CreateWatchlistRequestModel
     //targets: TargetRequestModel[] | null
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
         const copy = [...watchlistArray];
-        copy.push(watchlist); 
+        copy.push(watchlist);
         resolve(ok(copy));
       });
     } else if (

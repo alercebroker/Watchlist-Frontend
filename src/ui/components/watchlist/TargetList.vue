@@ -7,15 +7,11 @@
     <v-virtual-scroll :bench="0" :items="targets" height="500" item-height="64">
       <template v-slot:default="{ item }">
         <v-list-item-group v-model="selectedItem" color="primary">
-            <v-list-item
-              :key="item.name"
-              color="primary"
-            >
+          <v-list-item :key="item.name" color="primary">
             <v-list-item-content>
               <v-list-item-title>{{ item.name }}</v-list-item-title>
             </v-list-item-content>
-
-            </v-list-item>
+          </v-list-item>
         </v-list-item-group>
       </template>
     </v-virtual-scroll>

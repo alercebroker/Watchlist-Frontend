@@ -1,14 +1,17 @@
 import { ActionTree } from "vuex";
 import { IRootState } from "../Store.types";
 import { TargetsState } from "./state";
-import {WatchlistState} from "@/ui/store/watchlist/state";
-import {cid, container} from "inversify-props";
-import {Callbacks, UseCaseInteractor} from "@/shared/usecase/UseCaseInteractor.types";
-import {IWatchlistData} from "@/app/watchlist/domain";
-import {HttpError} from "@/shared/http";
-import {ParseError} from "@/shared/error/ParseError";
-import {ITargetData} from "@/app/target/domain/Target.types";
-import {MutationTypes} from "@/ui/store/targets/mutations";
+import { WatchlistState } from "@/ui/store/watchlist/state";
+import { cid, container } from "inversify-props";
+import {
+  Callbacks,
+  UseCaseInteractor,
+} from "@/shared/usecase/UseCaseInteractor.types";
+import { IWatchlistData } from "@/app/watchlist/domain";
+import { HttpError } from "@/shared/http";
+import { ParseError } from "@/shared/error/ParseError";
+import { ITargetData } from "@/app/target/domain/Target.types";
+import { MutationTypes } from "@/ui/store/targets/mutations";
 
 export enum ActionTypes {
   getTargets = "getTargets",
@@ -22,7 +25,6 @@ export enum ActionTypes {
 //   title: string,
 //   targets: Array<any>,
 // }
-
 
 export const actions: ActionTree<TargetsState, IRootState> = {
   async [ActionTypes.getTargets]({ commit, state }, url: string) {
@@ -52,4 +54,4 @@ export const actions: ActionTree<TargetsState, IRootState> = {
     };
     interactor.execute(url, callbacks);
   },
-}
+};

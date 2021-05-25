@@ -44,7 +44,7 @@ export class AuthService implements IUserRepository {
       const userResult = await this.httpService.get(
         {
           url: "/users",
-          config: { headers: { 'Authorization': `Bearer ${token}` } },
+          config: { headers: { Authorization: `Bearer ${token}` } },
         },
         { parseTo: parseUser }
       );

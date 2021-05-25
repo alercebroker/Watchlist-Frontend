@@ -8,10 +8,7 @@
             <v-list-item-content>
               <v-list-item-title v-text="item.title"></v-list-item-title>
             </v-list-item-content>
-            <v-dialog
-              v-model="delete_watchlist_dialog"
-              max-width="290"
-            >
+            <v-dialog v-model="delete_watchlist_dialog" max-width="290">
               <v-card>
                 <v-card-title class="headline">
                   Are you sure you want to delete this?
@@ -25,34 +22,36 @@
                   >
                     Cancel
                   </v-btn>
-                  <v-btn
-                    color="green darken-1"
-                    text
-                    @click="onDeleteClick()"
-                  >
+                  <v-btn color="green darken-1" text @click="onDeleteClick()">
                     Confirm
                   </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
             <v-list-item-action>
-              <v-btn
-                v-show="active"
-                @click="clickDeleteWatchlist"
-                icon
-              >
+              <v-btn v-show="active" @click="clickDeleteWatchlist" icon>
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </v-list-item-action>
           </template>
         </v-list-item>
       </v-list-item-group>
-      <v-btn @click="clickCreateWatchlist" color="primary" absolute bottom right fab>
+      <v-btn
+        @click="clickCreateWatchlist"
+        color="primary"
+        absolute
+        bottom
+        right
+        fab
+      >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-list>
     <v-dialog v-model="watchlist_dialog" max-width="500">
-      <create-watchlist @created="watchlist_dialog = false" @canceled="watchlist_dialog = false"/>
+      <create-watchlist
+        @created="watchlist_dialog = false"
+        @canceled="watchlist_dialog = false"
+      />
     </v-dialog>
   </v-card>
 </template>
@@ -63,7 +62,7 @@ import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist.vue";
 import { ActionTypes } from "@/ui/store/watchlist/actions";
 
 export default Vue.extend({
-  components: {CreateWatchlist},
+  components: { CreateWatchlist },
   data: () => ({
     selectedItem: 0,
     watchlist_dialog: false,
@@ -80,8 +79,8 @@ export default Vue.extend({
       get: function () {
         const singleWatchlist = this.$store.state.singleWatchlist;
         const index = this.watchlists
-        .map((x) => x.url)
-        .indexOf(singleWatchlist.url);
+          .map((x) => x.url)
+          .indexOf(singleWatchlist.url);
         if (index === -1 && this.watchlists.length >= 1) {
           this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, 0);
           return 0;
@@ -89,9 +88,12 @@ export default Vue.extend({
         return index;
       },
       set: function (newWatchlistIndex) {
-        this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, newWatchlistIndex);
-      }
-    }
+        this.$store.dispatch(
+          "watchlists/" + ActionTypes.selectWatchlist,
+          newWatchlistIndex
+        );
+      },
+    },
   },
   methods: {
     clickCreateWatchlist() {
@@ -107,9 +109,12 @@ export default Vue.extend({
   },
   watch: {
     selectedItem: function (newSelectedItem) {
-      this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, newSelectedItem);
-    }
-  }
+      this.$store.dispatch(
+        "watchlists/" + ActionTypes.selectWatchlist,
+        newSelectedItem
+      );
+    },
+  },
 });
 </script>
 
