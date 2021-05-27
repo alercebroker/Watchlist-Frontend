@@ -11,5 +11,13 @@ export const mockTargetsByWatchlist = {
       dec: 20,
       n_matches: 5,
     },
+    {
+      url: "test2",
+      name: "target2",
+      radius: 2,
+      ra: 20,
+      dec: 20,
+      n_matches: 2,
+    },
   ],
 };

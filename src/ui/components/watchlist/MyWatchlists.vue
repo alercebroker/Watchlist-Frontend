@@ -89,6 +89,7 @@ export default Vue.extend({
     delete_watchlist_dialog: false,
   }),
   async mounted() {
+    console.log('mounted');
     await this.$store.dispatch("watchlists/" + ActionTypes.getAllWatchlists);
   },
   computed: {

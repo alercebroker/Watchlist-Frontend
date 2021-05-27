@@ -46,23 +46,23 @@ export class MockAxiosCreator implements IAxiosCreator {
   }
 
   setMockActions() {
-    this.mock.onGet("/watchlists").reply((_config: any) => {
+    this.mock.onGet("/watchlists/").reply((_config: any) => {
       const response = mockApiWatchlists;
       return [200, JSON.stringify(response)];
     });
-    this.mock.onPost("/users").reply((_config: any) => {
+    this.mock.onPost("/users/").reply((_config: any) => {
       const response = mockRegisterUser;
       return [201, JSON.stringify(response)];
     });
-    this.mock.onPost("/users/login").reply((_config: any) => {
+    this.mock.onPost("/users/login/").reply((_config: any) => {
       const response = mockLoginResponse;
       return [201, JSON.stringify(response)];
     });
-    this.mock.onGet("/users").reply((_config: any) => {
+    this.mock.onGet("/users/").reply((_config: any) => {
       const response = mockUsersResponse;
       return [200, JSON.stringify(response)];
     });
-    this.mock.onPost("/watchlists").reply((_config: any) => {
+    this.mock.onPost("/watchlists/").reply((_config: any) => {
       const response = mockCreateWatchlistResponse;
       return [201, JSON.stringify(response)];
     });
@@ -80,21 +80,21 @@ export class MockAxiosCreator implements IAxiosCreator {
   }
 
   setErrorActions() {
-    this.mock.onGet("/watchlists").networkError();
-    this.mock.onPost("/users").networkError();
-    this.mock.onPost("/users/login").networkError();
-    this.mock.onGet("/users").networkError();
-    this.mock.onPost("/watchlists").networkError();
+    this.mock.onGet("/watchlists/").networkError();
+    this.mock.onPost("/users/").networkError();
+    this.mock.onPost("/users/login/").networkError();
+    this.mock.onGet("/users/").networkError();
+    this.mock.onPost("/watchlists/").networkError();
     this.mock.onGet("/watchlists/1/targets").networkError();
     this.mock.onGet("/watchlists/1").networkError();
   }
 
   setTimeoutActions() {
-    this.mock.onGet("/watchlist").timeout();
-    this.mock.onPost("/users").timeout();
-    this.mock.onPost("/users/login").timeout();
-    this.mock.onGet("/users").timeout();
-    this.mock.onPost("/watchlists").timeout();
+    this.mock.onGet("/watchlists/").timeout();
+    this.mock.onPost("/users/").timeout();
+    this.mock.onPost("/users/login/").timeout();
+    this.mock.onGet("/users/").timeout();
+    this.mock.onPost("/watchlists/").timeout();
     this.mock.onGet("/watchlists/1/targets").timeout();
     this.mock.onGet("/watchlists/1").timeout();
   }

@@ -4,35 +4,61 @@
     <v-card-subtitle>
       <v-file-input label="Upload  CSV"></v-file-input>
     </v-card-subtitle>
-    <v-virtual-scroll :bench="0" :items="targets" height="500" item-height="64">
-      <template v-slot:default="{ item }">
-        <v-list-item-group v-model="selectedItem" color="primary">
-          <v-list-item :key="item.name" color="primary">
-            <v-list-item-content>
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
+    <v-card-title>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="targets"
+      :search="search"
+      v-model="selected"
+      show-select
+      item-key="name"
+    >
+      <template v-slot:item.actions="{ item }">
+        <v-icon
+          small
+          @click="deleteItem(item)"
+        >
+          mdi-eye
+        </v-icon>
       </template>
-    </v-virtual-scroll>
-    <v-card-text style="height: 10px; position: relative">
-      <v-btn color="primary" dark absolute top right fab>
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-    </v-card-text>
+    </v-data-table>
   </v-card>
 </template>
 <script>
 import Vue from "vue";
+
 export default Vue.extend({
   data: () => ({
     selectedItem: 0,
     items: [],
+    selected: [],
+    search: '',
+    headers: [
+      {
+        text: 'Name',
+        align: 'start',
+        sortable: false,
+        value: 'name',
+      },
+      {text: 'Ra', value: 'ra'},
+      {text: 'Dec', value: 'dec'},
+      {text: 'radius', value: 'radius'},
+      {text: 'N matches', value: 'nMatches'},
+      {text: '', value: 'actions', sortable: false},
+    ],
   }),
   mounted() {
     const ret = [];
     for (let i = 1; i < 100; i++) {
-      ret.push({ name: "Target" + i, selected: false });
+      ret.push({name: "Target" + i, selected: false});
     }
     this.items = ret;
   },
@@ -42,6 +68,13 @@ export default Vue.extend({
     },
   },
   methods: {
+
+    deleteItem (item) {
+      console.log(item);
+      // this.editedIndex = this.desserts.indexOf(item)
+      // this.editedItem = Object.assign({}, item)
+      // this.dialogDelete = true
+    },
     onItemClick(item) {
       this.items.map((x) => {
         console.log(x.name !== item.target.innerText);
