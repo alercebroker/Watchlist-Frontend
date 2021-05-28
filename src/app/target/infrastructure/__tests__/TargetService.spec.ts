@@ -24,7 +24,8 @@ describe("TargetService", () => {
       const result = await targetService.getAllTargets(1);
       expect(result.isOk()).toBeTruthy();
       const expected = [
-        new Target({ name: "target", radius: 1, ra: 10, dec: 20, nMatches: 5 }),
+        new Target({ url: "test", name: "target", radius: 1, ra: 10, dec: 20, nMatches: 5 }),
+        new Target({ url: "test2", name: "target2", radius: 2, ra: 20, dec: 20, nMatches: 2 })
       ];
       result.map((res) => {
         expect(res).toStrictEqual(expected);

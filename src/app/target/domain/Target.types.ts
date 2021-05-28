@@ -3,6 +3,7 @@ import { HttpError } from "@/shared/http";
 import { Result } from "neverthrow";
 
 export interface ITargetData {
+  url: string;
   name: string;
   radius: number;
   ra: number;

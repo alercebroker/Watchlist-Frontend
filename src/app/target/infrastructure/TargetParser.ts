@@ -8,6 +8,7 @@ export class TargetParser {
   toDomain(response: TargetListApiResponse): Result<ITargetData, ParseError> {
     try {
       const target = new Target({
+        url: response.url,
         name: response.name,
         radius: response.radius,
         dec: response.dec,

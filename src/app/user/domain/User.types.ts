@@ -12,7 +12,8 @@ export interface IUserData {
   password: string | null;
   name: string;
   lastName: string;
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   institution: string | null;
   role: string | null;
 }

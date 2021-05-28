@@ -6,7 +6,8 @@ export class User implements IUser {
   password: string | null;
   name: string;
   lastName: string;
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   institution: string | null;
   role: string | null;
   constructor(data: IUserData) {
@@ -15,15 +16,18 @@ export class User implements IUser {
     this.password = data.password;
     this.name = data.name;
     this.lastName = data.lastName;
-    this.token = data.token;
+    this.accessToken = data.accessToken;
+    this.refreshToken = data.refreshToken;
     this.institution = data.institution;
     this.role = data.role;
   }
   storeToken(): void {
-    localStorage.setItem("token", this.token as string);
+    localStorage.setItem("access_token", this.accessToken as string);
+    localStorage.setItem("refresh_token", this.refreshToken as string);
   }
 
   deleteToken(): void {
-    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
   }
 }

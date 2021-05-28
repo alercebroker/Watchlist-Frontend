@@ -54,7 +54,7 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = mockRegisterUser;
       return [201, JSON.stringify(response)];
     });
-    this.mock.onPost("/users/login/").reply((_config: any) => {
+    this.mock.onPost("/users/login").reply((_config: any) => {
       const response = mockLoginResponse;
       return [201, JSON.stringify(response)];
     });

@@ -41,7 +41,7 @@ export default Vue.extend({
   },
   computed: {
     logged() {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("access_token");
       const user = this.$store.state.users.userData;
       return token != null && user.username !== "";
     },

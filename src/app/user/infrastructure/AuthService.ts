@@ -28,6 +28,7 @@ export class AuthService implements IUserRepository {
     const parseToken = (response: LoginApiResponse) => {
       return this.parser.parseToken(response);
     };
+    console.log("Login", params);
     const tokenResult = await this.httpService.post(
       {
         url: "/users/login/",
@@ -35,18 +36,20 @@ export class AuthService implements IUserRepository {
       },
       { parseTo: parseToken }
     );
+    console.log("token", tokenResult);
     if (tokenResult.isOk()) {
       const token = tokenResult.value;
       const parseUser = (response: UsersApiResponse) => {
-        return this.parser.parseUsersApiResponse(response, token);
+        return this.parser.parseUsersApiResponse(response, token.access, token.refresh);
       };
       const userResult = await this.httpService.get(
         {
           url: "/users/current/",
-          config: { headers: { Authorization: `Bearer ${token}` } },
+          config: { headers: { Authorization: `Bearer ${token.access}` } },
         },
         { parseTo: parseUser }
       );
+      console.log(userResult);
       return userResult.map((user: User) => {
         user.storeToken();
         return {
@@ -55,7 +58,8 @@ export class AuthService implements IUserRepository {
           password: user.password,
           name: user.name,
           lastName: user.lastName,
-          token: user.token,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
           institution: user.institution,
           role: user.role,
         };
@@ -82,7 +86,8 @@ export class AuthService implements IUserRepository {
         password: user.password,
         name: user.name,
         lastName: user.lastName,
-        token: user.token,
+        accessToken: user.accessToken,
+        refreshToken: user.refreshToken,
         institution: user.institution,
         role: user.role,
       };

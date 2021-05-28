@@ -84,6 +84,7 @@ export class HttpService implements IHttpService {
   ): Promise<Result<M, ParseError | HttpError>> {
     try {
       const response = await this.axiosService.post<T>(url, data, config);
+      console.log("Response", response);
       return this._parseFailable<T, M>(response.data, parser.parseTo);
     } catch (error) {
       return err(error);
@@ -132,10 +133,16 @@ export class HttpService implements IHttpService {
   private _handleRequest(config: AxiosRequestConfig) {
     // TODO Add authentication token to request headers
     // Read token from local storage
-    const token = localStorage.getItem("token");
+
+    const token = localStorage.getItem("access_token");
+    // USE verify endpoint
+    // if response is {} is ok 
+    // else USE refresh endpoint
+    // save in  localStorage
     if (token != null) {
       config.headers = { Authorization: "Bearer " + token };
     }
+    //console.log(config);
     return config;
   }
 

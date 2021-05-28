@@ -24,12 +24,13 @@
       <template v-slot:item.actions="{ item }">
         <v-icon
           small
-          @click="deleteItem(item)"
+          @click="onItemClick(item)"
         >
           mdi-eye
         </v-icon>
       </template>
     </v-data-table>
+    {{selected}}
   </v-card>
 </template>
 <script>
@@ -55,13 +56,6 @@ export default Vue.extend({
       {text: '', value: 'actions', sortable: false},
     ],
   }),
-  mounted() {
-    const ret = [];
-    for (let i = 1; i < 100; i++) {
-      ret.push({name: "Target" + i, selected: false});
-    }
-    this.items = ret;
-  },
   computed: {
     targets() {
       return this.$store.state.targets.targets;
@@ -71,14 +65,11 @@ export default Vue.extend({
 
     deleteItem (item) {
       console.log(item);
-      // this.editedIndex = this.desserts.indexOf(item)
-      // this.editedItem = Object.assign({}, item)
-      // this.dialogDelete = true
     },
     onItemClick(item) {
-      this.items.map((x) => {
-        console.log(x.name !== item.target.innerText);
-        if (x.name !== item.target.innerText) {
+      this.targets.map((x) => {
+        console.log(item);
+        if (x.name !== item.name.innerText) {
           x.selected = false;
         } else {
           x.selected = true;

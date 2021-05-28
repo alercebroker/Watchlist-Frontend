@@ -19,7 +19,8 @@ export class UserParser {
           password: null,
           name: response.name,
           lastName: response.last_name,
-          token: null,
+          accessToken: null,
+          refreshToken:null,
           institution: response.institution,
           role: response.role,
         })
@@ -29,15 +30,16 @@ export class UserParser {
     }
   }
 
-  parseToken(response: LoginApiResponse): Result<string, ParseError> {
-    return response.token
-      ? ok(response.token)
+  parseToken(response: LoginApiResponse): Result<any, ParseError> {
+    return response
+      ? ok(response)
       : err(new ParseError("Failed to parse token"));
   }
 
   parseUsersApiResponse(
     response: UsersApiResponse,
-    token: string
+    accessToken: string,
+    refreshToken: string
   ): Result<User, ParseError> {
     try {
       return ok(
@@ -47,7 +49,8 @@ export class UserParser {
           password: null,
           name: response.name,
           lastName: response.last_name,
-          token: token,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
           institution: response.institution,
           role: response.role,
         })
