@@ -1,12 +1,12 @@
 <template>
   <v-card>
-    <v-card-title class="headline">Register New User</v-card-title>
-
+    <v-card-title class="headline">Register New User {{ error }}</v-card-title>
     <v-card-text>
       <v-form ref="form">
         <v-container>
           <v-row>
             <v-col cols="12">
+            
               <v-text-field
                 v-model="username"
                 label="Username"
@@ -93,6 +93,7 @@ export default Vue.extend({
       role: "",
       roles: ["Researcher"],
       showPassword: false,
+      error: '',
       rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     };
   },
@@ -113,9 +114,16 @@ export default Vue.extend({
           "users/" + ActionTypes.registerUser,
           userInput
         );
-        this.$emit("registered");
+        this.error = this.$store.state.users.error;
+        if(this.error === ''){
+          this.$emit("registered");
+        }
       }
     },
+    validateUsername(){
+      console.log(this.error);
+      return this.error? this.error.username: this.error;
+    }
   },
 });
 </script>
