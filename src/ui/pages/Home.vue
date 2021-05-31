@@ -1,9 +1,8 @@
 <template>
   <v-container fill-height>
     <a-header title="ALeRCE Watchlist" @loggedout="logout"></a-header>
-    {{logged}}
     <v-row
-      v-if="!log_var"
+      v-if="!logged"
       align="center"
       align-content="center"
       justify="center"
@@ -40,27 +39,42 @@ export default Vue.extend({
     return {
       dialog: false,
       watchlist_dialog: false,
-      log_var: false,
+      token: null,
     };
+  },
+  mounted(){
+    this.token = localStorage.getItem("access_token");
   },
   computed: {
     logged() {
-      const token = localStorage.getItem("access_token");
-      const user = this.$store.state.users.userData;
-      if (token != null && user.username !== "") {
-          this.log_var = true;
-      }
-      return token != null && user.username !== "";
+
+      // if (this.token != null && this.user.username !== "") {
+      //     this.log_var = true;
+      // }
+      console.log(this.user);
+      return this.token != null && this.user.username !== "";
     },
+    user () {
+      return this.$store.state.users.userData;
+    }
   },
   methods: {
     logout() {
       localStorage.removeItem("access_token");
-      const token = localStorage.getItem("access_token");
-      this.log_var = false;
-      console.log(token)
+      // const token = localStorage.getItem("access_token");
+      // this.log_var = false;
+      this.token = null;
+      console.log(this.token)
     },
   },
+  watch: {
+    user(val) {
+      if (val.username != ""){
+        this.token = localStorage.getItem("access_token");
+      }
+      console.log(val);
+    } 
+  }
 });
 </script>
 

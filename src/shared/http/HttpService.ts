@@ -94,7 +94,7 @@ export class HttpService implements IHttpService {
   public async delete<T, M>({
     url,
     config,
-  }: IHttpRequest): // hardcoding form M to AxiosResponse<T>. problem of usage of return okAsync(response);
+  }: IHttpRequest): 
   Promise<Result<AxiosResponse<T>, HttpError>> {
     try {
       const response = await this.axiosService.delete<T>(url, config);
