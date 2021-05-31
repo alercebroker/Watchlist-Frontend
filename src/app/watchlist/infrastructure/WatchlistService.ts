@@ -70,7 +70,7 @@ export class WatchlistService implements IWatchlistRepository {
     url: string
   ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
     const result = await this.httpService.delete({ url: url });
-    console.log('service DeleteWathlist result', result)
+    
     if (result.isOk()) {
       return this.getAllWatchlists();
     } else {

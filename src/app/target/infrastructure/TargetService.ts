@@ -40,6 +40,10 @@ export class TargetService implements ITargetRepository {
     url: string
   ): Promise<Result<ITargetData[], ParseError | HttpError>> {
     const parseTo = (response: WatchlistTargetsApiResponse) => {
+      // count 
+      // next
+      // previous
+      
       const targets = response.results.map((x) => {
         return this.parser.toDomain(x);
       });

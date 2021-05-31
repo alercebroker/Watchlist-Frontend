@@ -56,7 +56,9 @@ export default Vue.extend({
       username: "",
       password: "",
       showPassword: false,
-      rules: [(v: string) => v.length > 0 || "Field can't be empty"],
+      apiResponse: "",
+      rules: [(v: string) => v.length > 0 || "Field can't be empty",
+      ],
     };
   },
   methods: {
@@ -68,6 +70,8 @@ export default Vue.extend({
           password: this.password,
         };
         this.$store.dispatch("users/" + ActionTypes.login, userInput);
+        this.apiResponse = this.$store.state.user.error;
+        console.log(this.apiResponse);
       }
     },
   },

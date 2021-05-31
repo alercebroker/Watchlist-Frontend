@@ -89,7 +89,6 @@ export default Vue.extend({
     delete_watchlist_dialog: false,
   }),
   async mounted() {
-    console.log('mounted');
     await this.$store.dispatch("watchlists/" + ActionTypes.getAllWatchlists);
   },
   computed: {
@@ -127,7 +126,6 @@ export default Vue.extend({
       this.delete_watchlist_dialog = true;
     },
     async onDeleteClick() {
-      console.log('myWathlist onDelete click')
       await this.$store.dispatch("watchlists/" + ActionTypes.deleteWatchlist);
       this.delete_watchlist_dialog = false;
     },

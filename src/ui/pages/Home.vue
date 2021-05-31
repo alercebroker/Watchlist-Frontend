@@ -51,7 +51,7 @@ export default Vue.extend({
       // if (this.token != null && this.user.username !== "") {
       //     this.log_var = true;
       // }
-      console.log(this.user);
+      //console.log(this.user);
       return this.token != null && this.user.username !== "";
     },
     user () {
@@ -64,7 +64,7 @@ export default Vue.extend({
       // const token = localStorage.getItem("access_token");
       // this.log_var = false;
       this.token = null;
-      console.log(this.token)
+      //console.log(this.token)
     },
   },
   watch: {
@@ -72,7 +72,7 @@ export default Vue.extend({
       if (val.username != ""){
         this.token = localStorage.getItem("access_token");
       }
-      console.log(val);
+      //console.log(val);
     } 
   }
 });

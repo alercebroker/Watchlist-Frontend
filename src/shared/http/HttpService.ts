@@ -84,7 +84,7 @@ export class HttpService implements IHttpService {
   ): Promise<Result<M, ParseError | HttpError>> {
     try {
       const response = await this.axiosService.post<T>(url, data, config);
-      console.log("Response", response);
+      console.log(response);
       return this._parseFailable<T, M>(response.data, parser.parseTo);
     } catch (error) {
       return err(error);
@@ -148,7 +148,7 @@ export class HttpService implements IHttpService {
 
   private _handleError(error: AxiosError): HttpError {
     if (error.response) {
-      return HttpError.fromStatus(error.response.status, error.message);
+      throw HttpError.fromStatus(error.response.status, error.response.data);
     }
     throw error;
   }

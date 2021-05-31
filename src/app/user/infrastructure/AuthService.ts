@@ -28,7 +28,7 @@ export class AuthService implements IUserRepository {
     const parseToken = (response: LoginApiResponse) => {
       return this.parser.parseToken(response);
     };
-    console.log("Login", params);
+    
     const tokenResult = await this.httpService.post(
       {
         url: "/users/login/",
@@ -36,7 +36,7 @@ export class AuthService implements IUserRepository {
       },
       { parseTo: parseToken }
     );
-    console.log("token", tokenResult);
+    
     if (tokenResult.isOk()) {
       const token = tokenResult.value;
       const parseUser = (response: UsersApiResponse) => {
@@ -49,7 +49,7 @@ export class AuthService implements IUserRepository {
         },
         { parseTo: parseUser }
       );
-      console.log(userResult);
+      
       return userResult.map((user: User) => {
         user.storeToken();
         return {
