@@ -1,70 +1,75 @@
 <template>
   <v-card>
-    <v-card-title class="headline">Register New User {{ error }}</v-card-title>
-    <v-card-text>
-      <v-form ref="form">
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-            
-              <v-text-field
-                v-model="username"
-                label="Username"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="name"
-                label="First Name"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
+      <v-card-title class="headline">Register New User {{ error }}</v-card-title>
+      <v-card-text v-if="error">
+        <v-alert text prominent type="error" icon="mdi-cloud-alert">
+          {{ error }}
+        </v-alert>
+      </v-card-text>
+      <v-card-text v-else>
+        <v-form ref="form">
+          <v-container>
+            <v-row>
+              <v-col cols="12">
 
-            <v-col cols="12">
-              <v-text-field
-                v-model="lastName"
-                label="Last Name"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="email"
-                label="Email"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
+                <v-text-field
+                  v-model="username"
+                  label="Username"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="name"
+                  label="First Name"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
 
-            <v-col cols="12">
-              <v-text-field
-                v-model="password"
-                label="Password"
-                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                :type="showPassword ? 'text' : 'password'"
-                @click:append="showPassword = !showPassword"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="institution"
-                label="Institution"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-select
-                v-model="role"
-                label="Role"
-                :items="roles"
-                :rules="rules"
-              ></v-select>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-form>
-    </v-card-text>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="lastName"
+                  label="Last Name"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="email"
+                  label="Email"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12">
+                <v-text-field
+                  v-model="password"
+                  label="Password"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showPassword ? 'text' : 'password'"
+                  @click:append="showPassword = !showPassword"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="institution"
+                  label="Institution"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="role"
+                  label="Role"
+                  :items="roles"
+                  :rules="rules"
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
+      </v-card-text>
 
     <v-card-actions>
       <v-spacer></v-spacer>
@@ -93,9 +98,15 @@ export default Vue.extend({
       role: "",
       roles: ["Researcher"],
       showPassword: false,
-      error: '',
+      // error: '',
       rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     };
+  },
+  computed: {
+    error() {
+      const error = this.$store.state.users.error
+      return error
+    },
   },
   methods: {
     async onRegisterClick() {
