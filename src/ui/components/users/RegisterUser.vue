@@ -1,21 +1,16 @@
 <template>
   <v-card>
-      <v-card-title class="headline">Register New User {{ error }}</v-card-title>
-      <v-card-text v-if="error">
-        <v-alert text prominent type="error" icon="mdi-cloud-alert">
-          {{ error }}
-        </v-alert>
-      </v-card-text>
-      <v-card-text v-else>
+      <v-card-title class="headline">Register New User </v-card-title>
+      <v-card-text>
         <v-form ref="form">
           <v-container>
             <v-row>
               <v-col cols="12">
-
                 <v-text-field
                   v-model="username"
                   label="Username"
                   :rules="rules"
+                  :error-messages="validateUsername"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -38,6 +33,7 @@
                   v-model="email"
                   label="Email"
                   :rules="rules"
+                  :error-messages="validateEmail"
                 ></v-text-field>
               </v-col>
 
@@ -98,15 +94,19 @@ export default Vue.extend({
       role: "",
       roles: ["Researcher"],
       showPassword: false,
-      // error: '',
       rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     };
   },
   computed: {
     error() {
-      const error = this.$store.state.users.error
-      return error
+      return this.$store.state.users.error
     },
+    validateUsername(){
+      return this.error? this.error.username: this.error;
+    },
+    validateEmail(){
+      return this.error? this.error.email: this.error;
+    }
   },
   methods: {
     async onRegisterClick() {
@@ -126,15 +126,11 @@ export default Vue.extend({
           userInput
         );
         this.error = this.$store.state.users.error;
-        if(this.error === ''){
+        if(this.error === null){
           this.$emit("registered");
         }
       }
     },
-    validateUsername(){
-      console.log(this.error);
-      return this.error? this.error.username: this.error;
-    }
   },
 });
 </script>
