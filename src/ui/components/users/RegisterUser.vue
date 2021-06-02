@@ -94,18 +94,26 @@ export default Vue.extend({
       role: "",
       roles: ["Researcher"],
       showPassword: false,
+      registerSent: false,
       rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     };
   },
   computed: {
-    error() {
-      return this.$store.state.users.error
+    validateUsername(): string {
+      return this.error()? this.error().username: this.error();
     },
-    validateUsername(){
-      return this.error? this.error.username: this.error;
+    validateEmail(): string {
+      return this.error()? this.error().email: this.error();
     },
-    validateEmail(){
-      return this.error? this.error.email: this.error;
+    apiLoading() {
+      return this.$store.state.users.loading;
+    }
+  },
+  watch: {
+    apiLoading(val) {
+      if (this.error()===null && val===false && this.registerSent) {
+        this.$emit("registered");
+      }
     }
   },
   methods: {
@@ -125,12 +133,12 @@ export default Vue.extend({
           "users/" + ActionTypes.registerUser,
           userInput
         );
-        this.error = this.$store.state.users.error;
-        if(this.error === null){
-          this.$emit("registered");
-        }
+        this.registerSent = true;
       }
     },
+    error() {
+      return this.$store.state.users.error
+    }
   },
 });
 </script>
