@@ -23,7 +23,8 @@ export interface LoginUserApiRequestModel {
 }
 
 export interface LoginApiResponse {
-  token: string;
+  access: string;
+  refresh: string;
 }
 
 export interface UsersApiResponse {

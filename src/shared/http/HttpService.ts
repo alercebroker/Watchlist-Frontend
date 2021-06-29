@@ -4,7 +4,7 @@ import axios, {
   AxiosRequestConfig,
   AxiosError,
 } from "axios";
-import { err, Result } from "neverthrow";
+import { err, ok, okAsync, Result } from "neverthrow";
 import { ParseError } from "../error/ParseError";
 import { HttpError } from "./HttpError";
 import { inject } from "inversify-props";
@@ -33,6 +33,9 @@ export interface IHttpService {
     request: IHttpRequest,
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
+  delete<T, M>(
+    request: IHttpRequest
+  ): Promise<Result<AxiosResponse<T>, ParseError | HttpError>>;
 }
 
 export interface IAxiosCreator {
@@ -81,7 +84,21 @@ export class HttpService implements IHttpService {
   ): Promise<Result<M, ParseError | HttpError>> {
     try {
       const response = await this.axiosService.post<T>(url, data, config);
+      console.log(response);
       return this._parseFailable<T, M>(response.data, parser.parseTo);
+    } catch (error) {
+      return err(error);
+    }
+  }
+
+  public async delete<T, M>({
+    url,
+    config,
+  }: IHttpRequest): 
+  Promise<Result<AxiosResponse<T>, HttpError>> {
+    try {
+      const response = await this.axiosService.delete<T>(url, config);
+      return okAsync(response);
     } catch (error) {
       return err(error);
     }
@@ -116,16 +133,22 @@ export class HttpService implements IHttpService {
   private _handleRequest(config: AxiosRequestConfig) {
     // TODO Add authentication token to request headers
     // Read token from local storage
-    const token = localStorage.getItem("token");
-    if(token != null){
+
+    const token = localStorage.getItem("access_token");
+    // USE verify endpoint
+    // if response is {} is ok 
+    // else USE refresh endpoint
+    // save in  localStorage
+    if (token != null) {
       config.headers = { Authorization: "Bearer " + token };
     }
+    //console.log(config);
     return config;
   }
 
   private _handleError(error: AxiosError): HttpError {
     if (error.response) {
-      return HttpError.fromStatus(error.response.status, error.message);
+      throw HttpError.fromStatus(error.response.status, error.response.data);
     }
     throw error;
   }

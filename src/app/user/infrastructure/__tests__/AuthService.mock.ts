@@ -11,7 +11,8 @@ const registerUserData: IUserData = {
   password: null,
   name: "name",
   lastName: "last name",
-  token: null,
+  accessToken: null,
+  refreshToken: null,
   institution: "institution",
   role: "role",
 };
@@ -22,7 +23,8 @@ const loginUserData: IUserData = {
   password: null,
   name: "name",
   lastName: "last name",
-  token: "token",
+  accessToken: "token",
+  refreshToken: "token",
   institution: "institution",
   role: "role",
 };
@@ -34,7 +36,8 @@ export class MockAuthService implements IUserRepository {
   }
   login(): Promise<Result<IUserData, ParseError | HttpError>> {
     if (this.actionType === "ok") {
-      localStorage.setItem("token", "token");
+      localStorage.setItem("access_token", "token");
+      localStorage.setItem("refresh_token", "token");
       return new Promise((resolve) => {
         resolve(ok(loginUserData));
       });
