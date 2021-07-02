@@ -19,7 +19,7 @@ export class AuthService implements IUserRepository {
   constructor(@inject() httpService: IHttpService) {
     this.httpService = httpService;
     this.parser = new UserParser();
-    this.httpService.initService("");
+    this.httpService.initService(process.env.VUE_APP_USER_API);
   }
 
   async login(
@@ -28,25 +28,28 @@ export class AuthService implements IUserRepository {
     const parseToken = (response: LoginApiResponse) => {
       return this.parser.parseToken(response);
     };
+    
     const tokenResult = await this.httpService.post(
       {
-        url: "/users/login",
+        url: "/users/login/",
         data: params,
       },
       { parseTo: parseToken }
     );
+    
     if (tokenResult.isOk()) {
       const token = tokenResult.value;
       const parseUser = (response: UsersApiResponse) => {
-        return this.parser.parseUsersApiResponse(response, token);
+        return this.parser.parseUsersApiResponse(response, token.access, token.refresh);
       };
       const userResult = await this.httpService.get(
         {
-          url: "/users",
-          config: { headers: { Bearer: token } },
+          url: "/users/current/",
+          config: { headers: { Authorization: `Bearer ${token.access}` } },
         },
         { parseTo: parseUser }
       );
+      
       return userResult.map((user: User) => {
         user.storeToken();
         return {
@@ -55,7 +58,8 @@ export class AuthService implements IUserRepository {
           password: user.password,
           name: user.name,
           lastName: user.lastName,
-          token: user.token,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
           institution: user.institution,
           role: user.role,
         };
@@ -72,7 +76,7 @@ export class AuthService implements IUserRepository {
     };
     // result with User entity
     const result = await this.httpService.post(
-      { url: "/users", data: params },
+      { url: "/users/", data: params },
       { parseTo }
     );
     return result.map((user: User) => {
@@ -82,7 +86,8 @@ export class AuthService implements IUserRepository {
         password: user.password,
         name: user.name,
         lastName: user.lastName,
-        token: user.token,
+        accessToken: user.accessToken,
+        refreshToken: user.refreshToken,
         institution: user.institution,
         role: user.role,
       };

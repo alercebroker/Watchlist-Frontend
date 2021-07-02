@@ -14,9 +14,9 @@ Vue.config.productionTip = false;
 
 Vue.use(Vuex);
 containerBuilder();
-mockTransient<IAxiosCreator>(cid.AxiosCreator, MockAxiosCreator);
-mockSingleton<IUserRepository>(cid.AuthService, MockAuthService);
-container.bind<TestActions>("ActionType").toConstantValue("ok");
+// mockTransient<IAxiosCreator>(cid.AxiosCreator, MockAxiosCreator);
+// mockSingleton<IUserRepository>(cid.AuthService, MockAuthService);
+// container.bind<TestActions>("ActionType").toConstantValue("ok");
 const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
 const store = storeCreator.create();
 

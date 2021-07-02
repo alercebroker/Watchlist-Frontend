@@ -4,46 +4,72 @@
     <v-card-subtitle>
       <v-file-input label="Upload  CSV"></v-file-input>
     </v-card-subtitle>
-    <v-virtual-scroll :bench="0" :items="items" height="500" item-height="64">
-      <template v-slot:default="{ item }">
-        <v-list-item
-          :key="item.text"
-          @click="onItemClick"
-          :input-value="item.selected"
-          color="primary"
+    <v-card-title>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="targets"
+      :search="search"
+      v-model="selected"
+      show-select
+      item-key="name"
+    >
+      <template v-slot:item.actions="{ item }">
+        <v-icon
+          small
+          @click="onItemClick(item)"
         >
-          <v-list-item-content>
-            <v-list-item-title>{{ item.text }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+          mdi-eye
+        </v-icon>
       </template>
-    </v-virtual-scroll>
-    <v-card-text style="height: 10px; position: relative">
-      <v-btn color="primary" dark absolute top right fab>
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-    </v-card-text>
+    </v-data-table>
+    {{selected}}
   </v-card>
 </template>
 <script>
 import Vue from "vue";
+
 export default Vue.extend({
   data: () => ({
+    selectedItem: 0,
     items: [],
+    selected: [],
+    search: '',
+    headers: [
+      {
+        text: 'Name',
+        align: 'start',
+        sortable: false,
+        value: 'name',
+      },
+      {text: 'Ra', value: 'ra'},
+      {text: 'Dec', value: 'dec'},
+      {text: 'radius', value: 'radius'},
+      {text: 'N matches', value: 'nMatches'},
+      {text: '', value: 'actions', sortable: false},
+    ],
   }),
-  mounted() {
-    const ret = [];
-    for (let i = 1; i < 100; i++) {
-      ret.push({ text: "Target" + i, selected: false });
-    }
-    this.items = ret;
+  computed: {
+    targets() {
+      return this.$store.state.targets.targets;
+    },
   },
   methods: {
+
+    deleteItem (item) {
+      console.log(item);
+    },
     onItemClick(item) {
-      console.log(item.target.innerText);
-      this.items.map((x) => {
-        console.log(x.text !== item.target.innerText);
-        if (x.text !== item.target.innerText) {
+      this.targets.map((x) => {
+        console.log(item);
+        if (x.name !== item.name.innerText) {
           x.selected = false;
         } else {
           x.selected = true;

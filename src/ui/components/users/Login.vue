@@ -10,6 +10,7 @@
                 v-model="username"
                 label="Username"
                 :rules="rules"
+                :error-messages="error"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -22,6 +23,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
                 :rules="rules"
+                :error-messages="error"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -56,7 +58,8 @@ export default Vue.extend({
       username: "",
       password: "",
       showPassword: false,
-      rules: [(v: string) => v.length > 0 || "Field can't be empty"],
+      error: "",
+      rules: [(v: string) => v.length > 0 || "Field can't be empty",],
     };
   },
   methods: {
@@ -68,6 +71,7 @@ export default Vue.extend({
           password: this.password,
         };
         this.$store.dispatch("users/" + ActionTypes.login, userInput);
+        this.error = this.$store.state.users.error.detail;
       }
     },
   },

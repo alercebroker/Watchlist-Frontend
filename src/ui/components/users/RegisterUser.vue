@@ -1,70 +1,71 @@
 <template>
   <v-card>
-    <v-card-title class="headline">Register New User</v-card-title>
+      <v-card-title class="headline">Register New User </v-card-title>
+      <v-card-text>
+        <v-form ref="form">
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="username"
+                  label="Username"
+                  :rules="rules"
+                  :error-messages="validateUsername"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="name"
+                  label="First Name"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
 
-    <v-card-text>
-      <v-form ref="form">
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                v-model="username"
-                label="Username"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="name"
-                label="First Name"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="lastName"
+                  label="Last Name"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="email"
+                  label="Email"
+                  :rules="rules"
+                  :error-messages="validateEmail"
+                ></v-text-field>
+              </v-col>
 
-            <v-col cols="12">
-              <v-text-field
-                v-model="lastName"
-                label="Last Name"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="email"
-                label="Email"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="12">
-              <v-text-field
-                v-model="password"
-                label="Password"
-                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                :type="showPassword ? 'text' : 'password'"
-                @click:append="showPassword = !showPassword"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="institution"
-                label="Institution"
-                :rules="rules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-select
-                v-model="role"
-                label="Role"
-                :items="roles"
-                :rules="rules"
-              ></v-select>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-form>
-    </v-card-text>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="password"
+                  label="Password"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showPassword ? 'text' : 'password'"
+                  @click:append="showPassword = !showPassword"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="institution"
+                  label="Institution"
+                  :rules="rules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="role"
+                  label="Role"
+                  :items="roles"
+                  :rules="rules"
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
+      </v-card-text>
 
     <v-card-actions>
       <v-spacer></v-spacer>
@@ -93,8 +94,27 @@ export default Vue.extend({
       role: "",
       roles: ["Researcher"],
       showPassword: false,
+      registerSent: false,
       rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     };
+  },
+  computed: {
+    validateUsername(): string {
+      return this.error()? this.error().username: this.error();
+    },
+    validateEmail(): string {
+      return this.error()? this.error().email: this.error();
+    },
+    apiLoading() {
+      return this.$store.state.users.loading;
+    }
+  },
+  watch: {
+    apiLoading(val) {
+      if (this.error()===null && val===false && this.registerSent) {
+        this.$emit("registered");
+      }
+    }
   },
   methods: {
     async onRegisterClick() {
@@ -113,9 +133,12 @@ export default Vue.extend({
           "users/" + ActionTypes.registerUser,
           userInput
         );
-        this.$emit("registered");
+        this.registerSent = true;
       }
     },
+    error() {
+      return this.$store.state.users.error
+    }
   },
 });
 </script>
