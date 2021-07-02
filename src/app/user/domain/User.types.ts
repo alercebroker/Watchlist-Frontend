@@ -30,5 +30,5 @@ export interface IUserRepository {
   register(
     params: RegisterUserRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>>;
-  logout(): void;
+  logout(): Result<IUserData, Error>;
 }

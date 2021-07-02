@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height>
-    <a-header title="ALeRCE Watchlist" @loggedout="logout"></a-header>
+    <a-header title="ALeRCE Watchlist"></a-header>
     <v-row
       v-if="!logged"
       align="center"
@@ -32,49 +32,33 @@ import WatchlistDetails from "../components/watchlist/WatchlistDetails.vue";
 import Login from "../components/users/Login.vue";
 import RegisterUser from "../components/users/RegisterUser.vue";
 import AHeader from "@/ui/components/watchlist/AHeader.vue";
+import { IUserData } from "@/app/user/domain/User.types";
 
 export default Vue.extend({
   components: { AHeader, MyWatchlists, WatchlistDetails, Login, RegisterUser },
-  data() {
-    return {
-      dialog: false,
-      watchlist_dialog: false,
-      token: null,
-    };
-  },
-  mounted(){
-    this.token = localStorage.getItem("access_token");
-  },
-  computed: {
-    logged() {
+  data: (): {
+    dialog: boolean;
+    watchlist_dialog: boolean;
+    accessToken: string | null;
+  } => ({
+    dialog: false,
+    watchlist_dialog: false,
+    accessToken: null,
+  }),
 
-      // if (this.token != null && this.user.username !== "") {
-      //     this.log_var = true;
-      // }
-      //console.log(this.user);
-      return this.token != null && this.user.username !== "";
+  computed: {
+    logged: function (): boolean {
+      return this.accessToken != null && this.user.username !== "";
     },
-    user () {
+    user: function (): IUserData {
       return this.$store.state.users.userData;
-    }
-  },
-  methods: {
-    logout() {
-      localStorage.removeItem("access_token");
-      // const token = localStorage.getItem("access_token");
-      // this.log_var = false;
-      this.token = null;
-      //console.log(this.token)
     },
   },
   watch: {
-    user(val) {
-      if (val.username != ""){
-        this.token = localStorage.getItem("access_token");
-      }
-      //console.log(val);
-    } 
-  }
+    user(_: IUserData) {
+      this.accessToken = localStorage.getItem("access_token");
+    },
+  },
 });
 </script>
 

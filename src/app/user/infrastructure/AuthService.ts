@@ -1,13 +1,11 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, IHttpService } from "@/shared/http";
 import { inject } from "inversify-props";
-import { err, Result } from "neverthrow";
+import { err, ok, Result } from "neverthrow";
 import { User } from "../domain/User";
 import { IUserData, IUserRepository } from "../domain/User.types";
 import {
-  LoginApiResponse,
   LoginUserApiRequestModel,
-  RegisterUserApiResponse,
   RegisterUserRequestModel,
   UsersApiResponse,
 } from "./AuthService.types";
@@ -25,22 +23,22 @@ export class AuthService implements IUserRepository {
   async login(
     params: LoginUserApiRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>> {
-    const parseToken = (response: LoginApiResponse) => {
-      return this.parser.parseToken(response);
-    };
-    
     const tokenResult = await this.httpService.post(
       {
         url: "/users/login/",
         data: params,
       },
-      { parseTo: parseToken }
+      { parseTo: this.parser.parseToken }
     );
-    
+
     if (tokenResult.isOk()) {
       const token = tokenResult.value;
       const parseUser = (response: UsersApiResponse) => {
-        return this.parser.parseUsersApiResponse(response, token.access, token.refresh);
+        return this.parser.parseUsersApiResponse(
+          response,
+          token.access,
+          token.refresh
+        );
       };
       const userResult = await this.httpService.get(
         {
@@ -49,7 +47,7 @@ export class AuthService implements IUserRepository {
         },
         { parseTo: parseUser }
       );
-      
+
       return userResult.map((user: User) => {
         user.storeToken();
         return {
@@ -68,17 +66,16 @@ export class AuthService implements IUserRepository {
       return err(tokenResult.error);
     }
   }
+
   async register(
     params: RegisterUserRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>> {
-    const parseTo = (response: RegisterUserApiResponse) => {
-      return this.parser.parseRegisterApiResponse(response);
-    };
     // result with User entity
     const result = await this.httpService.post(
       { url: "/users/", data: params },
-      { parseTo }
+      { parseTo: this.parser.parseRegisterApiResponse }
     );
+
     return result.map((user: User) => {
       return {
         username: user.username,
@@ -93,7 +90,14 @@ export class AuthService implements IUserRepository {
       };
     });
   }
-  logout(): void {
-    throw new Error("Method not implemented.");
+
+  logout(): Result<IUserData, Error> {
+    try {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      return ok({} as IUserData);
+    } catch (error) {
+      return err(error);
+    }
   }
 }

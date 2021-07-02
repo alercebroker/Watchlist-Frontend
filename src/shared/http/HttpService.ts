@@ -33,7 +33,7 @@ export interface IHttpService {
     request: IHttpRequest,
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
-  delete<T>(request: IHttpRequest): Promise<Result<number, HttpError>>;
+  delete(request: IHttpRequest): Promise<Result<number, HttpError>>;
 }
 
 export interface IAxiosCreator {
@@ -145,6 +145,17 @@ export class HttpService implements IHttpService {
   private _handleError(error: AxiosError, context: HttpService): HttpError {
     if (error.response) {
       if (error.response.status === 401) {
+        if (
+          error.response.config.url === "/users/refresh/" ||
+          error.response.config.url === "/users/login"
+        ) {
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("access_token");
+          throw HttpError.fromStatus(
+            error.response.status,
+            error.response.data
+          );
+        }
         context._refreshToken();
       } else {
         throw HttpError.fromStatus(error.response.status, error.response.data);
@@ -155,9 +166,11 @@ export class HttpService implements IHttpService {
 
   private async _refreshToken() {
     const refreshToken = localStorage.getItem("refresh_token");
-    const data = { refresh: refreshToken };
-    const response = await this.axiosService.post("/users/refresh", data);
-    localStorage.setItem("access_token", response.data.access);
+    if (refreshToken) {
+      const data = { refresh: refreshToken };
+      const response = await this.axiosService.post("/users/refresh/", data);
+      localStorage.setItem("access_token", response.data.access);
+    }
   }
 
   private async _retryOrReturnError<T, M>(
@@ -171,15 +184,21 @@ export class HttpService implements IHttpService {
           { url: error.config.url ? error.config.url : "" },
           parser
         );
-      if (verb === "post")
+      if (verb === "post") {
+        if (error.config.url === "/users/login/") {
+          return err(
+            HttpError.fromStatus(error.response.status, error.response.data)
+          );
+        }
         return this.post<T, M>(
           {
-            url: error.response.config.url ? error.response.config.url : "",
-            data: error.response.config.data,
+            url: error.config.url ? error.config.url : "",
+            data: error.config.data,
             config: error.config,
           },
           parser
         );
+      }
     }
     return err(error);
   }
