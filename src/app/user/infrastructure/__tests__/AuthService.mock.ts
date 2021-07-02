@@ -88,7 +88,7 @@ export class MockAuthService implements IUserRepository {
       resolve(err(new ParseError("Parse Error")));
     });
   }
-  logout(): void {
+  logout(): Result<IUserData, Error> {
     throw new Error("Method not implemented.");
   }
 }

@@ -120,4 +120,17 @@ export const actions: ActionTree<UserState, IRootState> = {
       commit(MutationTypes.SET_LOADING, false);
     }
   },
+  async [ActionTypes.logout]({ commit }) {
+    const logout = container.get<UseCaseInteractor>(cid.Logout);
+    logout.execute(null, {
+      respondWithSuccess: (userData) => {
+        commit(MutationTypes.SET_USER_DATA, userData);
+        commit(MutationTypes.SET_ERROR, false);
+      },
+      respondWithAppError: (error) => {
+        commit(MutationTypes.SET_USER_DATA, {});
+        commit(MutationTypes.SET_ERROR, error);
+      },
+    } as Callbacks);
+  },
 };

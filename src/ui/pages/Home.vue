@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height>
-    <a-header title="ALeRCE Watchlist" @loggedout="logout"></a-header>
+    <a-header title="ALeRCE Watchlist"></a-header>
     <v-row
       v-if="!logged"
       align="center"
@@ -39,35 +39,24 @@ export default Vue.extend({
   data: (): {
     dialog: boolean;
     watchlist_dialog: boolean;
-    token: string | null;
+    accessToken: string | null;
   } => ({
     dialog: false,
     watchlist_dialog: false,
-    token: null,
+    accessToken: null,
   }),
-  mounted() {
-    this.token = localStorage.getItem("access_token");
-  },
+
   computed: {
     logged: function (): boolean {
-      return this.token != null && this.user.username !== "";
+      return this.accessToken != null && this.user.username !== "";
     },
     user: function (): IUserData {
       return this.$store.state.users.userData;
     },
   },
-  methods: {
-    logout() {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      this.token = null;
-    },
-  },
   watch: {
-    user(val) {
-      if (val.username != "") {
-        this.token = localStorage.getItem("access_token");
-      }
+    user(_: IUserData) {
+      this.accessToken = localStorage.getItem("access_token");
     },
   },
 });

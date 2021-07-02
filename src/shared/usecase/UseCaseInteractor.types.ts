@@ -5,6 +5,7 @@ export interface Callbacks {
   respondWithClientError(error: Error): void;
   respondWithServerError(error: Error): void;
   respondWithParseError(error: ParseError): void;
+  respondWithAppError?(error: Error): void;
 }
 
 export interface UseCaseInteractor {
