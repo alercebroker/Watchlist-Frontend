@@ -20,7 +20,8 @@ export type TestActions =
   | "timeout"
   | "parseError"
   | "clientError"
-  | "serverError";
+  | "serverError"
+  | "accessTokenExpired";
 
 export class MockAxiosCreator implements IAxiosCreator {
   mock!: MockAdapter;
@@ -42,6 +43,8 @@ export class MockAxiosCreator implements IAxiosCreator {
       this.setErrorActions();
     if (this.actionType === "timeout") this.setTimeoutActions();
     if (this.actionType === "parseError") this.setParseErrorActions();
+    if (this.actionType === "accessTokenExpired")
+      this.setAccessTokenExpiredActions();
     return instance;
   }
 
@@ -104,5 +107,23 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = {};
       return [200, JSON.stringify(response)];
     });
+  }
+
+  setAccessTokenExpiredActions() {
+    localStorage.setItem("refresh_token", "token")
+    this.mock.onPost("/users/refresh").reply((_config: any) => {
+      return [200, JSON.stringify({access: "access_token"})]
+    })
+    this.mock
+      .onGet("/watchlists/")
+      .replyOnce(401)
+      .onGet("/watchlists/")
+      .reply((_config: any) => {
+        return [200, JSON.stringify(mockApiWatchlists)];
+      });
+  }
+
+  setRefreshTokenExpiredActions() {
+    this.mock.onGet("/watchlists").reply(401)
   }
 }
