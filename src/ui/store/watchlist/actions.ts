@@ -12,6 +12,7 @@ import { MutationTypes } from "./mutations";
 import { MutationTypes as SingleWatchlistMutationType } from "../singleWatchlist/mutations";
 import { HttpError } from "@/shared/http";
 import { ParseError } from "@/shared/error/ParseError";
+import { ITargetData } from "@/app/target/domain/Target.types";
 
 export enum ActionTypes {
   getAllWatchlists = "getAllWatchlists",
@@ -27,7 +28,7 @@ function throwExpression(errorMessage: string) {
 
 export interface WatchlistInput {
   title: string;
-  targets: Array<any>;
+  targets: Array<ITargetData>;
 }
 export const actions: ActionTree<WatchlistState, IRootState> = {
   async [ActionTypes.getAllWatchlists]({ commit }) {
@@ -98,7 +99,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       commit(MutationTypes.SET_LOADING, false);
     }
   },
-  async [ActionTypes.deleteWatchlist]({ commit, dispatch, state, rootState }) {
+  async [ActionTypes.deleteWatchlist]({ commit, rootState }) {
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(cid.DeleteWatchlist);
     const watchlist = rootState.singleWatchlist;

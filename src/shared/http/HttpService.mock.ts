@@ -80,6 +80,25 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onDelete("/watchlists/1").reply((_config: any) => {
       return [204];
     });
+    this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).reply((_config: any) => {
+      const response = {
+        url:
+          "https://6k5dhpzcdg.execute-api.us-east-1.amazonaws.com/dev/watchlists/32/targets/103303/",
+        id: 103303,
+        name: "M-00-103-01-0",
+        radius: 0.008055555555555555,
+        ra: 0.960746,
+        dec: -11.47467,
+        matches: [
+          {
+            object_id: "ZTF18abtmgfn",
+            candid: "1643456821815010006",
+            date: "2021-07-02T11:05:27.454545Z",
+          },
+        ],
+      };
+      return [200, JSON.stringify(response)];
+    });
   }
 
   setErrorActions() {
@@ -110,10 +129,10 @@ export class MockAxiosCreator implements IAxiosCreator {
   }
 
   setAccessTokenExpiredActions() {
-    localStorage.setItem("refresh_token", "token")
+    localStorage.setItem("refresh_token", "token");
     this.mock.onPost("/users/refresh").reply((_config: any) => {
-      return [200, JSON.stringify({access: "access_token"})]
-    })
+      return [200, JSON.stringify({ access: "access_token" })];
+    });
     this.mock
       .onGet("/watchlists/")
       .replyOnce(401)
@@ -124,6 +143,6 @@ export class MockAxiosCreator implements IAxiosCreator {
   }
 
   setRefreshTokenExpiredActions() {
-    this.mock.onGet("/watchlists").reply(401)
+    this.mock.onGet("/watchlists").reply(401);
   }
 }

@@ -24,6 +24,7 @@
   </v-app-bar>
 </template>
 <script>
+import { ActionTypes } from "@/ui/store/user/actions";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -50,6 +51,7 @@ export default Vue.extend({
   },
   methods: {
     logout() {
+      this.$store.dispatch("users/" + ActionTypes.logout);
       this.$emit("loggedout");
     },
   },

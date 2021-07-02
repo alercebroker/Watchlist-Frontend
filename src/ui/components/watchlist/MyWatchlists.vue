@@ -53,16 +53,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog
-      v-model="loading"
-      hide-overlay
-      persistent
-      width="300"
-    >
-      <v-card
-        color="primary"
-        dark
-      >
+    <v-dialog v-model="loading" hide-overlay persistent width="300">
+      <v-card color="primary" dark>
         <v-card-text>
           Loading... please stand by
           <v-progress-linear
@@ -79,10 +71,11 @@
 <script lang="ts">
 import Vue from "vue";
 import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist.vue";
-import {ActionTypes} from "@/ui/store/watchlist/actions";
+import { ActionTypes } from "@/ui/store/watchlist/actions";
+import { IWatchlistData } from "@/app/watchlist/domain";
 
 export default Vue.extend({
-  components: {CreateWatchlist},
+  components: { CreateWatchlist },
   data: () => ({
     selectedItem: 0,
     watchlist_dialog: false,
@@ -92,18 +85,21 @@ export default Vue.extend({
     await this.$store.dispatch("watchlists/" + ActionTypes.getAllWatchlists);
   },
   computed: {
-    watchlists() {
+    watchlists: function (): IWatchlistData[] {
       return this.$store.state.watchlists.watchlists;
     },
-    loading() {
-      return this.$store.state.watchlists.loading || this.$store.state.targets.loading;
+    loading: function (): boolean {
+      return (
+        this.$store.state.watchlists.loading ||
+        this.$store.state.targets.loading
+      );
     },
     watchlist: {
-      get: function () {
+      get: function (): number {
         const singleWatchlist = this.$store.state.singleWatchlist;
         const index = this.watchlists
-        .map((x) => x.url)
-        .indexOf(singleWatchlist.url);
+          .map((x: IWatchlistData) => x.url)
+          .indexOf(singleWatchlist.url);
         if (index === -1 && this.watchlists.length >= 1) {
           this.$store.dispatch("watchlists/" + ActionTypes.selectWatchlist, 0);
           return 0;
@@ -122,7 +118,7 @@ export default Vue.extend({
     clickCreateWatchlist() {
       this.watchlist_dialog = true;
     },
-    clickDeleteWatchlist(item) {
+    clickDeleteWatchlist() {
       this.delete_watchlist_dialog = true;
     },
     async onDeleteClick() {

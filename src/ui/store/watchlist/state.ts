@@ -1,9 +1,13 @@
 import { IWatchlistData } from "@/app/watchlist/domain";
 
-export const state = () => ({
-  loading: false,
-  watchlists: [] as IWatchlistData[],
-  error: null as string | null,
-});
+export type WatchlistState = {
+  loading: boolean;
+  watchlists: IWatchlistData[];
+  error: string | null;
+};
 
-export type WatchlistState = ReturnType<typeof state>;
+export const state = (): WatchlistState => ({
+  loading: false,
+  watchlists: [],
+  error: null,
+});

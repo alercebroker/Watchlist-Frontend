@@ -51,7 +51,7 @@ export default Vue.extend({
       chosenFile: null,
       rules: [(v: string) => v.length > 0 || "Field can't be empty"],
       csvData: "",
-      targetList: [],
+      targetList: [] as any,
     };
   },
   methods: {
@@ -70,23 +70,27 @@ export default Vue.extend({
         this.$emit("created");
       }
     },
+
     onCancelClick() {
       this.$emit("canceled");
     },
+
     onFilePicked(file: any) {
       const fr = new FileReader();
       fr.readAsText(file);
       fr.addEventListener("load", () => {
-        this.csvData = fr.result;
+        if (fr.result) {
+          this.csvData = fr.result as string;
+        }
       });
     },
+
     parseCSVToList(csvData: string) {
-      const targetList = [];
       let lines = csvData.split("\n");
       let headers = lines[0].split(",").map((x) => x.trim());
       let body = lines.slice(1, -1);
       return body.map((elem) => {
-        var line = {};
+        let line = {} as any;
         elem.split(",").forEach((item, index) => {
           line[headers[index]] = item.trim();
         });

@@ -55,7 +55,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    user(_: IUserData) {
+    user() {
       this.accessToken = localStorage.getItem("access_token");
     },
   },
