@@ -25,16 +25,12 @@ export class AuthService implements IUserRepository {
   async login(
     params: LoginUserApiRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>> {
-    const parseToken = (response: LoginApiResponse) => {
-      return this.parser.parseToken(response);
-    };
-    
     const tokenResult = await this.httpService.post(
       {
         url: "/users/login/",
         data: params,
       },
-      { parseTo: parseToken }
+      { parseTo: this.parser.parseToken }
     );
     
     if (tokenResult.isOk()) {
@@ -68,17 +64,17 @@ export class AuthService implements IUserRepository {
       return err(tokenResult.error);
     }
   }
+
   async register(
     params: RegisterUserRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>> {
-    const parseTo = (response: RegisterUserApiResponse) => {
-      return this.parser.parseRegisterApiResponse(response);
-    };
+
     // result with User entity
     const result = await this.httpService.post(
       { url: "/users/", data: params },
-      { parseTo }
+      { parseTo: this.parser.parseRegisterApiResponse }
     );
+
     return result.map((user: User) => {
       return {
         username: user.username,
@@ -93,6 +89,7 @@ export class AuthService implements IUserRepository {
       };
     });
   }
+
   logout(): void {
     throw new Error("Method not implemented.");
   }

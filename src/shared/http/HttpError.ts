@@ -28,7 +28,7 @@ export class HttpError extends Error implements IHttpError {
     return this.status >= 500 && this.status <= 599;
   }
 
-  public static fromStatus(status: number, message?: string) : HttpError{
+  public static fromStatus(status: number, message?: string): HttpError {
     return new this(status, message);
   }
 }

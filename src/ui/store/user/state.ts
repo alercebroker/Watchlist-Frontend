@@ -1,8 +1,13 @@
 import { IUserData } from "@/app/user/domain/User.types";
 
-export const state = () => ({
+export type UserState = {
+  loading: boolean;
+  error: string | null;
+  userData: IUserData;
+};
+
+export const state = (): UserState => ({
   loading: false,
-  error: null as string | null,
+  error: null,
   userData: {} as IUserData,
 });
-export type UserState = ReturnType<typeof state>;

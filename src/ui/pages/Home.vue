@@ -32,49 +32,44 @@ import WatchlistDetails from "../components/watchlist/WatchlistDetails.vue";
 import Login from "../components/users/Login.vue";
 import RegisterUser from "../components/users/RegisterUser.vue";
 import AHeader from "@/ui/components/watchlist/AHeader.vue";
+import { IUserData } from "@/app/user/domain/User.types";
 
 export default Vue.extend({
   components: { AHeader, MyWatchlists, WatchlistDetails, Login, RegisterUser },
-  data() {
-    return {
-      dialog: false,
-      watchlist_dialog: false,
-      token: null,
-    };
-  },
-  mounted(){
+  data: (): {
+    dialog: boolean;
+    watchlist_dialog: boolean;
+    token: string | null;
+  } => ({
+    dialog: false,
+    watchlist_dialog: false,
+    token: null,
+  }),
+  mounted() {
     this.token = localStorage.getItem("access_token");
   },
   computed: {
-    logged() {
-
-      // if (this.token != null && this.user.username !== "") {
-      //     this.log_var = true;
-      // }
-      //console.log(this.user);
+    logged: function (): boolean {
       return this.token != null && this.user.username !== "";
     },
-    user () {
+    user: function (): IUserData {
       return this.$store.state.users.userData;
-    }
+    },
   },
   methods: {
     logout() {
       localStorage.removeItem("access_token");
-      // const token = localStorage.getItem("access_token");
-      // this.log_var = false;
+      localStorage.removeItem("refresh_token");
       this.token = null;
-      //console.log(this.token)
     },
   },
   watch: {
     user(val) {
-      if (val.username != ""){
+      if (val.username != "") {
         this.token = localStorage.getItem("access_token");
       }
-      //console.log(val);
-    } 
-  }
+    },
+  },
 });
 </script>
 

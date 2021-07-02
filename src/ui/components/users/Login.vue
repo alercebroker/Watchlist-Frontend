@@ -11,6 +11,7 @@
                 label="Username"
                 :rules="rules"
                 :error-messages="error"
+                :loading="loading"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -24,12 +25,18 @@
                 @click:append="showPassword = !showPassword"
                 :rules="rules"
                 :error-messages="error"
+                :loading="loading"
               ></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="6">
-              <v-btn id="login" color="primary" block @click="onLoginClick"
+              <v-btn
+                id="login"
+                color="primary"
+                block
+                @click="onLoginClick"
+                :loading="loading"
                 >Login</v-btn
               >
             </v-col>
@@ -39,6 +46,7 @@
                 color="primary"
                 block
                 @click="$emit('registerClick')"
+                :loading="loading"
                 >Register</v-btn
               >
             </v-col>
@@ -58,8 +66,7 @@ export default Vue.extend({
       username: "",
       password: "",
       showPassword: false,
-      error: "",
-      rules: [(v: string) => v.length > 0 || "Field can't be empty",],
+      rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     };
   },
   methods: {
@@ -71,8 +78,15 @@ export default Vue.extend({
           password: this.password,
         };
         this.$store.dispatch("users/" + ActionTypes.login, userInput);
-        this.error = this.$store.state.users.error.detail;
       }
+    },
+  },
+  computed: {
+    error: function (): string {
+      return this.$store.state.users.error?.detail;
+    },
+    loading: function (): boolean {
+      return this.$store.state.users.loading;
     },
   },
 });

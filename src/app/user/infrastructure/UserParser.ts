@@ -30,7 +30,7 @@ export class UserParser {
     }
   }
 
-  parseToken(response: LoginApiResponse): Result<any, ParseError> {
+  parseToken(response: LoginApiResponse): Result<LoginApiResponse, ParseError> {
     return response
       ? ok(response)
       : err(new ParseError("Failed to parse token"));
