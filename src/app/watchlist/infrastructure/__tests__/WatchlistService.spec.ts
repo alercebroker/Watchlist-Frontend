@@ -26,6 +26,7 @@ describe("WatchlistService", () => {
       expect(result.isOk()).toBeTruthy();
       const expected = [
         new Watchlist({
+          id: 1,
           owner: "owner",
           title: "Test1",
           targets: "test",
@@ -34,6 +35,7 @@ describe("WatchlistService", () => {
           lastMatch: "test",
         }),
         new Watchlist({
+          id: 2,
           owner: "owner",
           title: "Test2",
           targets: "test",
@@ -45,15 +47,15 @@ describe("WatchlistService", () => {
       result.map((watchlists) => {
         expect(watchlists).toStrictEqual(expected);
       });
-    }),
-      it("should return errored result", async () => {
-        container.bind<TestActions>("ActionType").toConstantValue("error");
-        const httpService = container.get<IHttpService>(cid.HttpService);
-        const service = new WatchlistService(httpService);
-        const result = await service.getAllWatchlists();
-        expect(result.isOk()).toBeFalsy();
-      });
+    });
     it("should return errored result", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const httpService = container.get<IHttpService>(cid.HttpService);
+      const service = new WatchlistService(httpService);
+      const result = await service.getAllWatchlists();
+      expect(result.isOk()).toBeFalsy();
+    });
+    it("should return errored result on timeout", async () => {
       container.bind<TestActions>("ActionType").toConstantValue("timeout");
       const httpService = container.get<IHttpService>(cid.HttpService);
       const service = new WatchlistService(httpService);
@@ -70,6 +72,7 @@ describe("WatchlistService", () => {
       expect(result.isOk()).toBeTruthy();
       const expected = [
         new Watchlist({
+          id: 1,
           owner: "owner",
           title: "Test1",
           targets: "test",
@@ -78,6 +81,7 @@ describe("WatchlistService", () => {
           lastMatch: "test",
         }),
         new Watchlist({
+          id: 2,
           owner: "owner",
           title: "Test2",
           targets: "test",
@@ -112,6 +116,7 @@ describe("WatchlistService", () => {
       expect(result.isOk()).toBeTruthy();
       const expected = [
         new Watchlist({
+          id: 1,
           owner: "owner",
           title: "Test1",
           targets: "test",
@@ -120,6 +125,7 @@ describe("WatchlistService", () => {
           lastMatch: "test",
         }),
         new Watchlist({
+          id: 2,
           owner: "owner",
           title: "Test2",
           targets: "test",
@@ -184,6 +190,7 @@ describe("WatchlistService", () => {
       const result = await service.getOneWatchlist("watchlists/1");
       expect(result.isOk()).toBeTruthy();
       const expected = new Watchlist({
+        id: 1,
         owner: "owner",
         title: "title",
         targets: "watchlists/1/targets",
@@ -220,6 +227,7 @@ describe("WatchlistService", () => {
       expect(result.isOk()).toBeTruthy();
       const expected = [
         new Watchlist({
+          id: 1,
           owner: "owner",
           title: "Test1",
           targets: "test",
@@ -228,6 +236,7 @@ describe("WatchlistService", () => {
           lastMatch: "test",
         }),
         new Watchlist({
+          id: 2,
           owner: "owner",
           title: "Test2",
           targets: "test",

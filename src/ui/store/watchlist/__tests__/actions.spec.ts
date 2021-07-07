@@ -16,6 +16,15 @@ localVue.use(Vuex);
 
 const modules = {
   modules: {
+    singleWatchlist: {
+      namespaced: true,
+      actions: {},
+      mutations: {},
+      state: {
+        url: "test",
+      },
+      getters: {},
+    },
     watchlists: {
       namespaced: true,
       actions: actions,
@@ -48,6 +57,7 @@ describe("getAllWatchlists", () => {
     await store.dispatch("watchlists/getAllWatchlists");
     const expected = [
       {
+        id: 1,
         title: "watchlist 1",
         owner: "owner 1",
         targets: "test",
@@ -56,6 +66,7 @@ describe("getAllWatchlists", () => {
         url: "test",
       },
       {
+        id: 2,
         title: "watchlist 2",
         owner: "owner 1",
         targets: "test",
@@ -167,11 +178,12 @@ describe("createWatchlist", () => {
           ra: 1.0,
           dec: 1.0,
         },
-      ]
-    }
+      ],
+    };
     await store.dispatch("watchlists/createWatchlist", watchlistInput);
     const expected = [
       {
+        id: 1,
         title: "watchlist 1",
         owner: "owner 1",
         targets: "test",
@@ -180,6 +192,7 @@ describe("createWatchlist", () => {
         url: "test",
       },
       {
+        id: 2,
         title: "watchlist 2",
         owner: "owner 1",
         targets: "test",
@@ -188,14 +201,14 @@ describe("createWatchlist", () => {
         url: "test",
       },
       {
-        title: "watchlist 3",
+        id: 3,
+        title: "title",
         owner: "owner 1",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
         url: "test",
       },
-
     ];
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
@@ -214,7 +227,6 @@ describe("createWatchlist", () => {
       {},
       false
     );
-
   });
 
   it("should call client error callback", async () => {
@@ -230,8 +242,8 @@ describe("createWatchlist", () => {
           ra: 1.0,
           dec: 1.0,
         },
-      ]
-    }
+      ],
+    };
     await store.dispatch("watchlists/createWatchlist", watchlistInput);
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
@@ -264,8 +276,8 @@ describe("createWatchlist", () => {
           ra: 1.0,
           dec: 1.0,
         },
-      ]
-    }
+      ],
+    };
     await store.dispatch("watchlists/createWatchlist", watchlistInput);
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
@@ -298,8 +310,8 @@ describe("createWatchlist", () => {
           ra: 1.0,
           dec: 1.0,
         },
-      ]
-    }
+      ],
+    };
     await store.dispatch("watchlists/createWatchlist", watchlistInput);
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
@@ -327,42 +339,33 @@ describe("deleteWatchlist", () => {
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
     await store.dispatch("watchlists/deleteWatchlist");
-    const expected = [
-      {
-        title: "watchlist 1",
-        owner: "owner 1",
-        targets: "test",
-        nTargets: "test",
-        lastMatch: "test",
-        url: "test",
-      },
-      {
-        title: "watchlist 2",
-        owner: "owner 1",
-        targets: "test",
-        nTargets: "test",
-        lastMatch: "test",
-        url: "test",
-      },
-    ];
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
-      {},
-      expected
+      expect.anything(),
+      [
+        {
+          id: 1,
+          lastMatch: "test",
+          nTargets: "test",
+          owner: "owner 1",
+          targets: "test",
+          title: "watchlist 1",
+          url: "test",
+        },
+      ]
     );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
-      {},
+      expect.anything(),
       null
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
-      {},
+      expect.anything(),
       true
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenLastCalledWith(
-      {},
+      expect.anything(),
       false
     );
-
   });
 
   it("should call client error callback", async () => {
@@ -393,7 +396,6 @@ describe("deleteWatchlist", () => {
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
     await store.dispatch("watchlists/deleteWatchlist");
-    //console.log(store);
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
       []
@@ -437,8 +439,4 @@ describe("deleteWatchlist", () => {
   });
 });
 
-describe("selectWatchlist", () => {
-
-});
-
-
+describe("selectWatchlist", () => {});

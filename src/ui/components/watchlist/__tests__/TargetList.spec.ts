@@ -1,15 +1,41 @@
 import { containerBuilder } from "@/ui/plugins/inversify";
-import { ITargetRepository } from "@/app/target/domain/Target.types";
-import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
-import { TestActions } from "@/shared/http";
-import { IStoreCreator } from "@/ui/store/StoreCreator";
+import { IStoreCreator, StoreCreator } from "@/ui/store/StoreCreator";
 import { createLocalVue, mount } from "@vue/test-utils";
-import { cid, container, mockSingleton, resetContainer } from "inversify-props";
+import { cid, container, resetContainer } from "inversify-props";
 import Vue from "vue";
 import Vuetify from "vuetify";
-import Vuex from "vuex";
+import Vuex, { Store } from "vuex";
 import TargetList from "@/ui/components/watchlist/TargetList.vue";
 import flushPromises from "flush-promises";
+import { Modules } from "@/ui/store/RegisterModules";
+import { IRootState } from "@/ui/store/Store.types";
+
+const modules = {
+  modules: {
+    singleWatchlist: {
+      namespaced: true,
+      actions: {},
+      mutations: {},
+      state: {
+        id: 1,
+      },
+      getters: {},
+    },
+    targets: {
+      namespaced: true,
+      actions: {},
+      mutations: {},
+      state: {
+        targets: [
+          {
+            name: "test",
+          },
+        ],
+      },
+      getters: {},
+    },
+  },
+};
 
 describe("List Targets", () => {
   containerBuilder();
@@ -17,32 +43,70 @@ describe("List Targets", () => {
   localVue.use(Vuex);
   Vue.use(Vuetify);
   let vuetify: Vuetify;
-  const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
-  const store = storeCreator.create();
+  let store: Store<IRootState>;
 
   beforeEach(() => {
     resetContainer();
     containerBuilder();
-    mockSingleton<ITargetRepository>(cid.TargetService, MockTargetService);
     vuetify = new Vuetify();
+    container.unbind("Modules");
+    container.bind<Modules>("Modules").toConstantValue(modules);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
   });
 
-  it("should mount and fetch target list", async () => {
-    container.bind<TestActions>("ActionType").toConstantValue("ok");
+  it("should mount and not show anything if there aren't targets", async () => {
+    const emptyModules = {
+      modules: {
+        singleWatchlist: {
+          namespaced: true,
+          actions: {},
+          mutations: {},
+          state: {
+            id: 1,
+          },
+          getters: {},
+        },
+        targets: {
+          namespaced: true,
+          actions: {},
+          mutations: {},
+          state: {
+            targets: [],
+          },
+          getters: {},
+        },
+      },
+    };
+
+    container.unbind("Modules");
+    container.bind<Modules>("Modules").toConstantValue(emptyModules);
+    container.unbind(cid.StoreCreator);
+    container.addSingleton<IStoreCreator>(StoreCreator);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
     const wrapper = mount(TargetList, {
       localVue,
       store,
       vuetify,
     });
     await flushPromises();
-    const expected = [
-      {
-        name: "target",
-      },
-    ];
-    const wrappers = wrapper.findAll(".v-list-item__title").wrappers;
-    wrappers.forEach((item, index) => {
-      expect(item.text()).toEqual(expected[index].name);
+    const tbody = wrapper.find("tbody");
+    const tr = tbody.find("tr");
+    expect(tr.find("td").text()).toBe("No data available");
+  });
+  it("should mount and show targets if store is not empty", async () => {
+    const wrapper = mount(TargetList, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    const tbody = wrapper.find("tbody");
+    const trs = tbody.findAll("tr");
+    expect(trs.length).toBe(1);
+    trs.wrappers.forEach((tr) => {
+      expect(tr.find("td").text()).toBe("test");
     });
   });
 });

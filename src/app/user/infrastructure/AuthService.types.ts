@@ -19,7 +19,7 @@ export interface RegisterUserApiResponse {
 
 export interface LoginUserApiRequestModel {
   username: string;
-  [password: string]: string;
+  password: string;
 }
 
 export interface LoginApiResponse {

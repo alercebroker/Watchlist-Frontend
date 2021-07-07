@@ -23,8 +23,11 @@ import { GetTargets } from "@/app/target/use_case/GetTargets";
 import { SelectWatchlist } from "@/app/watchlist/use_case/SelectWatchlist";
 import { DeleteWatchlist } from "@/app/watchlist/use_case/DeleteWatchlist";
 import { Logout } from "@/app/user/use_case/Logout";
+import { IMatchRepository } from "@/app/match/domain/Match.types";
+import { MatchService } from "@/app/match/infrastructure/MatchService";
+import { GetMatches } from "@/app/match/use_case/GetMatches";
 
-export function containerBuilder() {
+export function containerBuilder(): void {
   container.addTransient<IAxiosCreator>(AxiosCreator);
   container.addTransient<IHttpService>(HttpService);
   container.addSingleton<IWatchlistRepository>(WatchlistService);
@@ -40,4 +43,6 @@ export function containerBuilder() {
   container.addTransient<UseCaseInteractor>(GetTargets);
   container.addTransient<UseCaseInteractor>(SelectWatchlist);
   container.addTransient<UseCaseInteractor>(DeleteWatchlist);
+  container.addSingleton<IMatchRepository>(MatchService);
+  container.addTransient<UseCaseInteractor>(GetMatches);
 }

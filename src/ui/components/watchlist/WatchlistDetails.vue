@@ -26,10 +26,6 @@ export default Vue.extend({
         content: "Filters",
       },
       {
-        title: "Settings",
-        content: "Settings",
-      },
-      {
         title: "Overview",
         content: "Overview",
       },

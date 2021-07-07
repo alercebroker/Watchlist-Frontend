@@ -1,4 +1,3 @@
-import { TargetRequestModel } from "@/app/target/infrastructure/TargetService.types";
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, TestActions } from "@/shared/http";
 import { inject } from "inversify-props";
@@ -8,6 +7,7 @@ import { CreateWatchlistRequestModel } from "../WatchlistService.types";
 
 const watchlistArray: IWatchlistData[] = [
   {
+    id: 1,
     title: "watchlist 1",
     owner: "owner 1",
     targets: "test",
@@ -16,6 +16,7 @@ const watchlistArray: IWatchlistData[] = [
     lastMatch: "test",
   },
   {
+    id: 2,
     title: "watchlist 2",
     owner: "owner 1",
     targets: "test",
@@ -26,6 +27,7 @@ const watchlistArray: IWatchlistData[] = [
 ];
 
 const watchlist: IWatchlistData = {
+  id: 3,
   title: "watchlist 3",
   owner: "owner 1",
   targets: "test",
@@ -100,7 +102,15 @@ export class MockWatchlistService implements IWatchlistRepository {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
         const copy = [...watchlistArray];
-        copy.push(watchlist);
+        copy.push({
+          id: 3,
+          title: params.title,
+          owner: "owner 1",
+          targets: "test",
+          url: "test",
+          nTargets: "test",
+          lastMatch: "test",
+        });
         resolve(ok(copy));
       });
     } else if (
@@ -126,10 +136,10 @@ export class MockWatchlistService implements IWatchlistRepository {
 
   deleteWatchlist(
     url: string
-  ):Promise<Result<IWatchlistData[], ParseError | HttpError>> {
+  ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
-        resolve(ok([watchlistArray[-1]]));
+        resolve(ok([watchlistArray[0]]));
       });
     } else if (
       this.actionType === "error" ||

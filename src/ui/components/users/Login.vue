@@ -71,8 +71,7 @@ export default Vue.extend({
   },
   methods: {
     onLoginClick() {
-      const form: any = this.$refs.form;
-      if (form.validate()) {
+      if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         const userInput = {
           username: this.username,
           password: this.password,

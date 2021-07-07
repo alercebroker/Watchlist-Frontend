@@ -1,12 +1,7 @@
 <template>
-  <v-container fill-height>
+  <v-container>
     <a-header title="ALeRCE Watchlist"></a-header>
-    <v-row
-      v-if="!logged"
-      align="center"
-      align-content="center"
-      justify="center"
-    >
+    <v-row v-if="!logged" align="center" align-content="center">
       <v-col cols="4">
         <login @registerClick="dialog = true" />
         <v-dialog v-model="dialog" max-width="500">
@@ -48,15 +43,18 @@ export default Vue.extend({
 
   computed: {
     logged: function (): boolean {
-      return this.accessToken != null && this.user.username !== "";
+      return this.accessToken != null;
     },
     user: function (): IUserData {
       return this.$store.state.users.userData;
     },
   },
   watch: {
-    user(_: IUserData) {
-      this.accessToken = localStorage.getItem("access_token");
+    user: {
+      handler: function () {
+        this.accessToken = localStorage.getItem("access_token");
+      },
+      immediate: true,
     },
   },
 });

@@ -1,13 +1,11 @@
 import { ActionTree } from "vuex";
 import { IRootState } from "../Store.types";
 import { TargetsState } from "./state";
-import { WatchlistState } from "@/ui/store/watchlist/state";
 import { cid, container } from "inversify-props";
 import {
   Callbacks,
   UseCaseInteractor,
 } from "@/shared/usecase/UseCaseInteractor.types";
-import { IWatchlistData } from "@/app/watchlist/domain";
 import { HttpError } from "@/shared/http";
 import { ParseError } from "@/shared/error/ParseError";
 import { ITargetData } from "@/app/target/domain/Target.types";
@@ -27,7 +25,7 @@ export enum ActionTypes {
 // }
 
 export const actions: ActionTree<TargetsState, IRootState> = {
-  async [ActionTypes.getTargets]({ commit, state }, url: string) {
+  async [ActionTypes.getTargets]({ commit }, url: string) {
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(cid.GetTargets);
     const callbacks: Callbacks = {

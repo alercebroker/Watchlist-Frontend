@@ -12,13 +12,14 @@ import { MutationTypes } from "./mutations";
 import { MutationTypes as SingleWatchlistMutationType } from "../singleWatchlist/mutations";
 import { HttpError } from "@/shared/http";
 import { ParseError } from "@/shared/error/ParseError";
+import { ITargetData } from "@/app/target/domain/Target.types";
+import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 
 export enum ActionTypes {
   getAllWatchlists = "getAllWatchlists",
   createWatchlist = "createWatchlist",
   deleteWatchlist = "deleteWatchlist",
   selectWatchlist = "selectWatchlist",
-  getTargets = "getTargets",
 }
 
 function throwExpression(errorMessage: string) {
@@ -27,7 +28,7 @@ function throwExpression(errorMessage: string) {
 
 export interface WatchlistInput {
   title: string;
-  targets: Array<any>;
+  targets: Array<ITargetData>;
 }
 export const actions: ActionTree<WatchlistState, IRootState> = {
   async [ActionTypes.getAllWatchlists]({ commit }) {
@@ -98,7 +99,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       commit(MutationTypes.SET_LOADING, false);
     }
   },
-  async [ActionTypes.deleteWatchlist]({ commit, dispatch, state, rootState }) {
+  async [ActionTypes.deleteWatchlist]({ commit, rootState }) {
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(cid.DeleteWatchlist);
     const watchlist = rootState.singleWatchlist;
@@ -142,9 +143,14 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
     const interactor = container.get<UseCaseInteractor>(cid.SelectWatchlist);
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlist: IWatchlistData) => {
-        dispatch("targets/" + ActionTypes.getTargets, watchlist.targets, {
+        dispatch("targets/" + TargetActionTypes.getTargets, watchlist.targets, {
           root: true,
         });
+        commit(
+          "singleWatchlist/" + SingleWatchlistMutationType.SET_ID,
+          watchlist.id,
+          { root: true }
+        );
         commit(
           "singleWatchlist/" + SingleWatchlistMutationType.SET_TITLE,
           watchlist.title,

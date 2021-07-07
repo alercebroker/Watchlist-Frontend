@@ -2,6 +2,7 @@ import { MutationTree } from "vuex";
 import { SingleWatchlistState } from "./state";
 
 export enum MutationTypes {
+  SET_ID = "SET_ID",
   SET_LOADING = "SET_LOADING",
   SET_ERROR = "SET_ERROR",
   SET_TITLE = "SET_TITLE",
@@ -12,6 +13,9 @@ export enum MutationTypes {
 }
 
 export const mutations: MutationTree<SingleWatchlistState> = {
+  [MutationTypes.SET_ID](state, id: number) {
+    state.id = id;
+  },
   [MutationTypes.SET_TITLE](state, title: string) {
     state.title = title;
   },

@@ -4,6 +4,7 @@ export interface WatchlistRequestModel {
 }
 
 export interface WatchlistApiResult {
+  id: number;
   url: string;
   title: string;
   targets: string;
@@ -36,6 +37,7 @@ export interface CreateWatchlistApiResponse {
 }
 
 export interface OneWatchlistApiResponse {
+  id: number;
   url: string;
   title: string;
   owner: string;

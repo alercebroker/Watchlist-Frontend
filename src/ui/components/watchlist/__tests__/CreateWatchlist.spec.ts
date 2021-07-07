@@ -46,6 +46,6 @@ describe("CreateWatchlist Component", () => {
     const button = wrapper.find("#send");
     button.trigger("click");
     await flushPromises();
-    expect(store.state.watchlists.watchlists[-1].title).toEqual("title");
+    expect(store.state.watchlists.watchlists.pop()!.title).toEqual("title");
   });
 });
