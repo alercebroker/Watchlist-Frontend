@@ -1,10 +1,5 @@
 import { containerBuilder } from "@/ui/plugins/inversify";
-import {
-  IAxiosCreator,
-  IHttpService,
-  MockAxiosCreator,
-  TestActions,
-} from "@/shared/http";
+import { IAxiosCreator, MockAxiosCreator, TestActions } from "@/shared/http";
 import { cid, container, mockTransient, resetContainer } from "inversify-props";
 import { ITargetRepository } from "../../domain/Target.types";
 import { Target } from "../../domain/Target";
@@ -24,8 +19,26 @@ describe("TargetService", () => {
       const result = await targetService.getAllTargets(1);
       expect(result.isOk()).toBeTruthy();
       const expected = [
-        new Target({ url: "test", name: "target", radius: 1, ra: 10, dec: 20, nMatches: 5 }),
-        new Target({ url: "test2", name: "target2", radius: 2, ra: 20, dec: 20, nMatches: 2 })
+        new Target({
+          id: 1,
+          url: "test",
+          name: "target",
+          radius: 1,
+          ra: 10,
+          dec: 20,
+          nMatches: 5,
+          lastMatch: new Date(10, 10, 10).toISOString(),
+        }),
+        new Target({
+          id: 2,
+          url: "test2",
+          name: "target2",
+          radius: 2,
+          ra: 20,
+          dec: 20,
+          nMatches: 2,
+          lastMatch: new Date(10, 10, 10).toISOString(),
+        }),
       ];
       result.map((res) => {
         expect(res).toStrictEqual(expected);

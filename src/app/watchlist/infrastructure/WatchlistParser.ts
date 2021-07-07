@@ -13,6 +13,7 @@ export class WatchlistApiParser {
   ): Result<IWatchlistData, ParseError> {
     try {
       const watchlistData: IWatchlistData = {
+        id: apiResponse.id,
         title: apiResponse.title,
         owner: owner,
         targets: apiResponse.targets,
@@ -33,8 +34,10 @@ export class WatchlistCreateApiParser {
     response: CreateWatchlistApiResponse
   ): Result<Watchlist, ParseError> {
     try {
+      // this returned watchlist is not going to be used
       return ok(
         new Watchlist({
+          id: -1,
           title: response.title,
           owner: "owner",
           targets: "",

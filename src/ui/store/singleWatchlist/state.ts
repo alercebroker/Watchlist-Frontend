@@ -1,6 +1,5 @@
-import { ITargetData } from "@/app/target/domain/Target.types";
-
 export const state = () => ({
+  id: -1,
   loading: false,
   url: "",
   n_targets: "",

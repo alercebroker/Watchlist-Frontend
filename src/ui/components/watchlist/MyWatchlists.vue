@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height="100%">
     <v-list>
       <v-subheader>My Watchlists</v-subheader>
       <v-list-item-group v-model="watchlist" color="primary" mandatory>

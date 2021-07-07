@@ -44,7 +44,7 @@ describe("Login Component", () => {
     // check store for user data
     expect(store.state.users.userData.username).toEqual("username");
     // check localStorage for token
-    expect(localStorage.getItem("token")).toEqual("token");
+    expect(localStorage.getItem("access_token")).toEqual("token");
   });
   it("should not create user if data is empty", async () => {
     container.bind<TestActions>("ActionType").toConstantValue("ok");

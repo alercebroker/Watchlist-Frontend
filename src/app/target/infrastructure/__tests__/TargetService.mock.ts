@@ -5,21 +5,25 @@ import { err, ok, Result } from "neverthrow";
 import { ITargetData, ITargetRepository } from "../../domain/Target.types";
 
 const targetArray: ITargetData[] = [
-  { 
+  {
+    id: 1,
     url: "test",
     name: "target 1",
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
     nMatches: 0,
+    lastMatch: new Date().toISOString(),
   },
-  { 
+  {
+    id: 2,
     url: "test",
     name: "target 2",
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
     nMatches: 0,
+    lastMatch: new Date().toISOString(),
   },
 ];
 

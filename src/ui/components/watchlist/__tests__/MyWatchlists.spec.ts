@@ -14,7 +14,8 @@ import { mockActions } from "@/ui/store/watchlist/__tests__/actions.mock";
 import { mockActions as mockTargetActions } from "@/ui/store/targets/__tests__/actions.mock";
 import { Modules } from "@/ui/store/RegisterModules";
 import { ActionTypes } from "@/ui/store/watchlist/actions";
-import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
+import { ITargetRepository } from "@/app/target/domain/Target.types";
+import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
 
 describe("List Watchlist", () => {
   containerBuilder();
@@ -32,6 +33,7 @@ describe("List Watchlist", () => {
       cid.WatchlistService,
       MockWatchlistService
     );
+    mockSingleton<ITargetRepository>(cid.TargetService, MockTargetService);
     vuetify = new Vuetify();
   });
 
@@ -65,7 +67,9 @@ describe("List Watchlist", () => {
           namespaced: true,
           actions: mockActions,
           mutations: {},
-          state: {},
+          state: {
+            watchlists: [],
+          },
           getters: {},
         },
         targets: {
@@ -73,6 +77,15 @@ describe("List Watchlist", () => {
           actions: mockTargetActions,
           mutations: {},
           state: {},
+          getters: {},
+        },
+        singleWatchlist: {
+          namespaced: true,
+          actions: {},
+          mutations: {},
+          state: {
+            url: "test",
+          },
           getters: {},
         },
       },
@@ -94,7 +107,5 @@ describe("List Watchlist", () => {
     await flushPromises();
     const mock = mockActions[ActionTypes.selectWatchlist] as jest.Mock;
     expect(mock.mock.calls[0][1]).toBe(2);
-    //const mockTarget = mockTargetActions[TargetActionTypes.getTargets] as jest.Mock;
-    //console.log(mockTarget.mock.calls);
   });
 });

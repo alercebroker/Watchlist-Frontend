@@ -57,9 +57,12 @@ export class MockAxiosCreator implements IAxiosCreator {
       const response = mockRegisterUser;
       return [201, JSON.stringify(response)];
     });
-    this.mock.onPost("/users/login").reply((_config: any) => {
+    this.mock.onPost("/users/login/").reply((_config: any) => {
       const response = mockLoginResponse;
       return [201, JSON.stringify(response)];
+    });
+    this.mock.onGet("/users/current/").reply((_config: any) => {
+      return [200, JSON.stringify(mockUsersResponse)];
     });
     this.mock.onGet("/users/").reply((_config: any) => {
       const response = mockUsersResponse;
@@ -109,6 +112,7 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onPost("/watchlists/").networkError();
     this.mock.onGet("/watchlists/1/targets").networkError();
     this.mock.onGet("/watchlists/1").networkError();
+    this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).networkError();
   }
 
   setTimeoutActions() {
@@ -119,6 +123,7 @@ export class MockAxiosCreator implements IAxiosCreator {
     this.mock.onPost("/watchlists/").timeout();
     this.mock.onGet("/watchlists/1/targets").timeout();
     this.mock.onGet("/watchlists/1").timeout();
+    this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).timeout();
   }
 
   setParseErrorActions() {
@@ -130,7 +135,7 @@ export class MockAxiosCreator implements IAxiosCreator {
 
   setAccessTokenExpiredActions() {
     localStorage.setItem("refresh_token", "token");
-    this.mock.onPost("/users/refresh").reply((_config: any) => {
+    this.mock.onPost("/users/refresh/").reply((_config: any) => {
       return [200, JSON.stringify({ access: "access_token" })];
     });
     this.mock

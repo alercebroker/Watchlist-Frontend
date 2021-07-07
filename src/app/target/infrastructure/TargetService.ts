@@ -30,20 +30,20 @@ export class TargetService implements ITargetRepository {
       });
       return combine(targets);
     };
-    return await this.httpService.get(
-      { url: "/watchlists/" + id + "/targets" },
-      { parseTo }
-    );
+    return await this.httpService.get<
+      WatchlistTargetsApiResponse,
+      ITargetData[]
+    >({ url: "/watchlists/" + id + "/targets" }, { parseTo });
   }
 
   private async getTargetsFromUrl(
     url: string
   ): Promise<Result<ITargetData[], ParseError | HttpError>> {
     const parseTo = (response: WatchlistTargetsApiResponse) => {
-      // count 
+      // count
       // next
       // previous
-      
+
       const targets = response.results.map((x) => {
         return this.parser.toDomain(x);
       });

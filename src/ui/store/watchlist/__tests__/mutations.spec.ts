@@ -37,12 +37,13 @@ describe("SET_WATCHLISTS", () => {
     const store = storeCreator.create();
     const data: IWatchlistData[] = [
       {
+        id: 1,
         title: "titulo",
         owner: "owner",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
-        url: "test"
+        url: "test",
       },
     ];
     store.commit("watchlists/SET_WATCHLISTS", data);

@@ -55,7 +55,8 @@ describe("RegisterUser Component", () => {
       email: "email",
       lastName: "last name",
       password: null,
-      token: null,
+      accessToken: null,
+      refreshToken: null,
       institution: "institution",
       role: "role",
     });

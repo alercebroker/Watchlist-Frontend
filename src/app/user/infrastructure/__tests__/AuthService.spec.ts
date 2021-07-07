@@ -34,7 +34,8 @@ describe("AuthService", () => {
           password: null,
           name: "name",
           lastName: "last name",
-          token: null,
+          accessToken: null,
+          refreshToken: null,
           institution: "institution",
           role: "role",
         });
@@ -88,7 +89,8 @@ describe("AuthService", () => {
       };
       const result = await service.login(request);
       expect(result.isOk()).toBeTruthy();
-      expect(localStorage.getItem("token")).toBe("token");
+      expect(localStorage.getItem("access_token")).toBe("token");
+      expect(localStorage.getItem("refresh_token")).toBe("token");
     });
     it("should return error if http has error", async () => {
       container.bind<TestActions>("ActionType").toConstantValue("error");

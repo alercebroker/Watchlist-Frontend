@@ -1,16 +1,15 @@
 import { IWatchlistData } from "./Watchlist.types";
 
 export class Watchlist implements IWatchlistData {
+  id: number;
   title: string;
-  //goodbye owner
   owner: string;
   targets: string | null;
   url: string;
   nTargets: string;
   lastMatch: string;
-  //add n_targets
-  //add last_match
   constructor(watchlistData: IWatchlistData) {
+    this.id = watchlistData.id;
     this.title = watchlistData.title;
     this.owner = watchlistData.owner;
     this.targets = watchlistData.targets;

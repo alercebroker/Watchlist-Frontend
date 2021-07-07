@@ -62,7 +62,8 @@ describe("UserActions", () => {
           email: "email",
           password: null,
           lastName: "last name",
-          token: null,
+          accessToken: null,
+          refreshToken: null,
           institution: "institution",
           role: "role",
         }
@@ -191,7 +192,8 @@ describe("UserActions", () => {
           email: "email",
           password: null,
           lastName: "last name",
-          token: "token",
+          refreshToken: "token",
+          accessToken: "token",
           institution: "institution",
           role: "role",
         }

@@ -13,13 +13,13 @@ import { MutationTypes as SingleWatchlistMutationType } from "../singleWatchlist
 import { HttpError } from "@/shared/http";
 import { ParseError } from "@/shared/error/ParseError";
 import { ITargetData } from "@/app/target/domain/Target.types";
+import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 
 export enum ActionTypes {
   getAllWatchlists = "getAllWatchlists",
   createWatchlist = "createWatchlist",
   deleteWatchlist = "deleteWatchlist",
   selectWatchlist = "selectWatchlist",
-  getTargets = "getTargets",
 }
 
 function throwExpression(errorMessage: string) {
@@ -143,9 +143,14 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
     const interactor = container.get<UseCaseInteractor>(cid.SelectWatchlist);
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlist: IWatchlistData) => {
-        dispatch("targets/" + ActionTypes.getTargets, watchlist.targets, {
+        dispatch("targets/" + TargetActionTypes.getTargets, watchlist.targets, {
           root: true,
         });
+        commit(
+          "singleWatchlist/" + SingleWatchlistMutationType.SET_ID,
+          watchlist.id,
+          { root: true }
+        );
         commit(
           "singleWatchlist/" + SingleWatchlistMutationType.SET_TITLE,
           watchlist.title,

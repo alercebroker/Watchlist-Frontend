@@ -5,4 +5,5 @@ import { WatchlistState } from "../state";
 
 export const mockActions: ActionTree<IRootState, WatchlistState> = {
   [ActionTypes.selectWatchlist]: jest.fn(),
+  [ActionTypes.getAllWatchlists]: jest.fn(),
 };

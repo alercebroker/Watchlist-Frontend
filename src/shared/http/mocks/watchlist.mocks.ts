@@ -11,6 +11,7 @@ export const mockApiWatchlists: WatchlistApiResponse = {
   previous: "",
   results: [
     {
+      id: 1,
       url: "watchlists/1",
       title: "Test1",
       targets: "test",
@@ -18,6 +19,7 @@ export const mockApiWatchlists: WatchlistApiResponse = {
       last_match: "test",
     },
     {
+      id: 2,
       url: "watchlists/2",
       title: "Test2",
       targets: "test",
@@ -56,6 +58,7 @@ export const mockCreateWatchlistResponse: CreateWatchlistApiResponse = {
 };
 
 export const mockSingleWatchlist: OneWatchlistApiResponse = {
+  id: 1,
   url: "watchlists/1",
   title: "title",
   owner: "owner",
