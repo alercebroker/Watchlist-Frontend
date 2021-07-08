@@ -45,7 +45,7 @@ describe("WatchlistService", () => {
         }),
       ];
       result.map((watchlists) => {
-        expect(watchlists).toStrictEqual(expected);
+        expect(watchlists.watchlists).toStrictEqual(expected);
       });
     });
     it("should return errored result", async () => {
@@ -91,7 +91,7 @@ describe("WatchlistService", () => {
         }),
       ];
       result.map((watchlists) => {
-        expect(watchlists).toStrictEqual(expected);
+        expect(watchlists.watchlists).toStrictEqual(expected);
       });
     });
   });
@@ -135,7 +135,7 @@ describe("WatchlistService", () => {
         }),
       ];
       result.map((watchlists) => {
-        expect(watchlists).toStrictEqual(expected);
+        expect(watchlists.watchlists).toStrictEqual(expected);
       });
     });
     it("should return server error", async () => {
@@ -246,7 +246,7 @@ describe("WatchlistService", () => {
         }),
       ];
       result.map((watchlists) => {
-        expect(watchlists).toStrictEqual(expected);
+        expect(watchlists.watchlists).toStrictEqual(expected);
       });
     });
 

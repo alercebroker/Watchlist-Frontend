@@ -6,16 +6,46 @@ import { createLocalVue, mount } from "@vue/test-utils";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import Vue from "vue";
 import Vuetify from "vuetify";
-import Vuex from "vuex";
+import Vuex, { Store } from "vuex";
 import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
 import flushPromises from "flush-promises";
-import { IStoreCreator } from "@/ui/store/StoreCreator";
+import { IStoreCreator, StoreCreator } from "@/ui/store/StoreCreator";
 import { mockActions } from "@/ui/store/watchlist/__tests__/actions.mock";
 import { mockActions as mockTargetActions } from "@/ui/store/targets/__tests__/actions.mock";
 import { Modules } from "@/ui/store/RegisterModules";
 import { ActionTypes } from "@/ui/store/watchlist/actions";
-import { ITargetRepository } from "@/app/target/domain/Target.types";
-import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
+import "./intersectionObserverMock";
+import { IRootState } from "@/ui/store/Store.types";
+
+const modules = {
+  modules: {
+    watchlists: {
+      namespaced: true,
+      actions: mockActions(),
+      mutations: {},
+      state: {
+        watchlists: [],
+      },
+      getters: {},
+    },
+    targets: {
+      namespaced: true,
+      actions: mockTargetActions,
+      mutations: {},
+      state: {},
+      getters: {},
+    },
+    singleWatchlist: {
+      namespaced: true,
+      actions: {},
+      mutations: {},
+      state: {
+        url: "test",
+      },
+      getters: {},
+    },
+  },
+};
 
 describe("List Watchlist", () => {
   containerBuilder();
@@ -23,18 +53,20 @@ describe("List Watchlist", () => {
   localVue.use(Vuex);
   Vue.use(Vuetify);
   let vuetify: Vuetify;
-  const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
-  const store = storeCreator.create();
+  let store: Store<IRootState>;
 
   beforeEach(() => {
+    vuetify = new Vuetify();
     resetContainer();
     containerBuilder();
+    container.unbind("Modules");
+    container.bind<Modules>("Modules").toConstantValue(modules);
     mockSingleton<IWatchlistRepository>(
       cid.WatchlistService,
       MockWatchlistService
     );
-    mockSingleton<ITargetRepository>(cid.TargetService, MockTargetService);
-    vuetify = new Vuetify();
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
   });
 
   it("should mount and fetch watchlists", async () => {
@@ -61,11 +93,11 @@ describe("List Watchlist", () => {
     });
   });
   it("should call actions when selectedItem changes", async () => {
-    const modules = {
+    const localModules = {
       modules: {
         watchlists: {
           namespaced: true,
-          actions: mockActions,
+          actions: mockActions(),
           mutations: {},
           state: {
             watchlists: [],
@@ -91,9 +123,11 @@ describe("List Watchlist", () => {
       },
     };
     container.unbind("Modules");
-    container.bind<Modules>("Modules").toConstantValue(modules);
+    container.bind<Modules>("Modules").toConstantValue(localModules);
+    container.unbind(cid.StoreCreator);
+    container.addSingleton<IStoreCreator>(StoreCreator);
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
-    const store = storeCreator.create();
+    store = storeCreator.create();
     container.bind<TestActions>("ActionType").toConstantValue("ok");
     const wrapper = mount(MyWatchlists, {
       localVue,
@@ -105,7 +139,70 @@ describe("List Watchlist", () => {
       selectedItem: 2,
     });
     await flushPromises();
-    const mock = mockActions[ActionTypes.selectWatchlist] as jest.Mock;
+    const mock = localModules.modules.watchlists.actions[
+      ActionTypes.selectWatchlist
+    ] as jest.Mock;
     expect(mock.mock.calls[0][1]).toBe(2);
+  });
+  it("should fetch new page when scrolling and next page is available", async () => {
+    container.bind<TestActions>("ActionType").toConstantValue("ok");
+    const localModules = {
+      modules: {
+        watchlists: {
+          namespaced: true,
+          actions: mockActions(),
+          mutations: {},
+          state: {
+            watchlists: [
+              {
+                id: 1,
+                title: "watchlist 1",
+                owner: "owner 1",
+                targets: "test",
+                url: "test",
+                nTargets: "test",
+                lastMatch: "test",
+              },
+            ],
+            nextPage: "nextPage",
+          },
+          getters: {},
+        },
+        targets: {
+          namespaced: true,
+          actions: mockTargetActions,
+          mutations: {},
+          state: {},
+          getters: {},
+        },
+        singleWatchlist: {
+          namespaced: true,
+          actions: {},
+          mutations: {},
+          state: {
+            url: "test",
+          },
+          getters: {},
+        },
+      },
+    };
+    container.unbind("Modules");
+    container.bind<Modules>("Modules").toConstantValue(localModules);
+    container.unbind(cid.StoreCreator);
+    container.addSingleton<IStoreCreator>(StoreCreator);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
+    const wrapper = mount(MyWatchlists, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    expect(
+      localModules.modules.watchlists.actions[ActionTypes.getAllWatchlists]
+    ).toHaveBeenCalledWith(expect.anything(), {
+      url: "nextPage",
+      append: true,
+    });
   });
 });

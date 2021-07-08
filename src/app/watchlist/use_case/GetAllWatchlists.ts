@@ -8,8 +8,13 @@ import { IWatchlistRepository } from "../domain";
 
 export class GetAllWatchlists implements UseCaseInteractor {
   @inject() watchlistService!: IWatchlistRepository;
-  async execute(params: any, callbacks: Callbacks): Promise<void> {
-    const result = await this.watchlistService.getAllWatchlists();
+  async execute(
+    params: { url?: string; page?: number; page_size?: number },
+    callbacks: Callbacks
+  ): Promise<void> {
+    const result = params.url
+      ? await this.watchlistService.getWatchlistsFromUrl(params.url)
+      : await this.watchlistService.getAllWatchlists(params);
     result
       .map((watchlists) => {
         callbacks.respondWithSuccess(watchlists);
