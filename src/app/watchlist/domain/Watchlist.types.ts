@@ -13,15 +13,26 @@ export interface IWatchlistData {
   targets: string | null; // url to targets
 }
 
+export interface IWatchlistList {
+  watchlists: IWatchlistData[];
+  next: string;
+  prev: string;
+}
+
 export interface IWatchlistRepository {
-  getAllWatchlists(): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
+  getAllWatchlists(
+    params?: any
+  ): Promise<Result<IWatchlistList, ParseError | HttpError>>;
+  getWatchlistsFromUrl(
+    url: string
+  ): Promise<Result<IWatchlistList, ParseError | HttpError>>;
   getOneWatchlist(
     url: string
   ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
   createWatchlist(
     params: CreateWatchlistRequestModel
-  ): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
+  ): Promise<Result<IWatchlistList, ParseError | HttpError>>;
   deleteWatchlist(
     url: string
-  ): Promise<Result<IWatchlistData[], ParseError | HttpError>>;
+  ): Promise<Result<IWatchlistList, ParseError | HttpError>>;
 }

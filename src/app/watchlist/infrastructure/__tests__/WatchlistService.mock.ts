@@ -2,7 +2,11 @@ import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, TestActions } from "@/shared/http";
 import { inject } from "inversify-props";
 import { err, ok, Result } from "neverthrow";
-import { IWatchlistData, IWatchlistRepository } from "../../domain";
+import {
+  IWatchlistData,
+  IWatchlistList,
+  IWatchlistRepository,
+} from "../../domain";
 import { CreateWatchlistRequestModel } from "../WatchlistService.types";
 
 const watchlistArray: IWatchlistData[] = [
@@ -41,12 +45,37 @@ export class MockWatchlistService implements IWatchlistRepository {
   constructor(@inject("ActionType") actionType: TestActions) {
     this.actionType = actionType;
   }
-  getAllWatchlists(): Promise<
-    Result<IWatchlistData[], ParseError | HttpError>
-  > {
+  getWatchlistsFromUrl(
+    url: string
+  ): Promise<Result<IWatchlistList, ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
-        resolve(ok(watchlistArray));
+        resolve(ok({ watchlists: watchlistArray, next: "test", prev: "test" }));
+      });
+    } else if (
+      this.actionType === "error" ||
+      this.actionType === "serverError"
+    ) {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(500, "Server Error")));
+      });
+    } else if (this.actionType === "clientError") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(400, "Client Error")));
+      });
+    } else if (this.actionType === "timeout") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(502, "Gateway Timeout")));
+      });
+    }
+    return new Promise((resolve) => {
+      resolve(err(new ParseError("Parse Error")));
+    });
+  }
+  getAllWatchlists(): Promise<Result<IWatchlistList, ParseError | HttpError>> {
+    if (this.actionType === "ok") {
+      return new Promise((resolve) => {
+        resolve(ok({ watchlists: watchlistArray, next: "test", prev: "test" }));
       });
     } else if (
       this.actionType === "error" ||
@@ -98,7 +127,7 @@ export class MockWatchlistService implements IWatchlistRepository {
   createWatchlist(
     params: CreateWatchlistRequestModel
     //targets: TargetRequestModel[] | null
-  ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
+  ): Promise<Result<IWatchlistList, ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
         const copy = [...watchlistArray];
@@ -111,7 +140,7 @@ export class MockWatchlistService implements IWatchlistRepository {
           nTargets: "test",
           lastMatch: "test",
         });
-        resolve(ok(copy));
+        resolve(ok({ watchlists: copy, next: "test", prev: "test" }));
       });
     } else if (
       this.actionType === "error" ||
@@ -136,10 +165,12 @@ export class MockWatchlistService implements IWatchlistRepository {
 
   deleteWatchlist(
     url: string
-  ): Promise<Result<IWatchlistData[], ParseError | HttpError>> {
+  ): Promise<Result<IWatchlistList, ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
-        resolve(ok([watchlistArray[0]]));
+        resolve(
+          ok({ watchlists: [watchlistArray[0]], next: "test", prev: "test" })
+        );
       });
     } else if (
       this.actionType === "error" ||

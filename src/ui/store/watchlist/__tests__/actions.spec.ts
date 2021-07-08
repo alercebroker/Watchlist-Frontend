@@ -46,6 +46,10 @@ beforeEach(() => {
   mockMutations[MutationTypes.SET_WATCHLISTS] = jest.fn();
   mockMutations[MutationTypes.SET_ERROR] = jest.fn();
   mockMutations[MutationTypes.SET_LOADING] = jest.fn();
+  mockMutations[MutationTypes.APPEND_WATCHLISTS] = jest.fn();
+  mockMutations[MutationTypes.SET_NEXT] = jest.fn();
+  mockMutations[MutationTypes.SET_PAGE] = jest.fn();
+  mockMutations[MutationTypes.SET_PREV] = jest.fn();
   container.bind<Modules>("Modules").toConstantValue(modules);
 });
 
@@ -54,7 +58,7 @@ describe("getAllWatchlists", () => {
     container.bind<TestActions>("ActionType").toConstantValue("ok");
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
-    await store.dispatch("watchlists/getAllWatchlists");
+    await store.dispatch("watchlists/getAllWatchlists", {});
     const expected = [
       {
         id: 1,
@@ -97,7 +101,7 @@ describe("getAllWatchlists", () => {
     container.bind<TestActions>("ActionType").toConstantValue("clientError");
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
-    await store.dispatch("watchlists/getAllWatchlists");
+    await store.dispatch("watchlists/getAllWatchlists", {});
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
       []
@@ -120,7 +124,7 @@ describe("getAllWatchlists", () => {
     container.bind<TestActions>("ActionType").toConstantValue("serverError");
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
-    await store.dispatch("watchlists/getAllWatchlists");
+    await store.dispatch("watchlists/getAllWatchlists", {});
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
       []
@@ -143,7 +147,7 @@ describe("getAllWatchlists", () => {
     container.bind<TestActions>("ActionType").toConstantValue("parseError");
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
-    await store.dispatch("watchlists/getAllWatchlists");
+    await store.dispatch("watchlists/getAllWatchlists", {});
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       {},
       []
@@ -338,7 +342,7 @@ describe("deleteWatchlist", () => {
     container.bind<TestActions>("ActionType").toConstantValue("ok");
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
-    await store.dispatch("watchlists/deleteWatchlist");
+    await store.dispatch("watchlists/deleteWatchlist", "test");
     expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
       expect.anything(),
       [

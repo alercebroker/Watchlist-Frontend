@@ -47,7 +47,6 @@ export default Vue.extend({
     }),
     ...targetsHelper.mapState({
       targets: function (state: TargetsState): ITargetData[] {
-        console.log("STATE", state.targets);
         return state.targets;
       },
     }),
