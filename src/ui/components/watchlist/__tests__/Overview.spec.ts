@@ -1,7 +1,7 @@
 import { containerBuilder } from "@/ui/plugins/inversify";
 import { ActionTypes } from "@/ui/store/matches/actions";
 import { MutationTypes } from "@/ui/store/matches/mutations";
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, mount, shallowMount } from "@vue/test-utils";
 import Vuex, { Store } from "vuex";
 import Vuetify from "vuetify";
 import Vue from "vue";
@@ -10,8 +10,12 @@ import { cid, container, resetContainer } from "inversify-props";
 import { Modules } from "@/ui/store/RegisterModules";
 import { IStoreCreator, StoreCreator } from "@/ui/store/StoreCreator";
 import Overview from "../Overview.vue";
+import TargetScrollingList from "../TargetScrollingList.vue";
+import "./intersectionObserverMock";
+import flushPromises from "flush-promises";
+import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 
-const modules = () => ({
+const modules = (): Modules => ({
   modules: {
     singleWatchlist: {
       namespaced: true,
@@ -34,6 +38,9 @@ const modules = () => ({
             url: "url",
           },
         ],
+        loading: false,
+        nextPage: null,
+        prevPage: null,
       },
       getters: {},
     },
@@ -76,45 +83,50 @@ describe("Overview", () => {
     store = storeCreator.create();
   });
   describe("Targets", () => {
-    it("should display targets if available", () => {
-      const wrapper = mount(Overview, {
+    it("should get matches on target click", async () => {
+      const wrapper = shallowMount(Overview, {
         localVue,
         store,
         vuetify,
       });
-      expect(wrapper.find("#t1").exists()).toBeTruthy();
-    });
-    it("should display nothing if no targets available", () => {
-      const emptyModules = modules();
-      emptyModules.modules.targets.state.targets = [];
-      container.unbind("Modules");
-      container.bind<Modules>("Modules").toConstantValue(emptyModules);
-      container.unbind(cid.StoreCreator);
-      container.addSingleton<IStoreCreator>(StoreCreator);
-      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
-      store = storeCreator.create();
-      const wrapper = mount(Overview, {
-        localVue,
-        store,
-        vuetify,
-      });
-      expect(wrapper.find("#targetFoot").find("p").text()).toBe(
-        "No targets for this watchlist"
+      const targetList = wrapper.findComponent(TargetScrollingList);
+      targetList.vm.$emit(
+        "targetSelected",
+        defaultModules.modules.targets.state.targets[0]
       );
-    });
-    it("should dispatch get matches action and select target", () => {
-      const overview = mount(Overview, {
-        localVue,
-        store,
-        vuetify,
-      });
-      overview.find("#t1").trigger("click");
+      await flushPromises();
       expect(
         defaultModules.modules.matches.actions[ActionTypes.getAllMatches]
       ).toHaveBeenCalledWith(expect.anything(), {
         url: "url",
         watchlistId: 1,
         targetId: 1,
+      });
+    });
+    it("should get targets on scroll", async () => {
+      const localModules = modules();
+      localModules.modules.targets.state.nextPage = "next";
+      localModules.modules.targets.actions[
+        TargetActionTypes.getTargets
+      ] = jest.fn();
+      container.unbind("Modules");
+      container.bind<Modules>("Modules").toConstantValue(localModules);
+      container.unbind(cid.StoreCreator);
+      container.addSingleton<IStoreCreator>(StoreCreator);
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      store = storeCreator.create();
+      const wrapper = shallowMount(Overview, {
+        localVue,
+        store,
+        vuetify,
+      });
+      const targetList = wrapper.findComponent(TargetScrollingList);
+      targetList.vm.$emit("nextPage");
+      await flushPromises();
+      expect(
+        localModules.modules.targets.actions[TargetActionTypes.getTargets]
+      ).toHaveBeenCalledWith(expect.anything(), {
+        params: { url: "next", append: true },
       });
     });
   });

@@ -5,7 +5,10 @@
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item v-for="item in items" :key="item.title">
-        <component v-bind:is="item.content"></component>
+        <component
+          v-if="items[tab].title === item.title"
+          v-bind:is="item.content"
+        ></component>
       </v-tab-item>
     </v-tabs-items>
   </v-card>
@@ -19,7 +22,7 @@ import Overview from "./Overview.vue";
 export default Vue.extend({
   components: { Filters, Settings, Overview },
   data: () => ({
-    tab: null,
+    tab: 0,
     items: [
       {
         title: "Filters",

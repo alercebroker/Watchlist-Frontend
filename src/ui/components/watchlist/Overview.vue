@@ -1,45 +1,12 @@
 <template>
   <v-row>
     <v-col>
-      <v-card id="targetsCard">
-        <v-card-title>Targets</v-card-title>
-        <v-card-text>
-          <v-simple-table height="800">
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">Name</th>
-                  <th class="text-left">Ra</th>
-                  <th class="text-left">Dec</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  :id="'t' + item.id"
-                  v-for="item in targets"
-                  :key="item.id"
-                  @click="onTargetClick(item)"
-                  :class="{
-                    rowSelected:
-                      item.id === (selectedTarget ? selectedTarget.id : -1),
-                  }"
-                >
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.ra }}</td>
-                  <td>{{ item.dec }}</td>
-                </tr>
-              </tbody>
-              <tfoot id="targetFoot">
-                <tr>
-                  <td colspan="3">
-                    <p v-if="!targets.length">No targets for this watchlist</p>
-                  </td>
-                </tr>
-              </tfoot>
-            </template>
-          </v-simple-table>
-        </v-card-text>
-      </v-card>
+      <target-scrolling-list
+        :targets="targets"
+        @targetSelected="onTargetClick"
+        @nextPage="onTargetsNextPage"
+        @loading="loadingTargets"
+      />
     </v-col>
     <v-col>
       <v-card>
@@ -115,11 +82,14 @@ import { ITargetData } from "@/app/target/domain/Target.types";
 import { MatchesState } from "@/ui/store/matches/state";
 import { IMatchData } from "@/app/match/domain/Match.types";
 import { MutationTypes } from "@/ui/store/matches/mutations";
+import TargetScrollingList from "./TargetScrollingList.vue";
+import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 
 const targetsHelper = createNamespacedHelpers("targets");
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const matchesHelper = createNamespacedHelpers("matches");
 export default Vue.extend({
+  components: { TargetScrollingList },
   data: (): {
     selectedMatch: IMatchData | null;
     selectedTarget: ITargetData | null;
@@ -137,6 +107,12 @@ export default Vue.extend({
       targets: function (state: TargetsState): ITargetData[] {
         return state.targets;
       },
+      targetsNextPage: function (state: TargetsState): string | null {
+        return state.nextPage;
+      },
+      loadingTargets: function (state: TargetsState): boolean {
+        return state.loading;
+      },
     }),
     ...matchesHelper.mapState({
       matches: function (state: MatchesState): IMatchData[] {
@@ -153,6 +129,7 @@ export default Vue.extend({
   methods: {
     ...matchesHelper.mapActions(["getAllMatches"]),
     ...matchesHelper.mapMutations([MutationTypes.SET_MATCHES]),
+    ...targetsHelper.mapActions([TargetActionTypes.getTargets]),
     onTargetClick(item: ITargetData) {
       this.selectedTarget = item;
       this.getAllMatches({
@@ -163,6 +140,14 @@ export default Vue.extend({
     },
     onMatchClick(item: IMatchData) {
       this.selectedMatch = item;
+    },
+    onTargetsNextPage() {
+      console.log("next page");
+      if (this.targetsNextPage) {
+        this.getTargets({
+          params: { url: this.targetsNextPage, append: true },
+        });
+      }
     },
   },
   watch: {
@@ -178,8 +163,4 @@ export default Vue.extend({
 });
 </script>
 
-<style>
-.rowSelected {
-  background-color: grey;
-}
-</style>
+<style></style>

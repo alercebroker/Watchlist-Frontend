@@ -1,5 +1,5 @@
 export const mockTargetsByWatchlist = {
-  count: 1,
+  count: 2,
   next: "next",
   previous: "prev",
   results: [
