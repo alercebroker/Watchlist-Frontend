@@ -1,10 +1,20 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, IHttpService } from "@/shared/http";
 import { inject } from "inversify-props";
-import { combine, Result } from "neverthrow";
-import { ITargetData, ITargetRepository } from "../domain/Target.types";
+import { combine, err, ok, Result } from "neverthrow";
+import {
+  ITargetData,
+  ITargetList,
+  ITargetRepository,
+} from "../domain/Target.types";
 import { TargetParser } from "./TargetParser";
 import { WatchlistTargetsApiResponse } from "./TargetService.types";
+
+type PaginationParams = {
+  ordering?: string;
+  page?: number;
+  page_size?: number;
+};
 
 export class TargetService implements ITargetRepository {
   httpService: IHttpService;
@@ -14,41 +24,81 @@ export class TargetService implements ITargetRepository {
     this.httpService.initService(process.env.VUE_APP_USER_API);
     this.parser = new TargetParser();
   }
-  getAllTargets(...args: [watchlistId: number] | [targetsUrl: string]): any {
-    if (typeof args[0] === "number") {
-      return this.getTargetsFromWatchlistId(args[0]);
-    } else if (typeof args[0] === "string") {
-      return this.getTargetsFromUrl(args[0]);
+  getAllTargets(
+    params: { watchlistId?: number; url?: string },
+    paginationParams?: PaginationParams
+  ): Promise<Result<ITargetList, ParseError | HttpError>> {
+    if (params.watchlistId) {
+      return this.getTargetsFromWatchlistId(
+        params.watchlistId,
+        paginationParams
+      );
+    } else {
+      return this.getTargetsFromUrl(params.url || "", paginationParams);
     }
   }
   private async getTargetsFromWatchlistId(
-    id: number
-  ): Promise<Result<ITargetData[], ParseError | HttpError>> {
-    const parseTo = (response: WatchlistTargetsApiResponse) => {
+    id: number,
+    params?: PaginationParams
+  ): Promise<Result<ITargetList, ParseError | HttpError>> {
+    let next: string | null;
+    let prev: string | null;
+    let count: number;
+    const parseTo = (
+      response: WatchlistTargetsApiResponse
+    ): Result<ITargetList, ParseError> => {
       const targets = response.results.map((x) => {
         return this.parser.toDomain(x);
       });
-      return combine(targets);
+      count = response.count;
+      next = response.next;
+      prev = response.previous;
+      const combined = combine(targets);
+      if (combined.isOk()) {
+        return ok({
+          targets: combined.value,
+          next,
+          prev,
+          count,
+        } as ITargetList);
+      } else {
+        return err(combined.error);
+      }
     };
-    return await this.httpService.get<
-      WatchlistTargetsApiResponse,
-      ITargetData[]
-    >({ url: "/watchlists/" + id + "/targets" }, { parseTo });
+    return await this.httpService.get<WatchlistTargetsApiResponse, ITargetList>(
+      { url: "/watchlists/" + id + "/targets", params },
+      { parseTo }
+    );
   }
 
   private async getTargetsFromUrl(
-    url: string
-  ): Promise<Result<ITargetData[], ParseError | HttpError>> {
-    const parseTo = (response: WatchlistTargetsApiResponse) => {
-      // count
-      // next
-      // previous
-
+    url: string,
+    params?: PaginationParams
+  ): Promise<Result<ITargetList, ParseError | HttpError>> {
+    let next: string | null;
+    let prev: string | null;
+    let count: number;
+    const parseTo = (
+      response: WatchlistTargetsApiResponse
+    ): Result<ITargetList, ParseError> => {
       const targets = response.results.map((x) => {
         return this.parser.toDomain(x);
       });
-      return combine(targets);
+      count = response.count;
+      next = response.next;
+      prev = response.previous;
+      const combined = combine(targets);
+      if (combined.isOk()) {
+        return ok({
+          targets: combined.value,
+          next,
+          prev,
+          count,
+        } as ITargetList);
+      } else {
+        return err(combined.error);
+      }
     };
-    return await this.httpService.get({ url }, { parseTo });
+    return await this.httpService.get({ url, config: { params } }, { parseTo });
   }
 }

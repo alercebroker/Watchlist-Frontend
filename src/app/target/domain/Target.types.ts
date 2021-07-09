@@ -13,11 +13,16 @@ export interface ITargetData {
   lastMatch: string;
 }
 
+export interface ITargetList {
+  targets: ITargetData[];
+  next: string;
+  prev: string;
+  count: number;
+}
+
 export interface ITargetRepository {
   getAllTargets(
-    watchlistId: number
-  ): Promise<Result<ITargetData[], ParseError | HttpError>>;
-  getAllTargets(
-    targetsUrl: string
-  ): Promise<Result<ITargetData[], ParseError | HttpError>>;
+    params: { watchlistId?: number; url?: string },
+    paginationParams?: { ordering?: string; page?: number; page_size?: number }
+  ): Promise<Result<ITargetList, ParseError | HttpError>>;
 }

@@ -6,6 +6,8 @@ export enum MutationTypes {
   SET_LOADING = "SET_LOADING",
   SET_ERROR = "SET_ERROR",
   SET_TARGETS = "SET_TARGETS",
+  SET_PAGINATION_DATA = "SET_PAGINATION_DATA",
+  APPEND_TARGETS = "APPEND_TARGETS",
 }
 
 export const mutations: MutationTree<TargetsState> = {
@@ -17,5 +19,13 @@ export const mutations: MutationTree<TargetsState> = {
   },
   [MutationTypes.SET_LOADING](state, loading: boolean) {
     state.loading = loading;
+  },
+  [MutationTypes.SET_PAGINATION_DATA](state, data) {
+    state.count = data.count;
+    state.nextPage = data.nextPage;
+    state.prevPage = data.prevPage;
+  },
+  [MutationTypes.APPEND_TARGETS](state, targets: ITargetData[]) {
+    state.targets = state.targets.concat(targets);
   },
 };

@@ -2,7 +2,11 @@ import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, TestActions } from "@/shared/http";
 import { inject } from "inversify-props";
 import { err, ok, Result } from "neverthrow";
-import { ITargetData, ITargetRepository } from "../../domain/Target.types";
+import {
+  ITargetData,
+  ITargetList,
+  ITargetRepository,
+} from "../../domain/Target.types";
 
 const targetArray: ITargetData[] = [
   {
@@ -33,11 +37,14 @@ export class MockTargetService implements ITargetRepository {
     this.actionType = actionType;
   }
   getAllTargets(
-    params: any
-  ): Promise<Result<ITargetData[], ParseError | HttpError>> {
+    params: any,
+    paginationParams: any
+  ): Promise<Result<ITargetList, ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
-        resolve(ok(targetArray));
+        resolve(
+          ok({ targets: targetArray, next: "test", prev: "test", count: 2 })
+        );
       });
     } else if (
       this.actionType === "error" ||
