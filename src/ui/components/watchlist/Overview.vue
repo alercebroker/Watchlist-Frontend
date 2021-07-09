@@ -3,61 +3,18 @@
     <v-col>
       <target-scrolling-list
         :targets="targets"
+        :loading="loadingTargets"
         @targetSelected="onTargetClick"
         @nextPage="onTargetsNextPage"
-        @loading="loadingTargets"
       />
     </v-col>
     <v-col>
-      <v-card>
-        <v-card-title>Matches</v-card-title>
-        <v-card-text>
-          <v-simple-table height="800">
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">Object</th>
-                  <th class="text-left">Date</th>
-                  <th class="text-left">Candid</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  :id="'m' + item.candid"
-                  v-for="item in matches"
-                  :key="item.candid"
-                  @click="onMatchClick(item)"
-                  :class="{
-                    rowSelected: item === selectedMatch,
-                  }"
-                >
-                  <td>{{ item.object_id }}</td>
-                  <td>{{ item.date }}</td>
-                  <td>{{ item.candid }}</td>
-                </tr>
-              </tbody>
-              <tfoot id="matchFoot">
-                <tr>
-                  <td colspan="3">
-                    <p
-                      v-if="
-                        !matches.length && selectedTarget && !loadingMatches
-                      "
-                    >
-                      No matches for this target
-                    </p>
-                    <v-progress-linear
-                      indeterminate
-                      color="white"
-                      v-if="loadingMatches"
-                    ></v-progress-linear>
-                  </td>
-                </tr>
-              </tfoot>
-            </template>
-          </v-simple-table>
-        </v-card-text>
-      </v-card>
+      <matches-scroling-list
+        :matches="matches"
+        :loading="loadingMatches"
+        @matchSelected="onMatchClick"
+        @nextPage="onMatchesNextPage"
+      />
     </v-col>
     <v-col>
       <v-card height="100%">
@@ -84,12 +41,13 @@ import { IMatchData } from "@/app/match/domain/Match.types";
 import { MutationTypes } from "@/ui/store/matches/mutations";
 import TargetScrollingList from "./TargetScrollingList.vue";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
+import MatchesScrolingList from "./MatchesScrolingList.vue";
 
 const targetsHelper = createNamespacedHelpers("targets");
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const matchesHelper = createNamespacedHelpers("matches");
 export default Vue.extend({
-  components: { TargetScrollingList },
+  components: { TargetScrollingList, MatchesScrolingList },
   data: (): {
     selectedMatch: IMatchData | null;
     selectedTarget: ITargetData | null;
@@ -121,6 +79,10 @@ export default Vue.extend({
       loadingMatches: function (state: MatchesState): boolean {
         return state.loading;
       },
+      matchesNextPage: function (state: MatchesState): boolean {
+        // TODO return state next page
+        return false;
+      },
     }),
     currentOid: function (): string {
       return this.selectedMatch ? this.selectedMatch.object_id : "";
@@ -142,10 +104,16 @@ export default Vue.extend({
       this.selectedMatch = item;
     },
     onTargetsNextPage() {
-      console.log("next page");
       if (this.targetsNextPage) {
         this.getTargets({
           params: { url: this.targetsNextPage, append: true },
+        });
+      }
+    },
+    onMatchesNextPage() {
+      if (this.matchesNextPage) {
+        this.getAllMatches({
+          params: { url: this.matchesNextPage, append: true },
         });
       }
     },
