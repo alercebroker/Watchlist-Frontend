@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { IStoreCreator, StoreCreator } from "@/ui/store/StoreCreator";
 import { createLocalVue, mount } from "@vue/test-utils";
 import { cid, container, resetContainer } from "inversify-props";

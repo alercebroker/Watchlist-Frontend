@@ -1,96 +1,21 @@
 <template>
   <v-row>
     <v-col>
-      <v-card id="targetsCard">
-        <v-card-title>Targets</v-card-title>
-        <v-card-text>
-          <v-simple-table height="800">
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">Name</th>
-                  <th class="text-left">Ra</th>
-                  <th class="text-left">Dec</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  :id="'t' + item.id"
-                  v-for="item in targets"
-                  :key="item.id"
-                  @click="onTargetClick(item)"
-                  :class="{
-                    rowSelected:
-                      item.id === (selectedTarget ? selectedTarget.id : -1),
-                  }"
-                >
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.ra }}</td>
-                  <td>{{ item.dec }}</td>
-                </tr>
-              </tbody>
-              <tfoot id="targetFoot">
-                <tr>
-                  <td colspan="3">
-                    <p v-if="!targets.length">No targets for this watchlist</p>
-                  </td>
-                </tr>
-              </tfoot>
-            </template>
-          </v-simple-table>
-        </v-card-text>
-      </v-card>
+      <target-scrolling-list
+        :targets="targets"
+        :loading="loadingTargets"
+        @targetSelected="onTargetClick"
+        @nextPage="onTargetsNextPage"
+      />
     </v-col>
     <v-col>
-      <v-card>
-        <v-card-title>Matches</v-card-title>
-        <v-card-text>
-          <v-simple-table height="800">
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">Object</th>
-                  <th class="text-left">Date</th>
-                  <th class="text-left">Candid</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  :id="'m' + item.candid"
-                  v-for="item in matches"
-                  :key="item.candid"
-                  @click="onMatchClick(item)"
-                  :class="{
-                    rowSelected: item === selectedMatch,
-                  }"
-                >
-                  <td>{{ item.object_id }}</td>
-                  <td>{{ item.date }}</td>
-                  <td>{{ item.candid }}</td>
-                </tr>
-              </tbody>
-              <tfoot id="matchFoot">
-                <tr>
-                  <td colspan="3">
-                    <p
-                      v-if="
-                        !matches.length && selectedTarget && !loadingMatches
-                      "
-                    >
-                      No matches for this target
-                    </p>
-                    <v-progress-linear
-                      indeterminate
-                      color="white"
-                      v-if="loadingMatches"
-                    ></v-progress-linear>
-                  </td>
-                </tr>
-              </tfoot>
-            </template>
-          </v-simple-table>
-        </v-card-text>
-      </v-card>
+      <matches-scroling-list
+        :matches="matches"
+        :loading="loadingMatches"
+        :selectedTarget="selectedTarget"
+        @matchSelected="onMatchClick"
+        @nextPage="onMatchesNextPage"
+      />
     </v-col>
     <v-col>
       <v-card height="100%">
@@ -115,11 +40,15 @@ import { ITargetData } from "@/app/target/domain/Target.types";
 import { MatchesState } from "@/ui/store/matches/state";
 import { IMatchData } from "@/app/match/domain/Match.types";
 import { MutationTypes } from "@/ui/store/matches/mutations";
+import TargetScrollingList from "./TargetScrollingList.vue";
+import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
+import MatchesScrolingList from "./MatchesScrolingList.vue";
 
 const targetsHelper = createNamespacedHelpers("targets");
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const matchesHelper = createNamespacedHelpers("matches");
 export default Vue.extend({
+  components: { TargetScrollingList, MatchesScrolingList },
   data: (): {
     selectedMatch: IMatchData | null;
     selectedTarget: ITargetData | null;
@@ -137,6 +66,12 @@ export default Vue.extend({
       targets: function (state: TargetsState): ITargetData[] {
         return state.targets;
       },
+      targetsNextPage: function (state: TargetsState): string | null {
+        return state.nextPage;
+      },
+      loadingTargets: function (state: TargetsState): boolean {
+        return state.loading;
+      },
     }),
     ...matchesHelper.mapState({
       matches: function (state: MatchesState): IMatchData[] {
@@ -144,6 +79,10 @@ export default Vue.extend({
       },
       loadingMatches: function (state: MatchesState): boolean {
         return state.loading;
+      },
+      matchesNextPage: function (state: MatchesState): boolean {
+        // TODO return state next page
+        return false;
       },
     }),
     currentOid: function (): string {
@@ -153,6 +92,7 @@ export default Vue.extend({
   methods: {
     ...matchesHelper.mapActions(["getAllMatches"]),
     ...matchesHelper.mapMutations([MutationTypes.SET_MATCHES]),
+    ...targetsHelper.mapActions([TargetActionTypes.getTargets]),
     onTargetClick(item: ITargetData) {
       this.selectedTarget = item;
       this.getAllMatches({
@@ -163,6 +103,20 @@ export default Vue.extend({
     },
     onMatchClick(item: IMatchData) {
       this.selectedMatch = item;
+    },
+    onTargetsNextPage() {
+      if (this.targetsNextPage) {
+        this.getTargets({
+          params: { url: this.targetsNextPage, append: true },
+        });
+      }
+    },
+    onMatchesNextPage() {
+      if (this.matchesNextPage) {
+        this.getAllMatches({
+          params: { url: this.matchesNextPage, append: true },
+        });
+      }
     },
   },
   watch: {
@@ -178,8 +132,4 @@ export default Vue.extend({
 });
 </script>
 
-<style>
-.rowSelected {
-  background-color: grey;
-}
-</style>
+<style></style>

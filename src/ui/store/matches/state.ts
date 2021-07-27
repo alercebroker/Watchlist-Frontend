@@ -7,7 +7,7 @@ export type MatchesState = {
 };
 
 export const state = () => ({
-    error: null,
-    loading: false,
-    matches: []
+  error: null,
+  loading: false,
+  matches: [],
 });

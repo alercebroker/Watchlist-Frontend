@@ -180,9 +180,16 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
     const interactor = container.get<UseCaseInteractor>(cid.SelectWatchlist);
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlist: IWatchlistData) => {
-        dispatch("targets/" + TargetActionTypes.getTargets, watchlist.targets, {
-          root: true,
-        });
+        dispatch(
+          "targets/" + TargetActionTypes.getTargets,
+          {
+            params: { url: watchlist.targets },
+            paginationParams: { page_size: 10 },
+          },
+          {
+            root: true,
+          }
+        );
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithClientError: (error: HttpError) => {
@@ -237,6 +244,11 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       commit(
         "singleWatchlist/" + SingleWatchlistMutationType.SET_URL,
         watchlist.url,
+        { root: true }
+      );
+      commit(
+        "singleWatchlist/" + SingleWatchlistMutationType.SET_TARGETS,
+        watchlist.targets,
         { root: true }
       );
       commit("singleWatchlist/" + SingleWatchlistMutationType.SET_ERROR, null, {

@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { IUserRepository } from "@/app/user/domain/User.types";
 import { MockAuthService } from "@/app/user/infrastructure/__tests__/AuthService.mock";
 import { IStoreCreator } from "@/ui/store/StoreCreator";

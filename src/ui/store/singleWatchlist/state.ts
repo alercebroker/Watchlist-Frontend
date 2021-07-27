@@ -6,6 +6,7 @@ export const state = () => ({
   last_match: "",
   title: "",
   error: null as string | null,
+  targets: "",
 });
 
 export type SingleWatchlistState = ReturnType<typeof state>;

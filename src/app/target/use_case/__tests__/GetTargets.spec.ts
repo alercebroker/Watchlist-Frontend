@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { TestActions } from "@/shared/http";
 import { cid, container, mockTransient, resetContainer } from "inversify-props";
 import {

@@ -9,7 +9,10 @@ import { ITargetRepository } from "@/app/target/domain/Target.types";
 export class GetTargets implements UseCaseInteractor {
   @inject() targetService!: ITargetRepository;
   async execute(params: any, callbacks: Callbacks): Promise<void> {
-    const result = await this.targetService.getAllTargets(params);
+    const result = await this.targetService.getAllTargets(
+      params.params,
+      params.paginationParams
+    );
     result
       .map((targets) => {
         callbacks.respondWithSuccess(targets);

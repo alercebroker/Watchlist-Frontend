@@ -4,7 +4,7 @@ import {
   Callbacks,
   UseCaseInteractor,
 } from "@/shared/usecase/UseCaseInteractor.types";
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { IUserRepository } from "../../domain/User.types";
 import { MockAuthService } from "../../infrastructure/__tests__/AuthService.mock";

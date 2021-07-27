@@ -34,4 +34,7 @@ export const mutations: MutationTree<SingleWatchlistState> = {
   [MutationTypes.SET_LOADING](state, loading: boolean) {
     state.loading = loading;
   },
+  [MutationTypes.SET_TARGETS](state, targets: string) {
+    state.targets = targets;
+  },
 };

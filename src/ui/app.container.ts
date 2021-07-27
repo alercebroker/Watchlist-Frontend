@@ -1,17 +1,10 @@
 import "reflect-metadata";
 import { container } from "inversify-props";
-import {
-  AxiosCreator,
-  HttpService,
-  IAxiosCreator,
-  IHttpService,
-} from "@/shared/http";
+import { HttpService } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
 import { UseCaseInteractor } from "@/shared/usecase/UseCaseInteractor.types";
-import { IStoreCreator, StoreCreator } from "../store/StoreCreator";
-import { Modules, modules } from "../store/RegisterModules";
 import { IUserRepository } from "@/app/user/domain/User.types";
 import { AuthService } from "@/app/user/infrastructure/AuthService";
 import { RegisterUser } from "@/app/user/use_case/RegisterUser";
@@ -26,23 +19,25 @@ import { Logout } from "@/app/user/use_case/Logout";
 import { IMatchRepository } from "@/app/match/domain/Match.types";
 import { MatchService } from "@/app/match/infrastructure/MatchService";
 import { GetMatches } from "@/app/match/use_case/GetMatches";
+import { UsersApiService } from "@/shared/http/UsersApiService";
+import { modules, Modules } from "./store/RegisterModules";
+import { IStoreCreator, StoreCreator } from "./store/StoreCreator";
 
 export function containerBuilder(): void {
-  container.addTransient<IAxiosCreator>(AxiosCreator);
-  container.addTransient<IHttpService>(HttpService);
+  container.addSingleton<HttpService>(UsersApiService);
+  container.addSingleton<IUserRepository>(AuthService);
+  container.addSingleton<UseCaseInteractor>(RegisterUser);
+  container.addSingleton<UseCaseInteractor>(Login);
+  container.addSingleton<UseCaseInteractor>(Logout);
   container.addSingleton<IWatchlistRepository>(WatchlistService);
-  container.addTransient<UseCaseInteractor>(GetAllWatchlists);
+  container.addSingleton<UseCaseInteractor>(GetAllWatchlists);
+  container.addSingleton<UseCaseInteractor>(CreateWatchlist);
+  container.addSingleton<ITargetRepository>(TargetService);
+  container.addSingleton<UseCaseInteractor>(GetTargets);
+  container.addSingleton<UseCaseInteractor>(SelectWatchlist);
+  container.addSingleton<UseCaseInteractor>(DeleteWatchlist);
+  container.addSingleton<IMatchRepository>(MatchService);
+  container.addSingleton<UseCaseInteractor>(GetMatches);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
-  container.addSingleton<IUserRepository>(AuthService);
-  container.addTransient<UseCaseInteractor>(RegisterUser);
-  container.addTransient<UseCaseInteractor>(Login);
-  container.addTransient<UseCaseInteractor>(Logout);
-  container.addTransient<UseCaseInteractor>(CreateWatchlist);
-  container.addSingleton<ITargetRepository>(TargetService);
-  container.addTransient<UseCaseInteractor>(GetTargets);
-  container.addTransient<UseCaseInteractor>(SelectWatchlist);
-  container.addTransient<UseCaseInteractor>(DeleteWatchlist);
-  container.addSingleton<IMatchRepository>(MatchService);
-  container.addTransient<UseCaseInteractor>(GetMatches);
 }
