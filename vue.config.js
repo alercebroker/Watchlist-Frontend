@@ -20,7 +20,7 @@ module.exports = {
       awsProfile: "default",
       overrideEndpoint: false,
       region: "us-east-1",
-      bucket: "watchlist-frontend-staging",
+      bucket: process.env.VUE_APP_AWS_BUCKET_NAME,
       createBucket: false,
       staticHosting: true,
       staticIndexPage: "index.html",
