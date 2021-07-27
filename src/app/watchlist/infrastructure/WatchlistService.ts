@@ -17,17 +17,17 @@ import {
   WatchlistApiParser,
   WatchlistCreateApiParser,
 } from "./WatchlistParser";
+import { UsersApiService } from "@/shared/http/UsersApiService";
 
 export class WatchlistService implements IWatchlistRepository {
   httpService: IHttpService;
   parser: WatchlistApiParser;
   parserCreate: WatchlistCreateApiParser;
 
-  constructor(@inject() httpService: IHttpService) {
+  constructor(@inject() usersApiService: UsersApiService) {
     this.parser = new WatchlistApiParser();
     this.parserCreate = new WatchlistCreateApiParser();
-    this.httpService = httpService;
-    this.httpService.initService(process.env.VUE_APP_USER_API);
+    this.httpService = usersApiService;
   }
 
   async getAllWatchlists(params?: {

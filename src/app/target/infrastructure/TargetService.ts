@@ -1,5 +1,6 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, IHttpService } from "@/shared/http";
+import { UsersApiService } from "@/shared/http/UsersApiService";
 import { inject } from "inversify-props";
 import { combine, err, ok, Result } from "neverthrow";
 import {
@@ -19,9 +20,8 @@ type PaginationParams = {
 export class TargetService implements ITargetRepository {
   httpService: IHttpService;
   parser: TargetParser;
-  constructor(@inject() httpService: IHttpService) {
-    this.httpService = httpService;
-    this.httpService.initService(process.env.VUE_APP_USER_API);
+  constructor(@inject() usersApiService: UsersApiService) {
+    this.httpService = usersApiService;
     this.parser = new TargetParser();
   }
   getAllTargets(

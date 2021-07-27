@@ -7,7 +7,7 @@ import axios, {
 import { err, ok, Result } from "neverthrow";
 import { ParseError } from "../error/ParseError";
 import { HttpError } from "./HttpError";
-import { inject } from "inversify-props";
+import { unmanaged } from "inversify";
 
 type IHttpRequest = {
   url: string;
@@ -29,7 +29,6 @@ export interface IHttpService {
     request: IHttpRequest,
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
-  initService(baseUrl: string): void;
   post<T, M>(
     request: IHttpRequest,
     parser: Parser<T, M>
@@ -37,30 +36,21 @@ export interface IHttpService {
   delete(request: IHttpRequest): Promise<Result<number, HttpError>>;
 }
 
-export interface IAxiosCreator {
-  createAxiosInstance(baseUrl: string): AxiosInstance;
-}
-
-export class AxiosCreator implements IAxiosCreator {
-  createAxiosInstance(baseUrl: string): AxiosInstance {
-    return axios.create({
-      baseURL: baseUrl,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-}
-
 export class HttpService implements IHttpService {
-  private axiosService: AxiosInstance;
-  private axiosCreator: AxiosCreator;
+  private axiosService!: AxiosInstance;
 
-  constructor(@inject() axiosCreator: AxiosCreator) {
-    this.axiosCreator = axiosCreator;
-    this.axiosService = axios.create();
-  }
-
-  initService(baseUrl: string): void {
-    this.axiosService = this.axiosCreator.createAxiosInstance(baseUrl);
+  constructor(
+    @unmanaged() baseUrl: string,
+    @unmanaged() axiosInstance?: AxiosInstance
+  ) {
+    if (axiosInstance) {
+      this.axiosService = axiosInstance;
+    } else {
+      this.axiosService = axios.create({
+        baseURL: baseUrl,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
     this._initializeRequestInterceptor();
     this._initializeResponseInterceptor();
   }

@@ -20,7 +20,7 @@ export class UserParser {
           name: response.name,
           lastName: response.last_name,
           accessToken: null,
-          refreshToken:null,
+          refreshToken: null,
           institution: response.institution,
           role: response.role,
         })

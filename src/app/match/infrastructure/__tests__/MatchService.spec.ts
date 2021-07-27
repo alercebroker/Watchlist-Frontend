@@ -1,18 +1,13 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
-import {
-  HttpError,
-  IAxiosCreator,
-  MockAxiosCreator,
-  TestActions,
-} from "@/shared/http";
-import { cid, container, mockTransient, resetContainer } from "inversify-props";
+import { containerBuilder } from "@/ui/app.container";
+import { HttpError, MockUserApi, TestActions } from "@/shared/http";
+import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { Match } from "../../domain/Match";
 import { IMatchRepository } from "../../domain/Match.types";
 
 beforeAll(() => {
   resetContainer();
   containerBuilder();
-  mockTransient<IAxiosCreator>(cid.AxiosCreator, MockAxiosCreator);
+  mockSingleton(cid.UsersApiService, MockUserApi);
 });
 describe("MatchService", () => {
   describe("getMatchesFromUrl", () => {

@@ -1,5 +1,6 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, IHttpService } from "@/shared/http";
+import { UsersApiService } from "@/shared/http/UsersApiService";
 import { inject } from "inversify-props";
 import { err, ok, Result } from "neverthrow";
 import { User } from "../domain/User";
@@ -12,18 +13,15 @@ import {
 import { UserParser } from "./UserParser";
 
 export class AuthService implements IUserRepository {
-  httpService: IHttpService;
   parser: UserParser;
-  constructor(@inject() httpService: IHttpService) {
-    this.httpService = httpService;
+  constructor(@inject() private usersApiService: UsersApiService) {
     this.parser = new UserParser();
-    this.httpService.initService(process.env.VUE_APP_USER_API);
   }
 
   async login(
     params: LoginUserApiRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>> {
-    const tokenResult = await this.httpService.post(
+    const tokenResult = await this.usersApiService.post(
       {
         url: "/users/login/",
         data: params,
@@ -40,7 +38,7 @@ export class AuthService implements IUserRepository {
           token.refresh
         );
       };
-      const userResult = await this.httpService.get(
+      const userResult = await this.usersApiService.get(
         {
           url: "/users/current/",
           config: { headers: { Authorization: `Bearer ${token.access}` } },
@@ -71,7 +69,7 @@ export class AuthService implements IUserRepository {
     params: RegisterUserRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>> {
     // result with User entity
-    const result = await this.httpService.post(
+    const result = await this.usersApiService.post(
       { url: "/users/", data: params },
       { parseTo: this.parser.parseRegisterApiResponse }
     );

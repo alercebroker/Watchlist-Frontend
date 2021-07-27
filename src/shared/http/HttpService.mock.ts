@@ -1,7 +1,7 @@
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { inject } from "inversify-props";
-import { IAxiosCreator } from ".";
+import { HttpService } from "./HttpService";
 import { mockTargetsByWatchlist } from "./mocks/target.mocks";
 import {
   mockLoginResponse,
@@ -23,16 +23,14 @@ export type TestActions =
   | "serverError"
   | "accessTokenExpired";
 
-export class MockAxiosCreator implements IAxiosCreator {
+export class MockUserApi extends HttpService {
   mock!: MockAdapter;
   actionType: TestActions;
 
   constructor(@inject("ActionType") actionType: TestActions) {
+    const instance = axios.create({});
+    super("test", instance);
     this.actionType = actionType;
-  }
-
-  createAxiosInstance(_baseUrl: string): AxiosInstance {
-    const instance = axios.create({ baseURL: _baseUrl });
     this.mock = new MockAdapter(instance);
     if (this.actionType === "ok") this.setMockActions();
     if (
@@ -45,7 +43,6 @@ export class MockAxiosCreator implements IAxiosCreator {
     if (this.actionType === "parseError") this.setParseErrorActions();
     if (this.actionType === "accessTokenExpired")
       this.setAccessTokenExpiredActions();
-    return instance;
   }
 
   setMockActions() {

@@ -1,5 +1,5 @@
 import { IWatchlistData } from "@/app/watchlist/domain";
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { createLocalVue } from "@vue/test-utils";
 import { cid, container, resetContainer } from "inversify-props";
 import { IStoreCreator } from "../../StoreCreator";

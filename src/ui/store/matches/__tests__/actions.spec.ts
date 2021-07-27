@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { createLocalVue } from "@vue/test-utils";
 import Vuex from "vuex";

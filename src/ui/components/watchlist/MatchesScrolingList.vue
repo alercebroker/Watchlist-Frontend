@@ -14,8 +14,8 @@
           <tbody>
             <tr
               :id="'m' + item.candid"
-              v-for="item in matches"
-              :key="item.candid"
+              v-for="(item, index) in matches"
+              :key="index"
               @click="onMatchClick(item)"
               :class="{
                 rowSelected: item === selectedMatch,
@@ -30,7 +30,13 @@
           <tfoot id="matchFoot">
             <tr>
               <td colspan="3">
-                <p v-if="!matches.length && selectedTarget && !loading">
+                <p
+                  v-if="
+                    matches.length == 0 &&
+                    selectedTarget != undefined &&
+                    !loading
+                  "
+                >
                   No matches for this target
                 </p>
                 <v-progress-linear
@@ -62,6 +68,13 @@ export default Vue.extend({
   } => ({
     selectedMatch: null,
   }),
+  mounted() {
+    console.log(
+      this.matches.length == 0 &&
+        this.selectedTarget != undefined &&
+        !this.loading
+    );
+  },
   methods: {
     onMatchClick(item: IMatchData) {
       this.selectedMatch = item;

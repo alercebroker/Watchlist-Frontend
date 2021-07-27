@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { IUserData } from "@/app/user/domain/User.types";
 import { HttpError } from "@/shared/http";
 import { createLocalVue } from "@vue/test-utils";

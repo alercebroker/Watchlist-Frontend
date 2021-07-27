@@ -1,6 +1,6 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
-import { IAxiosCreator, MockAxiosCreator, TestActions } from "@/shared/http";
-import { cid, container, mockTransient, resetContainer } from "inversify-props";
+import { containerBuilder } from "@/ui/app.container";
+import { IHttpService, MockUserApi, TestActions } from "@/shared/http";
+import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { ITargetRepository } from "../../domain/Target.types";
 import { Target } from "../../domain/Target";
 import { ParseError } from "@/shared/error/ParseError";
@@ -8,7 +8,7 @@ import { ParseError } from "@/shared/error/ParseError";
 beforeEach(() => {
   resetContainer();
   containerBuilder();
-  mockTransient<IAxiosCreator>(cid.AxiosCreator, MockAxiosCreator);
+  mockSingleton<IHttpService>(cid.UsersApiService, MockUserApi);
 });
 
 describe("TargetService", () => {

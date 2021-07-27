@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { createLocalVue, mount } from "@vue/test-utils";
 import Vuex, { createNamespacedHelpers, Store } from "vuex";
 import Vue from "vue";

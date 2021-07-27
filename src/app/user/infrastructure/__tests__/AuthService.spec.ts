@@ -1,13 +1,13 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
-import { IAxiosCreator, MockAxiosCreator, TestActions } from "@/shared/http";
-import { cid, container, mockTransient, resetContainer } from "inversify-props";
+import { containerBuilder } from "@/ui/app.container";
+import { MockUserApi, TestActions } from "@/shared/http";
+import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { IUserRepository } from "../../domain/User.types";
 import { RegisterUserRequestModel } from "../AuthService.types";
 
 beforeEach(() => {
   resetContainer();
   containerBuilder();
-  mockTransient<IAxiosCreator>(cid.AxiosCreator, MockAxiosCreator);
+  mockSingleton(cid.UsersApiService, MockUserApi);
   localStorage.clear();
 });
 

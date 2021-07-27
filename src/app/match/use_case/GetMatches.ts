@@ -9,7 +9,7 @@ import { Result } from "neverthrow";
 import { IMatchData, IMatchRepository } from "../domain/Match.types";
 
 export class GetMatches implements UseCaseInteractor {
-  @inject() matchService!: IMatchRepository;
+  constructor(@inject() private matchService: IMatchRepository) {}
   async execute(
     params: { url?: string; watchlistId: number; targetId: number },
     callbacks: Callbacks

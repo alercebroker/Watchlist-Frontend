@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { MockWatchlistService } from "@/app/watchlist/infrastructure/__tests__/WatchlistService.mock";
 import { TestActions } from "@/shared/http";

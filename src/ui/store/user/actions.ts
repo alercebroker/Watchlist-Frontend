@@ -3,6 +3,7 @@ import {
   LoginUserApiRequestModel,
   RegisterUserRequestModel,
 } from "@/app/user/infrastructure/AuthService.types";
+import { Login } from "@/app/user/use_case/Login";
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError } from "@/shared/http";
 import {
@@ -84,7 +85,7 @@ export const actions: ActionTree<UserState, IRootState> = {
     }
   },
   async [ActionTypes.login]({ commit }, userInput: LoginInput) {
-    const login = container.get<UseCaseInteractor>(cid.Login);
+    const login = container.get<Login>(cid.Login);
     const callbacks: Callbacks = {
       respondWithSuccess: (userData: IUserData) => {
         commit(MutationTypes.SET_USER_DATA, userData);

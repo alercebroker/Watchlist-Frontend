@@ -25,7 +25,7 @@ export const mockRegisterApiRequest: RegisterUserRequestModel = {
 
 export const mockLoginResponse: LoginApiResponse = {
   access: "token",
-  refresh: "token"
+  refresh: "token",
 };
 
 export const mockUsersResponse: UsersApiResponse = {

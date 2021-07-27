@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { ActionTypes } from "@/ui/store/matches/actions";
 import { MutationTypes } from "@/ui/store/matches/mutations";
 import { createLocalVue, mount, shallowMount } from "@vue/test-utils";
@@ -72,7 +72,7 @@ describe("Overview", () => {
   Vue.use(Vuetify);
   let vuetify: Vuetify;
   let store: Store<IRootState>;
-  let defaultModules = modules();
+  const defaultModules = modules();
   beforeEach(() => {
     resetContainer();
     containerBuilder();
@@ -154,6 +154,7 @@ describe("Overview", () => {
         vuetify,
       });
       await wrapper.setData({ selectedTarget: "test" });
+      flushPromises();
       expect(wrapper.find("#matchFoot").find("p").text()).toBe(
         "No matches for this target"
       );

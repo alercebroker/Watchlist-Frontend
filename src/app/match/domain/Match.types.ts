@@ -3,9 +3,9 @@ import { HttpError } from "@/shared/http";
 import { Result } from "neverthrow";
 
 export interface IMatchData {
-    object_id: string
-    candid: string
-    date: string
+  object_id: string;
+  candid: string;
+  date: string;
 }
 
 export interface IMatchRepository {

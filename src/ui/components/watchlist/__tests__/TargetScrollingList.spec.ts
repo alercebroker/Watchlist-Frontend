@@ -1,4 +1,4 @@
-import { containerBuilder } from "@/ui/plugins/inversify";
+import { containerBuilder } from "@/ui/app.container";
 import { createLocalVue, mount } from "@vue/test-utils";
 import Vuex, { Store } from "vuex";
 import Vue from "vue";
@@ -67,7 +67,7 @@ describe("TargetScrollingList", () => {
   Vue.use(Vuetify);
   let vuetify: Vuetify;
   let store: Store<IRootState>;
-  let defaultModules = modules();
+  const defaultModules = modules();
   beforeEach(() => {
     resetContainer();
     containerBuilder();

@@ -1,5 +1,6 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError, IHttpService } from "@/shared/http";
+import { UsersApiService } from "@/shared/http/UsersApiService";
 import { inject } from "inversify-props";
 import { combine, Result } from "neverthrow";
 import { IMatchData, IMatchRepository } from "../domain/Match.types";
@@ -9,9 +10,8 @@ import { TargetAPIResponse } from "./MatchService.types";
 export class MatchService implements IMatchRepository {
   httpService: IHttpService;
   parser: MatchParser;
-  constructor(@inject() httpService: IHttpService) {
-    this.httpService = httpService;
-    this.httpService.initService(process.env.VUE_APP_USER_API);
+  constructor(@inject() usersApiService: UsersApiService) {
+    this.httpService = usersApiService;
     this.parser = new MatchParser();
   }
   getAllMatches(
@@ -27,11 +27,8 @@ export class MatchService implements IMatchRepository {
       const matches = response.matches.map((match) => {
         return this.parser.toDomain(match);
       });
-      return combine(matches)
+      return combine(matches);
     };
-    return await this.httpService.get(
-      { url },
-      { parseTo }
-    );
+    return await this.httpService.get({ url }, { parseTo });
   }
 }

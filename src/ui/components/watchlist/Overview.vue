@@ -12,6 +12,7 @@
       <matches-scroling-list
         :matches="matches"
         :loading="loadingMatches"
+        :selectedTarget="selectedTarget"
         @matchSelected="onMatchClick"
         @nextPage="onMatchesNextPage"
       />
