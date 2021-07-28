@@ -7,7 +7,7 @@ on:
     branches: [ develop ]
 
 env:
-  VUE_APP_AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+  AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   NODE_ENV: staging
@@ -17,6 +17,7 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   publish:
+    environment: development
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
