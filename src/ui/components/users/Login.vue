@@ -7,10 +7,11 @@
           <v-row>
             <v-col>
               <v-text-field
+                id="username"
                 v-model="username"
                 label="Username"
                 :rules="rules"
-                :error-messages="error"
+                :error-messages="errorDetail"
                 :loading="loading"
               ></v-text-field>
             </v-col>
@@ -18,13 +19,14 @@
           <v-row>
             <v-col>
               <v-text-field
+                id="password"
                 v-model="password"
                 label="Password"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
                 :rules="rules"
-                :error-messages="error"
+                :error-messages="errorDetail"
                 :loading="loading"
               ></v-text-field>
             </v-col>
@@ -51,6 +53,11 @@
               >
             </v-col>
           </v-row>
+          <v-row v-if="error">
+            <v-col>
+              <generic-error :error="error" />
+            </v-col>
+          </v-row>
         </v-container>
       </v-form>
     </v-card-text>
@@ -60,7 +67,9 @@
 <script lang="ts">
 import { ActionTypes } from "@/ui/store/user/actions";
 import Vue from "vue";
+import GenericError from "../shared/GenericError.vue";
 export default Vue.extend({
+  components: { GenericError },
   data() {
     return {
       username: "",
@@ -81,8 +90,14 @@ export default Vue.extend({
     },
   },
   computed: {
-    error: function (): string {
+    errorDetail: function (): string {
       return this.$store.state.users.error?.detail;
+    },
+    error: function (): string {
+      if (typeof this.$store.state.users.error == "object") {
+        return "";
+      }
+      return this.$store.state.users.error;
     },
     loading: function (): boolean {
       return this.$store.state.users.loading;

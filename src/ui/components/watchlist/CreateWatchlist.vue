@@ -1,7 +1,10 @@
 <template>
   <v-card>
     <v-card-title class="headline">Create New Watchlist</v-card-title>
-
+    <targets-error
+      v-if="detailError.targets != undefined"
+      :errors="detailError.targets"
+    />
     <v-card-text>
       <v-form ref="form">
         <v-container>
@@ -31,7 +34,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
 
-      <v-btn text @click="onCancelClick">Cancel</v-btn>
+      <v-btn id="cancel" text @click="onCancelClick">Cancel</v-btn>
 
       <v-btn id="send" color="primary" text @click="onCreateClick"
         >Create</v-btn
@@ -43,8 +46,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { ActionTypes, WatchlistInput } from "@/ui/store/watchlist/actions";
+import { createNamespacedHelpers } from "vuex";
+import TargetsError from "./TargetsError.vue";
+const watchlistHelper = createNamespacedHelpers("watchlists");
 
 export default Vue.extend({
+  components: { TargetsError },
   data() {
     return {
       title: "",
@@ -54,8 +61,12 @@ export default Vue.extend({
       targetList: [] as any,
     };
   },
+  computed: {
+    ...watchlistHelper.mapGetters(["genericError", "detailError", "errored"]),
+  },
   methods: {
-    async onCreateClick() {
+    ...watchlistHelper.mapActions([ActionTypes.createWatchlist]),
+    onCreateClick() {
       const form: any = this.$refs.form;
       if (form.validate()) {
         this.targetList = this.parseCSVToList(this.csvData);
@@ -63,11 +74,11 @@ export default Vue.extend({
           title: this.title,
           targets: this.targetList,
         };
-        await this.$store.dispatch(
-          "watchlists/" + ActionTypes.createWatchlist,
-          watchlistInput
-        );
-        this.$emit("created");
+        this.createWatchlist(watchlistInput).then(() => {
+          if (!this.errored) {
+            this.$emit("created");
+          }
+        });
       }
     },
 
@@ -94,7 +105,6 @@ export default Vue.extend({
         elem.split(",").forEach((item, index) => {
           line[headers[index]] = item.trim();
         });
-
         return line;
       });
     },

@@ -28,24 +28,20 @@ export class MockUserApi extends HttpService {
   actionType: TestActions;
 
   constructor(@inject("ActionType") actionType: TestActions) {
-    const instance = axios.create({});
-    super("test", instance);
+    super(process.env.VUE_APP_USER_API);
+    this.mock = new MockAdapter(this.axiosService);
     this.actionType = actionType;
-    this.mock = new MockAdapter(instance);
     if (this.actionType === "ok") this.setMockActions();
-    if (
-      this.actionType === "error" ||
-      this.actionType === "serverError" ||
-      this.actionType === "clientError"
-    )
-      this.setErrorActions();
+    if (this.actionType === "error") this.setErrorActions();
+    if (this.actionType === "serverError") this.setServerErrorActions();
+    if (this.actionType === "clientError") this.setClientErrorActions();
     if (this.actionType === "timeout") this.setTimeoutActions();
     if (this.actionType === "parseError") this.setParseErrorActions();
     if (this.actionType === "accessTokenExpired")
       this.setAccessTokenExpiredActions();
   }
 
-  setMockActions() {
+  setMockActions(): void {
     this.mock.onGet("/watchlists/").reply((_config: any) => {
       const response = mockApiWatchlists;
       return [200, JSON.stringify(response)];
@@ -101,7 +97,7 @@ export class MockUserApi extends HttpService {
     });
   }
 
-  setErrorActions() {
+  setErrorActions(): void {
     this.mock.onGet("/watchlists/").networkError();
     this.mock.onPost("/users/").networkError();
     this.mock.onPost("/users/login/").networkError();
@@ -112,7 +108,26 @@ export class MockUserApi extends HttpService {
     this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).networkError();
   }
 
-  setTimeoutActions() {
+  setClientErrorActions(): void {
+    this.mock.onPost("/users/login/").reply(401, {
+      detail: "No active account found with the given credentials",
+    });
+    this.mock.onPost("/users").reply(400, {
+      username: ["This field may not be blank."],
+      password: ["This field may not be blank."],
+      name: ["This field may not be blank."],
+      last_name: ["This field may not be blank."],
+      institution: ["This field may not be blank."],
+      role: ["This field may not be blank."],
+    });
+  }
+
+  setServerErrorActions(): void {
+    this.mock.onPost("/users/login/").reply(500);
+    this.mock.onPost("/users").reply(500);
+  }
+
+  setTimeoutActions(): void {
     this.mock.onGet("/watchlists/").timeout();
     this.mock.onPost("/users/").timeout();
     this.mock.onPost("/users/login/").timeout();
@@ -123,14 +138,14 @@ export class MockUserApi extends HttpService {
     this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).timeout();
   }
 
-  setParseErrorActions() {
+  setParseErrorActions(): void {
     this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {
       const response = {};
       return [200, JSON.stringify(response)];
     });
   }
 
-  setAccessTokenExpiredActions() {
+  setAccessTokenExpiredActions(): void {
     localStorage.setItem("refresh_token", "token");
     this.mock.onPost("/users/refresh/").reply((_config: any) => {
       return [200, JSON.stringify({ access: "access_token" })];
@@ -144,7 +159,7 @@ export class MockUserApi extends HttpService {
       });
   }
 
-  setRefreshTokenExpiredActions() {
+  setRefreshTokenExpiredActions(): void {
     this.mock.onGet("/watchlists").reply(401);
   }
 }

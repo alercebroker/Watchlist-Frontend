@@ -29,5 +29,6 @@ export class RegisterUser implements UseCaseInteractor {
           callbacks.respondWithParseError(error);
         }
       });
+    return;
   }
 }

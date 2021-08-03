@@ -150,8 +150,22 @@ export class MockWatchlistService implements IWatchlistRepository {
         resolve(err(new HttpError(500, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
+      /* eslint-disable  @typescript-eslint/no-explicit-any */
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(
+          err(
+            HttpError.fromStatus(400, {
+              targets: [
+                {
+                  name: ["This field is required."],
+                  radius: ["This field is required."],
+                  ra: ["This field is required."],
+                  dec: ["This field is required."],
+                },
+              ],
+            } as any)
+          )
+        );
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {

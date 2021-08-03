@@ -94,21 +94,18 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       },
       respondWithClientError: (error: HttpError) => {
         commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithServerError: (error: HttpError) => {
         commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithParseError: (error: ParseError) => {
         commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
@@ -119,7 +116,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         title: watchlistInput.title ?? throwExpression("title required"),
         targets: watchlistInput.targets,
       };
-      interactor.execute(requestModel, callbacks);
+      await interactor.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
       commit(MutationTypes.SET_ERROR, error.message);

@@ -37,7 +37,7 @@ export interface IHttpService {
 }
 
 export class HttpService implements IHttpService {
-  private axiosService!: AxiosInstance;
+  protected axiosService!: AxiosInstance;
 
   constructor(
     @unmanaged() baseUrl: string,

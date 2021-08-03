@@ -2,7 +2,7 @@ import { IUserData } from "@/app/user/domain/User.types";
 
 export type UserState = {
   loading: boolean;
-  error: string | null;
+  error: Record<string, string> | string | null;
   userData: IUserData;
 };
 

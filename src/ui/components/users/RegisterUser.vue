@@ -1,6 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="headline">Register New User </v-card-title>
+    <generic-error v-if="genericError" :error="genericError" />
     <v-card-text>
       <v-form ref="form">
         <v-container>
@@ -9,15 +10,16 @@
               <v-text-field
                 v-model="username"
                 label="Username"
-                :rules="rules"
-                :error-messages="validateUsername"
+                :error-messages="error.username"
+                :loading="apiLoading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="name"
                 label="First Name"
-                :rules="rules"
+                :error-messages="error.name"
+                :loading="apiLoading"
               ></v-text-field>
             </v-col>
 
@@ -25,15 +27,16 @@
               <v-text-field
                 v-model="lastName"
                 label="Last Name"
-                :rules="rules"
+                :error-messages="error.last_name"
+                :loading="apiLoading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="email"
                 label="Email"
-                :rules="rules"
-                :error-messages="validateEmail"
+                :error-messages="error.email"
+                :loading="apiLoading"
               ></v-text-field>
             </v-col>
 
@@ -44,14 +47,16 @@
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
-                :rules="rules"
+                :error-messages="error.password"
+                :loading="apiLoading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="institution"
                 label="Institution"
-                :rules="rules"
+                :error-messages="error.institution"
+                :loading="apiLoading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
@@ -59,7 +64,8 @@
                 v-model="role"
                 label="Role"
                 :items="roles"
-                :rules="rules"
+                :error-messages="error.role"
+                :loading="apiLoading"
               ></v-select>
             </v-col>
           </v-row>
@@ -82,7 +88,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { ActionTypes, RegisterInput } from "@/ui/store/user/actions";
+import GenericError from "../shared/GenericError.vue";
 export default Vue.extend({
+  components: { GenericError },
   data() {
     return {
       username: "",
@@ -95,23 +103,24 @@ export default Vue.extend({
       roles: ["Researcher"],
       showPassword: false,
       registerSent: false,
-      rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     };
   },
   computed: {
-    validateUsername(): string {
-      return this.error() ? this.error().username : this.error();
-    },
-    validateEmail(): string {
-      return this.error() ? this.error().email : this.error();
-    },
-    apiLoading() {
+    apiLoading: function (): boolean {
       return this.$store.state.users.loading;
+    },
+    error: function (): Record<string, string> | string {
+      return this.$store.state.users.error || "";
+    },
+    genericError: function (): string {
+      if (typeof this.$store.state.users.error == "string")
+        return this.$store.state.users.error;
+      return "";
     },
   },
   watch: {
     apiLoading(val) {
-      if (this.error() === null && val === false && this.registerSent) {
+      if (this.error === null && val === false && this.registerSent) {
         this.$emit("registered");
       }
     },
@@ -135,9 +144,6 @@ export default Vue.extend({
         );
         this.registerSent = true;
       }
-    },
-    error() {
-      return this.$store.state.users.error;
     },
   },
 });

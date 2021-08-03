@@ -1,6 +1,6 @@
 import { containerBuilder } from "@/ui/app.container";
 import { createLocalVue, mount } from "@vue/test-utils";
-import Vuex, { createNamespacedHelpers, Store } from "vuex";
+import Vuex, { Store } from "vuex";
 import Vue from "vue";
 import Vuetify from "vuetify";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
@@ -21,31 +21,80 @@ describe("CreateWatchlist Component", () => {
   const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
   let store: Store<IRootState>;
 
-  beforeEach(() => {
-    resetContainer();
-    containerBuilder();
-    mockSingleton<IWatchlistRepository>(
-      cid.WatchlistService,
-      MockWatchlistService
-    );
-    vuetify = new Vuetify();
-    store = storeCreator.create();
+  describe("Without Errors", () => {
+    beforeEach(() => {
+      resetContainer();
+      containerBuilder();
+      mockSingleton<IWatchlistRepository>(
+        cid.WatchlistService,
+        MockWatchlistService
+      );
+      vuetify = new Vuetify();
+      store = storeCreator.create();
+    });
+
+    it("should create watchlist on click", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      await wrapper.setData({
+        title: "title",
+        csvData: "name,radius,ra,dec\nTarget 0,1.0,1.0,1.0\n",
+      });
+      const button = wrapper.find("#send");
+      button.trigger("click");
+      await flushPromises();
+      const watchlist = store.state.watchlists.watchlists.pop();
+      expect(watchlist).not.toBeUndefined();
+      if (watchlist) {
+        expect(watchlist.title).toEqual("title");
+      }
+      expect(wrapper.emitted().created).toBeTruthy();
+    });
+
+    it("should emit canceled on cancel click", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      const cancel = wrapper.find("#cancel");
+      await cancel.trigger("click");
+      expect(wrapper.emitted().canceled).toBeTruthy();
+    });
   });
 
-  it("should create watchlist on click", async () => {
-    container.bind<TestActions>("ActionType").toConstantValue("ok");
-    const wrapper = mount(CreateWatchlist, {
-      localVue,
-      store,
-      vuetify,
+  describe("With Errors", () => {
+    beforeEach(() => {
+      resetContainer();
+      containerBuilder();
+      mockSingleton<IWatchlistRepository>(
+        cid.WatchlistService,
+        MockWatchlistService
+      );
+      vuetify = new Vuetify();
+      store = storeCreator.create();
     });
-    await wrapper.setData({
-      title: "title",
-      csvData: "name,radius,ra,dec\nTarget 0,1.0,1.0,1.0\n",
+    it("should show error if target data is wrong", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("clientError");
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      await wrapper.setData({
+        title: "title",
+        csvData: "name,radius,ra,dec\nTarget 0,1.0,1.0,1.0\n",
+      });
+      const send = wrapper.find("#send");
+      await send.trigger("click");
+      await flushPromises();
+      const alert = wrapper.find(".v-alert");
+      expect(alert.text()).toContain("Line: 2");
     });
-    const button = wrapper.find("#send");
-    button.trigger("click");
-    await flushPromises();
-    expect(store.state.watchlists.watchlists.pop()!.title).toEqual("title");
   });
 });

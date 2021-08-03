@@ -12,6 +12,7 @@ Vue.use(Vuex);
 containerBuilder();
 const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
 const store = storeCreator.create();
+console.log(container);
 
 new Vue({
   store,

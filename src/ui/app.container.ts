@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { container } from "inversify-props";
-import { HttpService } from "@/shared/http";
+import { cid, container, mockSingleton } from "inversify-props";
+import { HttpService, MockUserApi, TestActions } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
@@ -40,4 +40,6 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(GetMatches);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
+  // container.bind<TestActions>("ActionType").toConstantValue("clientError");
+  // mockSingleton<HttpService>(cid.UsersApiService, MockUserApi);
 }
