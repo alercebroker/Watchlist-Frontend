@@ -1,20 +1,21 @@
 <template>
   <v-app>
     <v-main>
-      <Home />
+      <a-header title="ALeRCE Watchlist"></a-header>
+      <router-view/>
     </v-main>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import Home from "./pages/Home.vue";
+import AHeader from "./components/watchlist/AHeader.vue";
 
 export default Vue.extend({
   name: "App",
 
   components: {
-    Home,
+    AHeader,
   },
 
   data: () => ({

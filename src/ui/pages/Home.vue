@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <a-header title="ALeRCE Watchlist"></a-header>
+    
     <v-row v-if="!logged" align="center" align-content="center">
       <v-col cols="4">
         <login @registerClick="dialog = true" />
@@ -26,11 +26,11 @@ import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
 import WatchlistDetails from "../components/watchlist/WatchlistDetails.vue";
 import Login from "../components/users/Login.vue";
 import RegisterUser from "../components/users/RegisterUser.vue";
-import AHeader from "@/ui/components/watchlist/AHeader.vue";
+//import AHeader from "@/ui/components/watchlist/AHeader.vue";
 import { IUserData } from "@/app/user/domain/User.types";
 
 export default Vue.extend({
-  components: { AHeader, MyWatchlists, WatchlistDetails, Login, RegisterUser },
+  components: { MyWatchlists, WatchlistDetails, Login, RegisterUser },
   data: (): {
     dialog: boolean;
     watchlist_dialog: boolean;

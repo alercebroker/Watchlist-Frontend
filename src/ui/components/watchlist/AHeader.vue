@@ -20,6 +20,7 @@
       </v-btn>
     </v-toolbar-items>
     <v-spacer></v-spacer>
+    <v-btn @click="$router.push('/how-to')"> How-to </v-btn>
     <v-btn @click="logout"> Logout </v-btn>
   </v-app-bar>
 </template>
@@ -52,6 +53,8 @@ export default Vue.extend({
   methods: {
     logout() {
       this.$store.dispatch("users/" + ActionTypes.logout);
+      this.$router.push('/')
+
       this.$emit("loggedout");
     },
   },
