@@ -28,12 +28,14 @@
           <v-list-item-title>4. The table below shows the fields and the accepted values.</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-data-table
-      :headers="headers"
-      :items="fields"
-      :items-per-page="5"
-      class="elevation-1"
-      ></v-data-table>
+      <v-container>
+        <v-data-table
+        :headers="headers"
+        :items="fields"
+        :items-per-page="5"
+        class="elevation-1"
+        ></v-data-table>
+      </v-container>
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title>5. You can see <a href="https://alerce-static.s3.amazonaws.com/targets_example/target_sample.csv"> this example</a> to understand the format.</v-list-item-title>
