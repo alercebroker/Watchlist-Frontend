@@ -2,6 +2,7 @@ import { ParseError } from "@/shared/error/ParseError";
 import { HttpError } from "@/shared/http";
 import { Result } from "neverthrow";
 import {
+  ActivateUserApiRequestModel,
   LoginUserApiRequestModel,
   RegisterUserRequestModel,
 } from "../infrastructure/AuthService.types";
@@ -31,4 +32,7 @@ export interface IUserRepository {
     params: RegisterUserRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>>;
   logout(): Result<IUserData, Error>;
+  activate(
+    params: ActivateUserApiRequestModel
+  ): Promise<Result<IUserData, ParseError | HttpError>>;
 }

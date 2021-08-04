@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { container } from "inversify-props";
-import { HttpService } from "@/shared/http";
+import { cid, container, mockSingleton } from "inversify-props";
+import { HttpService, TestActions } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
@@ -22,6 +22,7 @@ import { GetMatches } from "@/app/match/use_case/GetMatches";
 import { UsersApiService } from "@/shared/http/UsersApiService";
 import { modules, Modules } from "./store/RegisterModules";
 import { IStoreCreator, StoreCreator } from "./store/StoreCreator";
+import { Activate } from "@/app/user/use_case/Activate";
 
 export function containerBuilder(): void {
   container.addSingleton<HttpService>(UsersApiService);
@@ -38,6 +39,7 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(DeleteWatchlist);
   container.addSingleton<IMatchRepository>(MatchService);
   container.addSingleton<UseCaseInteractor>(GetMatches);
+  container.addSingleton<UseCaseInteractor>(Activate);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
 }

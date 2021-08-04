@@ -1,5 +1,6 @@
 import { IUserData } from "@/app/user/domain/User.types";
 import {
+  ActivateUserApiRequestModel,
   LoginUserApiRequestModel,
   RegisterUserRequestModel,
 } from "@/app/user/infrastructure/AuthService.types";
@@ -17,9 +18,15 @@ import { MutationTypes } from "./mutations";
 import { UserState } from "./state";
 
 export enum ActionTypes {
+  activate = "activate",
   registerUser = "registerUser",
   login = "login",
   logout = "logout",
+}
+
+export interface ActivateInput {
+  uid: string;
+  token: string;
 }
 
 export interface LoginInput {
@@ -133,5 +140,36 @@ export const actions: ActionTree<UserState, IRootState> = {
         commit(MutationTypes.SET_ERROR, error);
       },
     } as Callbacks);
+  },
+  async [ActionTypes.activate]({ commit }, activateInput: ActivateInput) {
+    const activateUser = container.get<UseCaseInteractor>(cid.Activate);
+    const callbacks: Callbacks = {
+      respondWithSuccess: () => {
+        commit(MutationTypes.SET_ERROR, null);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithClientError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    };
+    try {
+      const requestModel: ActivateUserApiRequestModel = {
+        uid: activateInput.uid ?? throwExpression("uid required"),
+        token: activateInput.token ?? throwExpression("token required"),
+      };
+      activateUser.execute(requestModel, callbacks);
+    } catch (error) {
+      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_LOADING, false);
+    }
   },
 };
