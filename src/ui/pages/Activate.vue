@@ -1,10 +1,9 @@
 <template>
   <v-container fill-height>
-    {{ error }}
     <activate-card
-      :message="selected.message"
-      :icon="selected.icon"
-      :spinner="selected.spinner"
+      :message="message.text"
+      :icon="message.icon"
+      :spinner="loading"
     />
   </v-container>
 </template>
@@ -15,14 +14,19 @@ import ActivateCard from "@/ui/components/users/ActivateCard.vue";
 import { createNamespacedHelpers } from "vuex";
 import { UserState } from "../store/user/state";
 import { ActionTypes, ActivateInput } from "@/ui/store/user/actions";
-import { isHttpError } from "@/shared/http";
+import { HttpError } from "@/shared/http";
 
 const userHelper = createNamespacedHelpers("users");
+
+type messageType = {
+  text: string;
+  icon?: string;
+};
 
 export default Vue.extend({
   components: { ActivateCard },
   props: {
-    id: {
+    uid: {
       type: String || null,
       default: null,
     },
@@ -31,53 +35,48 @@ export default Vue.extend({
       default: null,
     },
   },
-
+  data: (): {
+    message: messageType;
+  } => ({
+    message: {
+      text: "Activating your account please wait...",
+    },
+  }),
   mounted() {
-    console.log("send activation", this.id, this.token);
-    const input: ActivateInput = { uid: this.id, token: this.token };
-    this.activate(input);
+    const input: ActivateInput = { uid: this.uid, token: this.token };
+    this.activate(input).then(() => {
+      this.afterRequest();
+    });
   },
   methods: {
+    afterRequest() {
+      const val = this.error;
+      if (val === null) {
+        this.message.text =
+          'Your account is activated. You may close this window and login. Or click <a href="/">here</a>.';
+        this.message.icon = "mdi-account-check";
+      } else if (val instanceof HttpError) {
+        if (val.status === 403) {
+          this.message.text = "This account is already active.";
+          this.message.icon = "mdi-account-convert";
+        } else {
+          this.message.text = JSON.stringify(val.message);
+          this.message.icon = "mdi-account-alert";
+        }
+      } else {
+        this.message.text = val.toString();
+        this.message.icon = "mdi-alert";
+      }
+    },
     ...userHelper.mapActions([ActionTypes.activate]),
   },
   computed: {
-    messages: function (): any {
-      return {
-        0: {
-          message: "Activating your account please wait...",
-          spinner: true,
-        },
-        1: {
-          message: "Invalid parameters, please retry... ",
-          icon: "mdi-account-question",
-        },
-        204: {
-          message:
-            'Your account is activated. You may close this window and login. Or click <a href="/">here</a>.',
-          icon: "mdi-account-check",
-        },
-        403: {
-          message: "This account is already active",
-          icon: "mdi-account-convert",
-        },
-        404: {
-          message: "Internal error: please retry...",
-          icon: "mdi-account-alert",
-        },
-      };
-    },
-    selected: function (): any {
-      const n = 0;
-      if (this.error instanceof Error) {
-        if (isHttpError(this.error)) {
-          console.log(this.error.status)
-        }
-      }
-      return this.messages[n];
-    },
     ...userHelper.mapState({
       error: function (x: UserState): Error | string | null {
         return x.error;
+      },
+      loading: function (x: UserState): boolean {
+        return x.loading;
       },
     }),
   },

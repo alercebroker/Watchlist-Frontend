@@ -19,7 +19,7 @@ const routes = [
     exact: true,
   },
   {
-    path: "/activate/:id/:token",
+    path: "/activate/:uid/:token",
     name: "activate",
     component: Activate,
     props: true,

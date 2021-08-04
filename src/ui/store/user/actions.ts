@@ -161,12 +161,13 @@ export const actions: ActionTree<UserState, IRootState> = {
         commit(MutationTypes.SET_LOADING, false);
       },
     };
+    commit(MutationTypes.SET_LOADING, true);
     try {
       const requestModel: ActivateUserApiRequestModel = {
         uid: activateInput.uid ?? throwExpression("uid required"),
         token: activateInput.token ?? throwExpression("token required"),
       };
-      activateUser.execute(requestModel, callbacks);
+      await activateUser.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_ERROR, error.message);
       commit(MutationTypes.SET_LOADING, false);

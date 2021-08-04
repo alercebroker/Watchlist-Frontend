@@ -1,11 +1,11 @@
+import { containerBuilder } from "./app.container";
 import Vue from "vue";
 import Vuex from "vuex";
 import App from "./App.vue";
-import router from "./router"
+import router from "./router";
 import vuetify from "./plugins/vuetify";
 import { cid, container } from "inversify-props";
 import { IStoreCreator } from "./store/StoreCreator";
-import { containerBuilder } from "./app.container";
 
 Vue.config.productionTip = false;
 

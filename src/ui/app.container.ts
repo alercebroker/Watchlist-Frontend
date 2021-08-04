@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { cid, container, mockSingleton } from "inversify-props";
-import { HttpService, TestActions } from "@/shared/http";
+import { container } from "inversify-props";
+import { HttpService } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";

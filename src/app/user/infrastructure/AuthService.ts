@@ -104,7 +104,7 @@ export class AuthService implements IUserRepository {
     params: ActivateUserApiRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>> {
     const result = await this.usersApiService.post(
-      { url: "/users/activation", data: params },
+      { url: "/users/activation/", data: params },
       { parseTo: (): Result<IUserData, ParseError> => ok({} as IUserData) }
     );
     return result;
