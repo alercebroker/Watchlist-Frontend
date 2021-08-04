@@ -26,7 +26,6 @@ import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
 import WatchlistDetails from "../components/watchlist/WatchlistDetails.vue";
 import Login from "../components/users/Login.vue";
 import RegisterUser from "../components/users/RegisterUser.vue";
-//import AHeader from "@/ui/components/watchlist/AHeader.vue";
 import { IUserData } from "@/app/user/domain/User.types";
 
 export default Vue.extend({
