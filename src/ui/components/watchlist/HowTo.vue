@@ -57,14 +57,14 @@ export default Vue.extend({
           name: 'ra',
           required: true,
           type: 'number',
-          constraints: [0, 360],
+          constraints: '[0, 360]',
           default: 'No default',
         },
         {
           name: 'dec',
           required: true,
           type: 'number',
-          constraints: [-90, 90],
+          constraints: '[-90, 90]',
           default: 'No default',
         },
         {
