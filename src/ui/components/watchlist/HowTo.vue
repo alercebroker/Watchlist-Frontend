@@ -13,7 +13,7 @@
 
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>2. Ra and dec must be in degrees, radius in arcsec.</v-list-item-title>
+          <v-list-item-title>2. Ra and dec must be in degrees, radius in arcsec</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
@@ -44,7 +44,12 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title><b>6. You can see the example below with a CSV format using comma separation.</b></v-list-item-title>
+          <v-list-item-title>6. You can see <a href="https://alerce-static.s3.amazonaws.com/targets_example/target_sample.csv"> this example</a> to understand the format.</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title><b>7. You can see the example below with a CSV format using comma separation.</b></v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-card >
