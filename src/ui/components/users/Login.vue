@@ -5,7 +5,7 @@
       <v-form ref="form">
         <v-container>
           <v-row>
-            <v-col>
+            <v-col cols="12">
               <v-text-field
                 v-model="username"
                 label="Username"
@@ -14,9 +14,7 @@
                 :loading="loading"
               ></v-text-field>
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
+            <v-col cols="12">
               <v-text-field
                 v-model="password"
                 label="Password"
@@ -27,6 +25,13 @@
                 :error-messages="error"
                 :loading="loading"
               ></v-text-field>
+            </v-col>
+            <v-col v-if="afterRegister" cols="12">
+              <v-alert icon="mdi-email" color="blue-grey" dismissible>
+                Registered user successfully. Check the email we sent to
+                <strong>{{ email }} </strong> to activate the account. <br />
+                Enjoy ALeRCE Watchlist.
+              </v-alert>
             </v-col>
           </v-row>
           <v-row>
@@ -61,6 +66,12 @@
 import { ActionTypes } from "@/ui/store/user/actions";
 import Vue from "vue";
 export default Vue.extend({
+  props: {
+    afterRegister: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       username: "",
@@ -87,6 +98,9 @@ export default Vue.extend({
     loading: function (): boolean {
       return this.$store.state.users.loading;
     },
+    email: function (): string {
+      return this.afterRegister ? this.$store.state.users.userData.email : "";
+    }
   },
 });
 </script>

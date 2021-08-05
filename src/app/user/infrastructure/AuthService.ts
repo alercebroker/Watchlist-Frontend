@@ -1,11 +1,12 @@
 import { ParseError } from "@/shared/error/ParseError";
-import { HttpError, IHttpService } from "@/shared/http";
+import { HttpError } from "@/shared/http";
 import { UsersApiService } from "@/shared/http/UsersApiService";
 import { inject } from "inversify-props";
 import { err, ok, Result } from "neverthrow";
 import { User } from "../domain/User";
 import { IUserData, IUserRepository } from "../domain/User.types";
 import {
+  ActivateUserApiRequestModel,
   LoginUserApiRequestModel,
   RegisterUserRequestModel,
   UsersApiResponse,
@@ -97,5 +98,15 @@ export class AuthService implements IUserRepository {
     } catch (error) {
       return err(error);
     }
+  }
+
+  async activate(
+    params: ActivateUserApiRequestModel
+  ): Promise<Result<IUserData, ParseError | HttpError>> {
+    const result = await this.usersApiService.post(
+      { url: "/users/activation/", data: params },
+      { parseTo: (): Result<IUserData, ParseError> => ok({} as IUserData) }
+    );
+    return result;
   }
 }
