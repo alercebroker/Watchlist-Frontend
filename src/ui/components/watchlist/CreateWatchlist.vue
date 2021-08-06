@@ -1,7 +1,12 @@
 <template>
   <v-card>
     <v-card-title class="headline">Create New Watchlist</v-card-title>
-
+    <targets-error
+      v-if="detailError.targets != undefined"
+      :errors="detailError.targets"
+    />
+    <csv-error v-if="csvError" :error="csvError.message" :line="csvError.row" />
+    <generic-error v-if="genericError" :error="genericError" />
     <v-card-text>
       <v-form ref="form">
         <v-container>
@@ -18,7 +23,7 @@
                 <v-file-input
                   accept=".csv"
                   label="Upload  CSV"
-                  @change="onFilePicked"
+                  v-model="selectedFile"
                 >
                 </v-file-input>
               </v-card-subtitle>
@@ -31,7 +36,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
 
-      <v-btn text @click="onCancelClick">Cancel</v-btn>
+      <v-btn id="cancel" text @click="onCancelClick">Cancel</v-btn>
 
       <v-btn id="send" color="primary" text @click="onCreateClick"
         >Create</v-btn
@@ -43,60 +48,79 @@
 <script lang="ts">
 import Vue from "vue";
 import { ActionTypes, WatchlistInput } from "@/ui/store/watchlist/actions";
+import { createNamespacedHelpers } from "vuex";
+import TargetsError from "./TargetsError.vue";
+import { parse, ParseError, ParseResult } from "papaparse";
+import { MutationTypes } from "@/ui/store/watchlist/mutations";
+import { ITargetData } from "@/app/target/domain/Target.types";
+import CsvError from "./CsvError.vue";
+import GenericError from "../shared/GenericError.vue";
+const watchlistHelper = createNamespacedHelpers("watchlists");
+
+type CsvTarget = {
+  name?: string;
+  ra: number;
+  dec: number;
+  radius: number;
+};
 
 export default Vue.extend({
-  data() {
-    return {
-      title: "",
-      chosenFile: null,
-      rules: [(v: string) => v.length > 0 || "Field can't be empty"],
-      csvData: "",
-      targetList: [] as any,
-    };
+  components: { TargetsError, CsvError, GenericError },
+  data: (): {
+    title: string;
+    selectedFile: File | null;
+    rules: Array<CallableFunction | string>;
+    parsedCsv: CsvTarget[];
+  } => ({
+    title: "",
+    rules: [(v: string) => v.length > 0 || "Field can't be empty"],
+    selectedFile: null,
+    parsedCsv: [],
+  }),
+  computed: {
+    ...watchlistHelper.mapGetters([
+      "genericError",
+      "csvError",
+      "detailError",
+      "errored",
+    ]),
   },
   methods: {
+    ...watchlistHelper.mapActions([ActionTypes.createWatchlist]),
+    ...watchlistHelper.mapMutations([MutationTypes.SET_ERROR]),
+    handleError(error: ParseError) {
+      this.SET_ERROR(error);
+    },
+    async handleComplete(results: ParseResult<CsvTarget>) {
+      this.parsedCsv = results.data;
+      const watchlistInput: WatchlistInput = {
+        title: this.title,
+        targets: this.parsedCsv.map(
+          (value) =>
+            ({
+              name: value.name,
+              ra: value.ra,
+              dec: value.dec,
+              radius: value.radius,
+            } as ITargetData)
+        ),
+      };
+      await this.createWatchlist(watchlistInput);
+      if (!this.errored) this.$emit("created");
+    },
     async onCreateClick() {
-      const form: any = this.$refs.form;
-      if (form.validate()) {
-        this.targetList = this.parseCSVToList(this.csvData);
-        const watchlistInput: WatchlistInput = {
-          title: this.title,
-          targets: this.targetList,
-        };
-        await this.$store.dispatch(
-          "watchlists/" + ActionTypes.createWatchlist,
-          watchlistInput
-        );
-        this.$emit("created");
+      if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+        if (this.selectedFile != null) {
+          parse(this.selectedFile, {
+            header: true,
+            error: this.handleError,
+            complete: this.handleComplete,
+          });
+        }
       }
     },
-
     onCancelClick() {
       this.$emit("canceled");
-    },
-
-    onFilePicked(file: any) {
-      const fr = new FileReader();
-      fr.readAsText(file);
-      fr.addEventListener("load", () => {
-        if (fr.result) {
-          this.csvData = fr.result as string;
-        }
-      });
-    },
-
-    parseCSVToList(csvData: string) {
-      let lines = csvData.split("\n");
-      let headers = lines[0].split(",").map((x) => x.trim());
-      let body = lines.slice(1, -1);
-      return body.map((elem) => {
-        let line = {} as any;
-        elem.split(",").forEach((item, index) => {
-          line[headers[index]] = item.trim();
-        });
-
-        return line;
-      });
     },
   },
 });

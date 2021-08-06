@@ -1,6 +1,6 @@
 import { containerBuilder } from "@/ui/app.container";
 import { createLocalVue, mount } from "@vue/test-utils";
-import Vuex, { createNamespacedHelpers, Store } from "vuex";
+import Vuex, { Store } from "vuex";
 import Vue from "vue";
 import Vuetify from "vuetify";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
@@ -21,31 +21,106 @@ describe("CreateWatchlist Component", () => {
   const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
   let store: Store<IRootState>;
 
-  beforeEach(() => {
-    resetContainer();
-    containerBuilder();
-    mockSingleton<IWatchlistRepository>(
-      cid.WatchlistService,
-      MockWatchlistService
-    );
-    vuetify = new Vuetify();
-    store = storeCreator.create();
+  describe("Without Errors", () => {
+    beforeEach(() => {
+      resetContainer();
+      containerBuilder();
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      mockSingleton<IWatchlistRepository>(
+        cid.WatchlistService,
+        MockWatchlistService
+      );
+      vuetify = new Vuetify();
+      store = storeCreator.create();
+    });
+
+    it("should create watchlist on click", async () => {
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      await wrapper.setData({
+        title: "title",
+        selectedFile: new File(
+          ["name,radius,ra,dec\nTarget 0,1.0,1.0,1.0"],
+          "test.csv",
+          { type: "text/csv" }
+        ),
+      });
+      const button = wrapper.find("#send");
+      await button.trigger("click");
+      await flushPromises();
+      await flushPromises();
+      expect(wrapper.emitted().created).toBeTruthy();
+      const watchlist = store.state.watchlists.watchlists.pop();
+      expect(watchlist).not.toBeUndefined();
+      if (watchlist) {
+        expect(watchlist.title).toEqual("title");
+      }
+    });
+
+    it("should emit canceled on cancel click", async () => {
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      const cancel = wrapper.find("#cancel");
+      await cancel.trigger("click");
+      expect(wrapper.emitted().canceled).toBeTruthy();
+    });
   });
 
-  it("should create watchlist on click", async () => {
-    container.bind<TestActions>("ActionType").toConstantValue("ok");
-    const wrapper = mount(CreateWatchlist, {
-      localVue,
-      store,
-      vuetify,
+  describe("With Errors", () => {
+    beforeEach(() => {
+      resetContainer();
+      containerBuilder();
+      container.bind<TestActions>("ActionType").toConstantValue("clientError");
+      mockSingleton<IWatchlistRepository>(
+        cid.WatchlistService,
+        MockWatchlistService
+      );
+      vuetify = new Vuetify();
+      store = storeCreator.create();
     });
-    await wrapper.setData({
-      title: "title",
-      csvData: "name,radius,ra,dec\nTarget 0,1.0,1.0,1.0\n",
+    it("should show error if creation fails", async () => {
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      await wrapper.setData({
+        title: "title",
+        selectedFile: new File(["name,radius,ra,dec\na,b,c,d"], "test.csv", {
+          type: "text/csv",
+        }),
+      });
+      const send = wrapper.find("#send");
+      await send.trigger("click");
+      await flushPromises();
+      await flushPromises();
+      const alert = wrapper.find(".v-alert");
+      expect(alert.text()).toContain("Line: 2");
     });
-    const button = wrapper.find("#send");
-    button.trigger("click");
-    await flushPromises();
-    expect(store.state.watchlists.watchlists.pop()!.title).toEqual("title");
+    it("should show error csv is wrongly created", async () => {
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      await wrapper.setData({
+        title: "title",
+        selectedFile: new File(["name,radius,ra,dec\n"], "test.csv", {
+          type: "text/csv",
+        }),
+      });
+      const send = wrapper.find("#send");
+      await send.trigger("click");
+      await flushPromises();
+      await flushPromises();
+      const alert = wrapper.find(".v-alert");
+      expect(alert.text()).toContain("Line: 2");
+    });
   });
 });

@@ -57,15 +57,15 @@ export class MockWatchlistService implements IWatchlistRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(err(new HttpError(400, {}, "Client Error")));
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
       });
     }
     return new Promise((resolve) => {
@@ -82,15 +82,15 @@ export class MockWatchlistService implements IWatchlistRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(err(new HttpError(400, {}, "Client Error")));
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
       });
     }
     return new Promise((resolve) => {
@@ -109,24 +109,23 @@ export class MockWatchlistService implements IWatchlistRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(err(new HttpError(400, {}, "Client Error")));
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
       });
     }
     return new Promise((resolve) => {
       resolve(err(new ParseError("Parse Error")));
     });
   }
-  createWatchlist(
+  async createWatchlist(
     params: CreateWatchlistRequestModel
-    //targets: TargetRequestModel[] | null
   ): Promise<Result<IWatchlistList, ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
@@ -147,20 +146,35 @@ export class MockWatchlistService implements IWatchlistRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
+      /* eslint-disable  @typescript-eslint/no-explicit-any */
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(
+          err(
+            HttpError.fromStatus(400, {
+              targets: [
+                {
+                  name: ["This field is required."],
+                  radius: ["This field is required."],
+                  ra: ["This field is required."],
+                  dec: ["This field is required."],
+                },
+              ],
+            } as any)
+          )
+        );
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
+      });
+    } else {
+      return new Promise((resolve) => {
+        resolve(err(new ParseError("Parse Error")));
       });
     }
-    return new Promise((resolve) => {
-      resolve(err(new ParseError("Parse Error")));
-    });
   }
 
   deleteWatchlist(
@@ -177,15 +191,15 @@ export class MockWatchlistService implements IWatchlistRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(err(new HttpError(400, {}, "Client Error")));
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
       });
     }
     return new Promise((resolve) => {

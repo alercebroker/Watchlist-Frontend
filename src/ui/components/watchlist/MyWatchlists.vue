@@ -169,7 +169,7 @@ export default Vue.extend({
       }
     },
     onItemClick(index: number) {
-      this.selectWatchlist(index);
+      this.selectedItem = index;
     },
   },
   watch: {

@@ -53,7 +53,7 @@ describe("UserMutations", () => {
   it("should set state with error", () => {
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
-    const error = new HttpError(400, "Bad request");
+    const error = new HttpError(400, {}, "Bad request");
     store.commit("users/" + MutationTypes.SET_ERROR, error.message);
     expect(store.state.users.error).toEqual(error.message);
   });

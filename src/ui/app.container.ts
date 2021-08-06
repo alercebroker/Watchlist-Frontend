@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { container } from "inversify-props";
-import { HttpService } from "@/shared/http";
+import { IHttpService } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
@@ -25,7 +25,7 @@ import { IStoreCreator, StoreCreator } from "./store/StoreCreator";
 import { Activate } from "@/app/user/use_case/Activate";
 
 export function containerBuilder(): void {
-  container.addSingleton<HttpService>(UsersApiService);
+  container.addSingleton<IHttpService>(UsersApiService);
   container.addSingleton<IUserRepository>(AuthService);
   container.addSingleton<UseCaseInteractor>(RegisterUser);
   container.addSingleton<UseCaseInteractor>(Login);

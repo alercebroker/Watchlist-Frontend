@@ -10,6 +10,7 @@ import { IStoreCreator } from "../../StoreCreator";
 import { actions, ActionTypes } from "../actions";
 import { MutationTypes } from "../mutations";
 import { mockMutations } from "./mutations.mock";
+import { ParseError } from "@/shared/error/ParseError";
 
 const localVue = createLocalVue();
 
@@ -93,7 +94,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Client Error"
+        new HttpError(400, {}, "Client Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -116,7 +117,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Server Error"
+        new HttpError(500, {}, "Server Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -139,7 +140,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Parse Error"
+        new ParseError("Parse Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -162,7 +163,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "username required"
+        new ParseError("username required")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -226,7 +227,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Client Error"
+        new HttpError(400, {}, "Client Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -252,7 +253,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Server Error"
+        new HttpError(500, {}, "Server Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -278,7 +279,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Parse Error"
+        new ParseError("Parse Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -303,7 +304,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "password required"
+        new ParseError("password required")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -351,7 +352,7 @@ describe("UserActions", () => {
       expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        HttpError.fromStatus(403, "Client Error")
+        HttpError.fromStatus(403, {}, "Client Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -374,7 +375,7 @@ describe("UserActions", () => {
       expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        HttpError.fromStatus(500, "Server Error")
+        HttpError.fromStatus(500, {}, "Server Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,

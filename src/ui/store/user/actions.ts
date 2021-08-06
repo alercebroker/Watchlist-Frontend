@@ -60,17 +60,17 @@ export const actions: ActionTree<UserState, IRootState> = {
       },
       respondWithClientError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithServerError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithParseError: (error: ParseError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
     };
@@ -87,7 +87,7 @@ export const actions: ActionTree<UserState, IRootState> = {
       registerUser.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
     }
   },
@@ -101,17 +101,17 @@ export const actions: ActionTree<UserState, IRootState> = {
       },
       respondWithClientError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithServerError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithParseError: (error: ParseError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
     };
@@ -124,7 +124,7 @@ export const actions: ActionTree<UserState, IRootState> = {
       login.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_USER_DATA, {});
-      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
     }
   },
@@ -169,7 +169,7 @@ export const actions: ActionTree<UserState, IRootState> = {
       };
       await activateUser.execute(requestModel, callbacks);
     } catch (error) {
-      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
     }
   },

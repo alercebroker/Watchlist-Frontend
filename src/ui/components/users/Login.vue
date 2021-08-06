@@ -7,22 +7,24 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
+                id="username"
                 v-model="username"
                 label="Username"
                 :rules="rules"
-                :error-messages="error"
+                :error-messages="detailError.detail"
                 :loading="loading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
+                id="password"
                 v-model="password"
                 label="Password"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
                 :rules="rules"
-                :error-messages="error"
+                :error-messages="detailError.detail"
                 :loading="loading"
               ></v-text-field>
             </v-col>
@@ -56,6 +58,11 @@
               >
             </v-col>
           </v-row>
+          <v-row v-if="genericError">
+            <v-col>
+              <generic-error :error="genericError" />
+            </v-col>
+          </v-row>
         </v-container>
       </v-form>
     </v-card-text>
@@ -65,7 +72,11 @@
 <script lang="ts">
 import { ActionTypes } from "@/ui/store/user/actions";
 import Vue from "vue";
+import GenericError from "../shared/GenericError.vue";
+import { createNamespacedHelpers } from "vuex";
+const userHelper = createNamespacedHelpers("users");
 export default Vue.extend({
+  components: { GenericError },
   props: {
     afterRegister: {
       type: Boolean,
@@ -81,26 +92,20 @@ export default Vue.extend({
     };
   },
   methods: {
+    ...userHelper.mapActions([ActionTypes.login]),
     onLoginClick(): void {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         const userInput = {
           username: this.username,
           password: this.password,
         };
-        this.$store.dispatch("users/" + ActionTypes.login, userInput);
+        this.login(userInput);
       }
     },
   },
   computed: {
-    error: function (): string {
-      return this.$store.state.users.error?.detail;
-    },
-    loading: function (): boolean {
-      return this.$store.state.users.loading;
-    },
-    email: function (): string {
-      return this.afterRegister ? this.$store.state.users.userData.email : "";
-    }
+    ...userHelper.mapState(["email", "loading"]),
+    ...userHelper.mapGetters(["genericError", "detailError", "errored"]),
   },
 });
 </script>
