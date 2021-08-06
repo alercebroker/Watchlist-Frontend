@@ -35,3 +35,8 @@ export interface UsersApiResponse {
   institution: string;
   role: string;
 }
+
+export interface ActivateUserApiRequestModel {
+  uid: string;
+  token: string;
+}

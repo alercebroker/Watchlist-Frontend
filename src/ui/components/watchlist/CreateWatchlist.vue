@@ -83,37 +83,39 @@ export default Vue.extend({
   methods: {
     ...watchlistHelper.mapActions([ActionTypes.createWatchlist]),
     ...watchlistHelper.mapMutations([MutationTypes.SET_ERROR]),
+    async handleComplete(results: ParseResult<CsvTarget>, _file: File) {
+      if (results.errors.length) {
+        this.SET_ERROR(results.errors[0]);
+      } else {
+        const watchlistInput: WatchlistInput = {
+          title: this.title,
+          targets: results.data.map(
+            (value) =>
+              ({
+                name: value.name,
+                ra: value.ra,
+                dec: value.dec,
+                radius: value.radius,
+              } as ITargetData)
+          ),
+        };
+        await this.createWatchlist(watchlistInput);
+        if (!this.errored) {
+          this.$emit("created");
+          console.log("emmited");
+        }
+      }
+    },
+    handleError(error: ParseError, _file: File) {
+      this.SET_ERROR(error);
+    },
     onCreateClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         if (this.selectedFile != null) {
           parse(this.selectedFile, {
             header: true,
-            error: (error: ParseError, _file: File) => {
-              this.SET_ERROR(error);
-            },
-            complete: (results: ParseResult<CsvTarget>, _file: File) => {
-              if (results.errors.length) {
-                this.SET_ERROR(results.errors[0]);
-              } else {
-                const watchlistInput: WatchlistInput = {
-                  title: this.title,
-                  targets: results.data.map(
-                    (value) =>
-                      ({
-                        name: value.name,
-                        ra: value.ra,
-                        dec: value.dec,
-                        radius: value.radius,
-                      } as ITargetData)
-                  ),
-                };
-                this.createWatchlist(watchlistInput).then(() => {
-                  if (!this.errored) {
-                    this.$emit("created");
-                  }
-                });
-              }
-            },
+            error: this.handleError,
+            complete: this.handleComplete,
           });
         }
       }
@@ -121,19 +123,6 @@ export default Vue.extend({
 
     onCancelClick() {
       this.$emit("canceled");
-    },
-
-    parseCSVToList(csvData: string) {
-      let lines = csvData.split("\n");
-      let headers = lines[0].split(",").map((x) => x.trim());
-      let body = lines.slice(1, -1);
-      return body.map((elem) => {
-        let line = {} as any;
-        elem.split(",").forEach((item, index) => {
-          line[headers[index]] = item.trim();
-        });
-        return line;
-      });
     },
   },
 });

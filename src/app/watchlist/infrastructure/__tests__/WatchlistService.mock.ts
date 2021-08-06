@@ -124,9 +124,8 @@ export class MockWatchlistService implements IWatchlistRepository {
       resolve(err(new ParseError("Parse Error")));
     });
   }
-  createWatchlist(
+  async createWatchlist(
     params: CreateWatchlistRequestModel
-    //targets: TargetRequestModel[] | null
   ): Promise<Result<IWatchlistList, ParseError | HttpError>> {
     if (this.actionType === "ok") {
       return new Promise((resolve) => {
@@ -171,10 +170,11 @@ export class MockWatchlistService implements IWatchlistRepository {
       return new Promise((resolve) => {
         resolve(err(new HttpError(502, "Gateway Timeout")));
       });
+    } else {
+      return new Promise((resolve) => {
+        resolve(err(new ParseError("Parse Error")));
+      });
     }
-    return new Promise((resolve) => {
-      resolve(err(new ParseError("Parse Error")));
-    });
   }
 
   deleteWatchlist(

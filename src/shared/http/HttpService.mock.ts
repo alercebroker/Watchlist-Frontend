@@ -57,6 +57,9 @@ export class MockUserApi extends HttpService {
     this.mock.onGet("/users/current/").reply((_config: any) => {
       return [200, JSON.stringify(mockUsersResponse)];
     });
+    this.mock.onPost("/users/activation/").reply((_config: any) => {
+      return [204];
+    });
     this.mock.onGet("/users/").reply((_config: any) => {
       const response = mockUsersResponse;
       return [200, JSON.stringify(response)];
@@ -101,6 +104,7 @@ export class MockUserApi extends HttpService {
     this.mock.onGet("/watchlists/").networkError();
     this.mock.onPost("/users/").networkError();
     this.mock.onPost("/users/login/").networkError();
+    this.mock.onPost("/users/activation/").networkError();
     this.mock.onGet("/users/").networkError();
     this.mock.onPost("/watchlists/").networkError();
     this.mock.onGet("/watchlists/1/targets").networkError();
@@ -131,6 +135,7 @@ export class MockUserApi extends HttpService {
     this.mock.onGet("/watchlists/").timeout();
     this.mock.onPost("/users/").timeout();
     this.mock.onPost("/users/login/").timeout();
+    this.mock.onPost("/users/activation/").networkError();
     this.mock.onGet("/users/").timeout();
     this.mock.onPost("/watchlists/").timeout();
     this.mock.onGet("/watchlists/1/targets").timeout();
