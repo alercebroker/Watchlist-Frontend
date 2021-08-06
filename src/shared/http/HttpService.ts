@@ -149,7 +149,11 @@ export class HttpService implements IHttpService {
         }
         context._refreshToken();
       } else {
-        throw HttpError.fromStatus(error.response.status, error.response.data);
+        throw HttpError.fromStatus(
+          error.response.status,
+          error.response.data,
+          error.response.statusText
+        );
       }
     }
     throw error;
@@ -178,7 +182,11 @@ export class HttpService implements IHttpService {
       if (verb === "post") {
         if (error.config.url === "/users/login/") {
           return err(
-            HttpError.fromStatus(error.response.status, error.response.data)
+            HttpError.fromStatus(
+              error.response.status,
+              error.response.data,
+              error.response.statusText
+            )
           );
         }
         return this.post<T, M>(

@@ -28,7 +28,7 @@ export class MockUserApi extends HttpService {
   actionType: TestActions;
 
   constructor(@inject("ActionType") actionType: TestActions) {
-    super(process.env.VUE_APP_USER_API);
+    super(process.env.VUE_APP_USER_API || "test");
     this.mock = new MockAdapter(this.axiosService);
     this.actionType = actionType;
     if (this.actionType === "ok") this.setMockActions();

@@ -98,11 +98,7 @@ describe("Login Component", () => {
       await flushPromises();
       const messages = wrapper.findAll(".v-messages__message");
       messages.wrappers.forEach((message: Wrapper<Vue>) => {
-        expect(message.text()).toBe(
-          typeof store.state.users.error === "object"
-            ? store.state.users.error?.detail
-            : store.state.users.error
-        );
+        expect(message.text()).toBe(store.getters["users/detailError"].detail);
       });
     });
     it("should show error in alert if error is not in detail", async () => {
@@ -119,13 +115,11 @@ describe("Login Component", () => {
       const message = wrapper.find(".v-alert").text();
       const trimmed = message.replace(/\s+/g, "");
       expect(trimmed).toContain(
-        typeof store.state.users.error === "object"
-          ? store.state.users.error?.detail
-          : (
-              "We found an error: " +
-              store.state.users.error +
-              ". Please contact the ALeRCE Team"
-            ).replace(/\s+/g, "")
+        (
+          "We found an error: " +
+          store.getters["users/genericError"] +
+          ". Please contact the ALeRCE Team"
+        ).replace(/\s+/g, "")
       );
     });
   });

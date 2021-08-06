@@ -7,7 +7,10 @@
           :afterRegister="afterRegister"
         />
         <v-dialog v-model="registerDialog" max-width="500">
-          <register-user @registered="registered" />
+          <register-user
+            @registered="registered"
+            @registerCancel="registerDialog = false"
+          />
         </v-dialog>
       </v-col>
     </v-row>

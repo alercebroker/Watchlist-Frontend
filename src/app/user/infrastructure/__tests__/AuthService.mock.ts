@@ -46,15 +46,15 @@ export class MockAuthService implements IUserRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(err(new HttpError(400, {}, "Client Error")));
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
       });
     }
     return new Promise((resolve) => {
@@ -73,15 +73,15 @@ export class MockAuthService implements IUserRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(400, "Client Error")));
+        resolve(err(new HttpError(400, {}, "Client Error")));
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
       });
     }
     return new Promise((resolve) => {
@@ -101,15 +101,15 @@ export class MockAuthService implements IUserRepository {
       this.actionType === "serverError"
     ) {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(500, "Server Error")));
+        resolve(err(new HttpError(500, {}, "Server Error")));
       });
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(403, "Client Error")));
+        resolve(err(new HttpError(403, {}, "Client Error")));
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {
-        resolve(err(new HttpError(502, "Gateway Timeout")));
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
       });
     }
     return new Promise((resolve) => {

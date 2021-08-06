@@ -55,21 +55,21 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(MutationTypes.SET_PREV, watchlists.prev);
       },
       respondWithClientError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithServerError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithParseError: (error: ParseError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
@@ -93,19 +93,19 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(MutationTypes.SET_PREV, watchlists.prev);
       },
       respondWithClientError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithServerError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithParseError: (error: ParseError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
@@ -119,7 +119,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       await interactor.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
-      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
       commit(MutationTypes.SET_NEXT, null);
       commit(MutationTypes.SET_PREV, null);
@@ -137,21 +137,21 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(MutationTypes.SET_PREV, watchlists.prev);
       },
       respondWithClientError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithServerError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
         commit(MutationTypes.SET_PREV, null);
       },
       respondWithParseError: (error: ParseError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_WATCHLISTS, []);
         commit(MutationTypes.SET_LOADING, false);
         commit(MutationTypes.SET_NEXT, null);
@@ -162,7 +162,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       interactor.execute(watchlist, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_WATCHLISTS, {} as IWatchlistData);
-      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
       commit(MutationTypes.SET_NEXT, null);
       commit(MutationTypes.SET_PREV, null);
@@ -194,7 +194,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
         commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
         commit(SingleWatchlistMutationType.SET_URL, "");
-        commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+        commit(SingleWatchlistMutationType.SET_ERROR, error);
         commit(SingleWatchlistMutationType.SET_LOADING, false);
         commit(MutationTypes.SET_LOADING, false);
       },
@@ -203,7 +203,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
         commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
         commit(SingleWatchlistMutationType.SET_URL, "");
-        commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+        commit(SingleWatchlistMutationType.SET_ERROR, error);
         commit(SingleWatchlistMutationType.SET_LOADING, false);
         commit(MutationTypes.SET_LOADING, false);
       },
@@ -212,7 +212,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
         commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
         commit(SingleWatchlistMutationType.SET_URL, "");
-        commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+        commit(SingleWatchlistMutationType.SET_ERROR, error);
         commit(SingleWatchlistMutationType.SET_LOADING, false);
         commit(MutationTypes.SET_LOADING, false);
       },
@@ -262,7 +262,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
       commit(SingleWatchlistMutationType.SET_LAST_MATCH, "");
       commit(SingleWatchlistMutationType.SET_N_TARGETS, "");
       commit(SingleWatchlistMutationType.SET_URL, "");
-      commit(SingleWatchlistMutationType.SET_ERROR, error.message);
+      commit(SingleWatchlistMutationType.SET_ERROR, error);
       commit(SingleWatchlistMutationType.SET_LOADING, false);
       commit(MutationTypes.SET_LOADING, false);
     }

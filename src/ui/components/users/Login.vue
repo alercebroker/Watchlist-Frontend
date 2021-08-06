@@ -11,7 +11,7 @@
                 v-model="username"
                 label="Username"
                 :rules="rules"
-                :error-messages="errorDetail"
+                :error-messages="detailError.detail"
                 :loading="loading"
               ></v-text-field>
             </v-col>
@@ -24,7 +24,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
                 :rules="rules"
-                :error-messages="errorDetail"
+                :error-messages="detailError.detail"
                 :loading="loading"
               ></v-text-field>
             </v-col>
@@ -58,9 +58,9 @@
               >
             </v-col>
           </v-row>
-          <v-row v-if="error">
+          <v-row v-if="genericError">
             <v-col>
-              <generic-error :error="error" />
+              <generic-error :error="genericError" />
             </v-col>
           </v-row>
         </v-container>
@@ -73,6 +73,8 @@
 import { ActionTypes } from "@/ui/store/user/actions";
 import Vue from "vue";
 import GenericError from "../shared/GenericError.vue";
+import { createNamespacedHelpers } from "vuex";
+const userHelper = createNamespacedHelpers("users");
 export default Vue.extend({
   components: { GenericError },
   props: {
@@ -90,32 +92,20 @@ export default Vue.extend({
     };
   },
   methods: {
+    ...userHelper.mapActions([ActionTypes.login]),
     onLoginClick(): void {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         const userInput = {
           username: this.username,
           password: this.password,
         };
-        this.$store.dispatch("users/" + ActionTypes.login, userInput);
+        this.login(userInput);
       }
     },
   },
   computed: {
-    errorDetail: function (): string {
-      return this.$store.state.users.error?.detail;
-    },
-    error: function (): string {
-      if (typeof this.$store.state.users.error == "object") {
-        return "";
-      }
-      return this.$store.state.users.error;
-    },
-    loading: function (): boolean {
-      return this.$store.state.users.loading;
-    },
-    email: function (): string {
-      return this.afterRegister ? this.$store.state.users.userData.email : "";
-    },
+    ...userHelper.mapState(["email", "loading"]),
+    ...userHelper.mapGetters(["genericError", "detailError", "errored"]),
   },
 });
 </script>

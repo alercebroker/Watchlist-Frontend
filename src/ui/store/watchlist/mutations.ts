@@ -16,7 +16,7 @@ export const mutations: MutationTree<WatchlistState> = {
   [MutationTypes.SET_WATCHLISTS](state, watchlists: IWatchlistData[]) {
     state.watchlists = watchlists;
   },
-  [MutationTypes.SET_ERROR](state, error: string) {
+  [MutationTypes.SET_ERROR](state, error: Error) {
     state.error = error;
   },
   [MutationTypes.SET_LOADING](state, loading: boolean) {

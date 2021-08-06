@@ -10,16 +10,16 @@
               <v-text-field
                 v-model="username"
                 label="Username"
-                :error-messages="error.username"
-                :loading="apiLoading"
+                :error-messages="detailError.username"
+                :loading="loading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="name"
                 label="First Name"
-                :error-messages="error.name"
-                :loading="apiLoading"
+                :error-messages="detailError.name"
+                :loading="loading"
               ></v-text-field>
             </v-col>
 
@@ -27,16 +27,16 @@
               <v-text-field
                 v-model="lastName"
                 label="Last Name"
-                :error-messages="error.last_name"
-                :loading="apiLoading"
+                :error-messages="detailError.last_name"
+                :loading="loading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="email"
                 label="Email"
-                :error-messages="error.email"
-                :loading="apiLoading"
+                :error-messages="detailError.email"
+                :loading="loading"
               ></v-text-field>
             </v-col>
 
@@ -47,16 +47,16 @@
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
-                :error-messages="error.password"
-                :loading="apiLoading"
+                :error-messages="detailError.password"
+                :loading="loading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="institution"
                 label="Institution"
-                :error-messages="error.institution"
-                :loading="apiLoading"
+                :error-messages="detailError.institution"
+                :loading="loading"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
@@ -64,8 +64,8 @@
                 v-model="role"
                 label="Role"
                 :items="roles"
-                :error-messages="error.role"
-                :loading="apiLoading"
+                :error-messages="detailError.role"
+                :loading="loading"
               ></v-select>
             </v-col>
           </v-row>
@@ -76,7 +76,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
 
-      <v-btn text @click="dialog = false">Cancel</v-btn>
+      <v-btn text @click="$emit('registerCancel')">Cancel</v-btn>
 
       <v-btn id="send" color="primary" text @click="onRegisterClick"
         >Send</v-btn
@@ -89,6 +89,8 @@
 import Vue from "vue";
 import { ActionTypes, RegisterInput } from "@/ui/store/user/actions";
 import GenericError from "../shared/GenericError.vue";
+import { createNamespacedHelpers } from "vuex";
+const userHelper = createNamespacedHelpers("users");
 export default Vue.extend({
   components: { GenericError },
   data() {
@@ -106,29 +108,20 @@ export default Vue.extend({
     };
   },
   computed: {
-    apiLoading: function (): boolean {
-      return this.$store.state.users.loading;
-    },
-    error: function (): Record<string, string> | string {
-      return this.$store.state.users.error || "";
-    },
-    genericError: function (): string {
-      if (typeof this.$store.state.users.error == "string")
-        return this.$store.state.users.error;
-      return "";
-    },
+    ...userHelper.mapGetters(["genericError", "detailError", "errored"]),
+    ...userHelper.mapState(["loading"]),
   },
   watch: {
-    apiLoading(val) {
-      if (this.error === null && val === false && this.registerSent) {
+    loading(val) {
+      if (!this.errored && val === false && this.registerSent) {
         this.$emit("registered");
       }
     },
   },
   methods: {
+    ...userHelper.mapActions([ActionTypes.registerUser]),
     async onRegisterClick() {
-      const form: any = this.$refs.form;
-      if (form.validate()) {
+      if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         const userInput: RegisterInput = {
           username: this.username,
           name: this.name,
@@ -138,11 +131,10 @@ export default Vue.extend({
           institution: this.institution,
           role: this.role,
         };
-        await this.$store.dispatch(
-          "users/" + ActionTypes.registerUser,
-          userInput
-        );
-        this.registerSent = true;
+        await this.registerUser(userInput);
+        if (!this.errored) {
+          this.registerSent = true;
+        }
       }
     },
   },

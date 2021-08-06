@@ -49,16 +49,15 @@ describe("CreateWatchlist Component", () => {
         ),
       });
       const button = wrapper.find("#send");
-      console.log(wrapper.vm.$data.title);
       await button.trigger("click");
       await flushPromises();
-      console.log(store.state.watchlists.watchlists);
+      await flushPromises();
       expect(wrapper.emitted().created).toBeTruthy();
-      // const watchlist = store.state.watchlists.watchlists.pop();
-      // expect(watchlist).not.toBeUndefined();
-      // if (watchlist) {
-      //   expect(watchlist.title).toEqual("title");
-      // }
+      const watchlist = store.state.watchlists.watchlists.pop();
+      expect(watchlist).not.toBeUndefined();
+      if (watchlist) {
+        expect(watchlist.title).toEqual("title");
+      }
     });
 
     it("should emit canceled on cancel click", async () => {
@@ -77,6 +76,7 @@ describe("CreateWatchlist Component", () => {
     beforeEach(() => {
       resetContainer();
       containerBuilder();
+      container.bind<TestActions>("ActionType").toConstantValue("clientError");
       mockSingleton<IWatchlistRepository>(
         cid.WatchlistService,
         MockWatchlistService
@@ -84,22 +84,43 @@ describe("CreateWatchlist Component", () => {
       vuetify = new Vuetify();
       store = storeCreator.create();
     });
-    // it("should show error if target data is wrong", async () => {
-    //   // container.bind<TestActions>("ActionType").toConstantValue("clientError");
-    //   const wrapper = mount(CreateWatchlist, {
-    //     localVue,
-    //     store,
-    //     vuetify,
-    //   });
-    //   await wrapper.setData({
-    //     title: "title",
-    //     csvData: "name,radius,ra,dec\nTarget 0,1.0,1.0,1.0",
-    //   });
-    //   const send = wrapper.find("#send");
-    //   await send.trigger("click");
-    //   await flushPromises();
-    //   const alert = wrapper.find(".v-alert");
-    //   expect(alert.text()).toContain("Line: 2");
-    // });
+    it("should show error if creation fails", async () => {
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      await wrapper.setData({
+        title: "title",
+        selectedFile: new File(["name,radius,ra,dec\na,b,c,d"], "test.csv", {
+          type: "text/csv",
+        }),
+      });
+      const send = wrapper.find("#send");
+      await send.trigger("click");
+      await flushPromises();
+      await flushPromises();
+      const alert = wrapper.find(".v-alert");
+      expect(alert.text()).toContain("Line: 2");
+    });
+    it("should show error csv is wrongly created", async () => {
+      const wrapper = mount(CreateWatchlist, {
+        localVue,
+        store,
+        vuetify,
+      });
+      await wrapper.setData({
+        title: "title",
+        selectedFile: new File(["name,radius,ra,dec\n"], "test.csv", {
+          type: "text/csv",
+        }),
+      });
+      const send = wrapper.find("#send");
+      await send.trigger("click");
+      await flushPromises();
+      await flushPromises();
+      const alert = wrapper.find(".v-alert");
+      expect(alert.text()).toContain("Line: 2");
+    });
   });
 });

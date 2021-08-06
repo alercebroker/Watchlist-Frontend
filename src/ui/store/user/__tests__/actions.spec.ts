@@ -351,7 +351,7 @@ describe("UserActions", () => {
       expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        HttpError.fromStatus(403, "Client Error")
+        HttpError.fromStatus(403, {}, "Client Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -374,7 +374,7 @@ describe("UserActions", () => {
       expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        HttpError.fromStatus(500, "Server Error")
+        HttpError.fromStatus(500, {}, "Server Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,

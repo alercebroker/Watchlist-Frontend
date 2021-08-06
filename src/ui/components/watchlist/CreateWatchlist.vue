@@ -5,11 +5,8 @@
       v-if="detailError.targets != undefined"
       :errors="detailError.targets"
     />
-    <csv-error
-      v-if="detailError.row"
-      :error="detailError.message"
-      :line="detailError.row"
-    />
+    <csv-error v-if="csvError" :error="csvError.message" :line="csvError.row" />
+    <generic-error v-if="genericError" :error="genericError" />
     <v-card-text>
       <v-form ref="form">
         <v-container>
@@ -57,6 +54,7 @@ import { parse, ParseError, ParseResult } from "papaparse";
 import { MutationTypes } from "@/ui/store/watchlist/mutations";
 import { ITargetData } from "@/app/target/domain/Target.types";
 import CsvError from "./CsvError.vue";
+import GenericError from "../shared/GenericError.vue";
 const watchlistHelper = createNamespacedHelpers("watchlists");
 
 type CsvTarget = {
@@ -67,49 +65,50 @@ type CsvTarget = {
 };
 
 export default Vue.extend({
-  components: { TargetsError, CsvError },
+  components: { TargetsError, CsvError, GenericError },
   data: (): {
     title: string;
     selectedFile: File | null;
     rules: Array<CallableFunction | string>;
+    parsedCsv: CsvTarget[];
   } => ({
     title: "",
     rules: [(v: string) => v.length > 0 || "Field can't be empty"],
     selectedFile: null,
+    parsedCsv: [],
   }),
   computed: {
-    ...watchlistHelper.mapGetters(["genericError", "detailError", "errored"]),
+    ...watchlistHelper.mapGetters([
+      "genericError",
+      "csvError",
+      "detailError",
+      "errored",
+    ]),
   },
   methods: {
     ...watchlistHelper.mapActions([ActionTypes.createWatchlist]),
     ...watchlistHelper.mapMutations([MutationTypes.SET_ERROR]),
-    async handleComplete(results: ParseResult<CsvTarget>, _file: File) {
-      if (results.errors.length) {
-        this.SET_ERROR(results.errors[0]);
-      } else {
-        const watchlistInput: WatchlistInput = {
-          title: this.title,
-          targets: results.data.map(
-            (value) =>
-              ({
-                name: value.name,
-                ra: value.ra,
-                dec: value.dec,
-                radius: value.radius,
-              } as ITargetData)
-          ),
-        };
-        await this.createWatchlist(watchlistInput);
-        if (!this.errored) {
-          this.$emit("created");
-          console.log("emmited");
-        }
-      }
-    },
-    handleError(error: ParseError, _file: File) {
+    handleError(error: ParseError) {
       this.SET_ERROR(error);
     },
-    onCreateClick() {
+    async handleComplete(results: ParseResult<CsvTarget>) {
+      this.parsedCsv = results.data;
+      const watchlistInput: WatchlistInput = {
+        title: this.title,
+        targets: this.parsedCsv.map(
+          (value) =>
+            ({
+              name: value.name,
+              ra: value.ra,
+              dec: value.dec,
+              radius: value.radius,
+            } as ITargetData)
+        ),
+      };
+      await this.createWatchlist(watchlistInput);
+      if (!this.errored) this.$emit("created");
+    },
+    async onCreateClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         if (this.selectedFile != null) {
           parse(this.selectedFile, {
@@ -120,7 +119,6 @@ export default Vue.extend({
         }
       }
     },
-
     onCancelClick() {
       this.$emit("canceled");
     },
