@@ -102,7 +102,7 @@ describe("RegisterUser Component", () => {
       ).toBe(
         (
           "We found an error: " +
-          store.state.users.error +
+          store.getters["users/genericError"] +
           ". Please contact the ALeRCE Team"
         ).replace(/\s+/g, "")
       );

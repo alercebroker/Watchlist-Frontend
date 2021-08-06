@@ -128,7 +128,8 @@ export class MockUserApi extends HttpService {
 
   setServerErrorActions(): void {
     this.mock.onPost("/users/login/").reply(500);
-    this.mock.onPost("/users").reply(500);
+    this.mock.onPost("/users/").reply(500);
+    this.mock.onPost("/users/activation/").reply(500);
   }
 
   setTimeoutActions(): void {
