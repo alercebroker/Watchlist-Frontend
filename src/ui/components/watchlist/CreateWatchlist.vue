@@ -113,6 +113,7 @@ export default Vue.extend({
         if (this.selectedFile != null) {
           parse(this.selectedFile, {
             header: true,
+            skipEmptyLines: true,
             error: this.handleError,
             complete: this.handleComplete,
           });
