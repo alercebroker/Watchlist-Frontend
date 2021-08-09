@@ -53,7 +53,7 @@ export default Vue.extend({
   methods: {
     logout() {
       this.$store.dispatch("users/" + ActionTypes.logout);
-      this.$router.push('/')
+      this.$router.push("/");
 
       this.$emit("loggedout");
     },

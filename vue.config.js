@@ -1,15 +1,16 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const TerserPlugin = require("terser-webpack-plugin");
 module.exports = {
   configureWebpack: (config) => {
-    config.optimization.minimize = false
+    config.optimization.minimize = false;
     config.optimization.minimizer = [
       new TerserPlugin({
         terserOptions: {
           keep_classnames: true,
-          keep_fnames: true
-        }
-      })
-    ]
+          keep_fnames: true,
+        },
+      }),
+    ];
   },
 
   transpileDependencies: ["vuetify"],
