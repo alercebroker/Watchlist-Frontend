@@ -9,6 +9,7 @@
               <th class="text-left">Name</th>
               <th class="text-left">Ra</th>
               <th class="text-left">Dec</th>
+              <th class="text-left"># Matches</th>
             </tr>
           </thead>
           <tbody>
@@ -25,6 +26,7 @@
               <td>{{ item.name }}</td>
               <td>{{ item.ra }}</td>
               <td>{{ item.dec }}</td>
+              <td>{{ item.nMatches }}</td>
             </tr>
           </tbody>
           <v-card v-if="targets" v-intersect="onIntersect"></v-card>
