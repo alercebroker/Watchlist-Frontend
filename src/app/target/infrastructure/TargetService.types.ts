@@ -1,5 +1,3 @@
-export interface TargetRequestModel {}
-
 export interface TargetListApiResponse {
   id: number;
   url: string;

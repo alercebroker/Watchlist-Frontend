@@ -431,5 +431,3 @@ describe("deleteWatchlist", () => {
     );
   });
 });
-
-describe("selectWatchlist", () => {});

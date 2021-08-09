@@ -2,7 +2,7 @@
   <v-app>
     <v-main>
       <a-header title="ALeRCE Watchlist"></a-header>
-      <router-view/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
