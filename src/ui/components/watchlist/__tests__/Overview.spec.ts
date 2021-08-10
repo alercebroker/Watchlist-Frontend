@@ -14,6 +14,8 @@ import TargetScrollingList from "../TargetScrollingList.vue";
 import "./intersectionObserverMock";
 import flushPromises from "flush-promises";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
+import { Getters as MatchesGetters } from "@/ui/store/matches/getters";
+import { ITargetData } from "@/app/target/domain/Target.types";
 
 const modules = (): Modules => ({
   modules: {
@@ -56,11 +58,20 @@ const modules = (): Modules => ({
         matches: [
           {
             object_id: "oid1",
+            date: "2020-01-01",
             candid: "candid1",
           },
         ],
         loading: false,
       },
+      getters: {
+        formattedMJDMatches: () => [
+          { object_id: "oid1", date: "123", candid: "candid1" },
+        ],
+        formattedUTCMatches: () => [
+          { object_id: "oid1", date: "some date", candid: "candid1" },
+        ],
+      } as MatchesGetters,
     },
   },
 });
@@ -142,6 +153,10 @@ describe("Overview", () => {
     it("should display nothing if no targets available", async () => {
       const emptyModules = modules();
       emptyModules.modules.matches.state.matches = [];
+      emptyModules.modules.matches.getters = {
+        formattedUTCMatches: () => [],
+        formattedMJDMatches: () => [],
+      };
       container.unbind("Modules");
       container.bind<Modules>("Modules").toConstantValue(emptyModules);
       container.unbind(cid.StoreCreator);
@@ -153,8 +168,8 @@ describe("Overview", () => {
         store,
         vuetify,
       });
-      await wrapper.setData({ selectedTarget: "test" });
-      flushPromises();
+      await wrapper.setData({ selectedTarget: {} as ITargetData });
+      await flushPromises();
       expect(wrapper.find("#matchFoot").find("p").text()).toBe(
         "No matches for this target"
       );

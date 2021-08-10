@@ -80,7 +80,7 @@ export default Vue.extend({
       loadingMatches: function (state: MatchesState): boolean {
         return state.loading;
       },
-      matchesNextPage: function (state: MatchesState): boolean {
+      matchesNextPage: function (): boolean {
         // TODO return state next page
         return false;
       },

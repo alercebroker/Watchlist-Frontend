@@ -9,6 +9,7 @@ import TargetList from "@/ui/components/watchlist/TargetList.vue";
 import flushPromises from "flush-promises";
 import { Modules } from "@/ui/store/RegisterModules";
 import { IRootState } from "@/ui/store/Store.types";
+import { ActionTypes } from "@/ui/store/targets/actions";
 
 const modules = {
   modules: {
@@ -23,7 +24,9 @@ const modules = {
     },
     targets: {
       namespaced: true,
-      actions: {},
+      actions: {
+        [ActionTypes.getTargets]: jest.fn(),
+      },
       mutations: {},
       state: {
         targets: [
@@ -69,7 +72,9 @@ describe("List Targets", () => {
         },
         targets: {
           namespaced: true,
-          actions: {},
+          actions: {
+            [ActionTypes.getTargets]: jest.fn(),
+          },
           mutations: {},
           state: {
             targets: [],
