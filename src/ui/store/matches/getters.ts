@@ -4,7 +4,7 @@ import { GetterTree } from "vuex";
 import { IRootState } from "../Store.types";
 import { MatchesState } from "./state";
 
-type Getters = {
+export type Getters = {
   formattedUTCMatches(state: MatchesState): IMatchData[];
   formattedMJDMatches(state: MatchesState): IMatchData[];
 };

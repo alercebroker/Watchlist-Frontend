@@ -33,7 +33,7 @@
               <td colspan="3">
                 <p
                   v-if="
-                    matches.length == 0 &&
+                    formattedMatches.length == 0 &&
                     selectedTarget != undefined &&
                     !loading
                   "
