@@ -1,14 +1,14 @@
 <template>
-  <v-row>
-    <v-col cols="5">
+  <overview-layout>
+    <template v-slot:targets>
       <target-scrolling-list
         :targets="targets"
         :loading="loadingTargets"
         @targetSelected="onTargetClick"
         @nextPage="onTargetsNextPage"
       />
-    </v-col>
-    <v-col cols="4">
+    </template>
+    <template v-slot:matches>
       <matches-scroling-list
         :matches="matches"
         :loading="loadingMatches"
@@ -16,19 +16,19 @@
         @matchSelected="onMatchClick"
         @nextPage="onMatchesNextPage"
       />
-    </v-col>
-    <v-col cols="3">
+    </template>
+    <template v-slot:alertInfo>
       <v-card height="100%">
         <v-card-title>Alert Info</v-card-title>
         <v-card-text>
           Link to Explorer:
-          <a :href="'https://alerce.online/object/' + currentOid">
-            {{ currentOid }}
-          </a>
+          <a :href="'https://alerce.online/object/' + currentOid">{{
+            currentOid
+          }}</a>
         </v-card-text>
       </v-card>
-    </v-col>
-  </v-row>
+    </template>
+  </overview-layout>
 </template>
 
 <script lang="ts">
@@ -43,12 +43,13 @@ import { MutationTypes } from "@/ui/store/matches/mutations";
 import TargetScrollingList from "./TargetScrollingList.vue";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 import MatchesScrolingList from "./MatchesScrolingList.vue";
+import OverviewLayout from "@/ui/layouts/OverviewLayout.vue";
 
 const targetsHelper = createNamespacedHelpers("targets");
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const matchesHelper = createNamespacedHelpers("matches");
 export default Vue.extend({
-  components: { TargetScrollingList, MatchesScrolingList },
+  components: { TargetScrollingList, MatchesScrolingList, OverviewLayout },
   data: (): {
     selectedMatch: IMatchData | null;
     selectedTarget: ITargetData | null;

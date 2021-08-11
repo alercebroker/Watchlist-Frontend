@@ -2,7 +2,7 @@
   <v-card height="100%">
     <v-card-text>
       <v-row>
-        <v-col cols="8">
+        <v-col cols="12" sm="8">
           <v-select
             :value="
               watchlists.length > 0 ? watchlists[selectedItem].title : null
@@ -16,12 +16,12 @@
             </template>
           </v-select>
         </v-col>
-        <v-col cols="1">
+        <v-col cols="6" sm="1">
           <v-btn icon fab outlined @click="clickCreateWatchlist">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="1">
+        <v-col cols="6" sm="1">
           <v-btn icon fab outlined color="red" @click="clickDeleteWatchlist">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
