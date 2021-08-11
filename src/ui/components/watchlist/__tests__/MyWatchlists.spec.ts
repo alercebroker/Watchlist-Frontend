@@ -2,7 +2,7 @@ import { containerBuilder } from "@/ui/app.container";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { MockWatchlistService } from "@/app/watchlist/infrastructure/__tests__/WatchlistService.mock";
 import { TestActions } from "@/shared/http";
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, mount, shallowMount } from "@vue/test-utils";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import Vue from "vue";
 import Vuetify from "vuetify";
@@ -192,11 +192,12 @@ describe("List Watchlist", () => {
     container.addSingleton<IStoreCreator>(StoreCreator);
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     store = storeCreator.create();
-    const wrapper = mount(MyWatchlists, {
+    mount(MyWatchlists, {
       localVue,
       store,
       vuetify,
     });
+    await flushPromises();
     await flushPromises();
     expect(
       localModules.modules.watchlists.actions[ActionTypes.getAllWatchlists]

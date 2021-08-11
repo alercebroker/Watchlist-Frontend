@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col>
+    <v-col cols="5">
       <target-scrolling-list
         :targets="targets"
         :loading="loadingTargets"
@@ -8,7 +8,7 @@
         @nextPage="onTargetsNextPage"
       />
     </v-col>
-    <v-col>
+    <v-col cols="4">
       <matches-scroling-list
         :matches="matches"
         :loading="loadingMatches"
@@ -17,14 +17,14 @@
         @nextPage="onMatchesNextPage"
       />
     </v-col>
-    <v-col>
+    <v-col cols="3">
       <v-card height="100%">
         <v-card-title>Alert Info</v-card-title>
         <v-card-text>
           Link to Explorer:
-          <a :href="'https://alerce.online/object/' + currentOid">{{
-            currentOid
-          }}</a>
+          <a :href="'https://alerce.online/object/' + currentOid">
+            {{ currentOid }}
+          </a>
         </v-card-text>
       </v-card>
     </v-col>
