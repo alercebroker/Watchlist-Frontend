@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title class="headline">Register New User </v-card-title>
+    <v-card-title class="headline">Register New User</v-card-title>
     <generic-error v-if="genericError" :error="genericError" />
     <v-card-text>
       <v-form ref="form">
@@ -109,11 +109,11 @@ export default Vue.extend({
   },
   computed: {
     ...userHelper.mapGetters(["genericError", "detailError", "errored"]),
-    ...userHelper.mapState(["loading"]),
+    ...userHelper.mapState(["loading", "userData"]),
   },
   watch: {
-    loading(val) {
-      if (!this.errored && val === false && this.registerSent) {
+    userData(val) {
+      if (!this.errored && val != null && this.registerSent) {
         this.$emit("registered");
       }
     },
@@ -132,9 +132,7 @@ export default Vue.extend({
           role: this.role,
         };
         await this.registerUser(userInput);
-        if (!this.errored) {
-          this.registerSent = true;
-        }
+        this.registerSent = true;
       }
     },
   },

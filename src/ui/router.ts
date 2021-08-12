@@ -3,9 +3,10 @@ import VueRouter, { Route } from "vue-router";
 import Home from "./pages/Home.vue";
 import Howto from "./components/watchlist/HowTo.vue";
 import Activate from "./pages/Activate.vue";
+import Login from "./pages/Login.vue";
 Vue.use(VueRouter);
 
-const routes = [
+export const routes = [
   {
     path: "/",
     name: "home",
@@ -33,6 +34,15 @@ const routes = [
       title: process.env.VUE_APP_APP_TITLE + " - Activate Account",
     },
   },
+  {
+    path: "/login",
+    name: "login",
+    component: Login,
+    exact: true,
+    meta: {
+      title: process.env.VUE_APP_APP_TITLE + " - Login",
+    },
+  },
 ];
 
 const router = new VueRouter({
@@ -41,11 +51,16 @@ const router = new VueRouter({
   routes,
 });
 
+const isLogged = (): boolean => {
+  return localStorage.getItem("access_token") != null;
+};
+
 router.beforeEach((to: Route, _from: Route, next) => {
   if (to.meta) {
     document.title = to.meta.title;
   }
-  next();
+  if (to.name !== "login" && !isLogged()) next("/login");
+  else next();
 });
 
 export default router;

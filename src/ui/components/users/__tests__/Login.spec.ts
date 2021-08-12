@@ -11,16 +11,22 @@ import Vuex, { Store } from "vuex";
 import Login from "@/ui/components/users/Login.vue";
 import { IHttpService, MockUserApi, TestActions } from "@/shared/http";
 import flushPromises from "flush-promises";
+import VueRouter from "vue-router";
+import { routes } from "@/ui/router";
 
 describe("Login Component", () => {
   const localVue = createLocalVue();
   localVue.use(Vuex);
+  localVue.use(VueRouter);
   Vue.use(Vuetify);
   let vuetify: Vuetify;
   containerBuilder();
   const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
   let store: Store<IRootState>;
-
+  let router: VueRouter;
+  const $route = {
+    path: "/login",
+  };
   describe("Without Error", () => {
     beforeEach(() => {
       resetContainer();
@@ -29,6 +35,8 @@ describe("Login Component", () => {
       vuetify = new Vuetify();
       store = storeCreator.create();
       localStorage.clear();
+      router = new VueRouter({ routes });
+      router.push("/login");
     });
 
     it("should save user in store and save token on login click", async () => {
@@ -37,11 +45,13 @@ describe("Login Component", () => {
         localVue,
         store,
         vuetify,
+        router,
       });
       await wrapper.setData({ username: "test", password: "test" });
       const button = wrapper.find("#login");
       button.trigger("click");
       await flushPromises();
+      await wrapper.vm.$nextTick();
       // check store for user data
       expect(store.state.users.userData.username).toEqual("username");
       // check localStorage for token
@@ -53,13 +63,13 @@ describe("Login Component", () => {
         localVue,
         store,
         vuetify,
+        router,
       });
       await wrapper.setData({
         username: "",
       });
       const button = wrapper.find("#login");
       button.trigger("click");
-      await flushPromises();
       expect(store.state.users.userData).toStrictEqual({});
       expect(localStorage.getItem("token")).toBeNull();
     });
@@ -68,6 +78,7 @@ describe("Login Component", () => {
         localVue,
         store,
         vuetify,
+        router,
       });
       const button = wrapper.find("#register");
       button.trigger("click");
@@ -91,6 +102,7 @@ describe("Login Component", () => {
         localVue,
         store,
         vuetify,
+        router,
       });
       await wrapper.setData({ username: "test", password: "test" });
       const button = wrapper.find("#login");
@@ -107,6 +119,7 @@ describe("Login Component", () => {
         localVue,
         store,
         vuetify,
+        router,
       });
       await wrapper.setData({ username: "test", password: "test" });
       const button = wrapper.find("#login");

@@ -10,6 +10,7 @@ export enum MutationTypes {
   SET_NEXT = "SET_NEXT",
   SET_PREV = "SET_PREV",
   SET_PAGE = "SET_PAGE",
+  SET_DEFAULT_STATE = "SET_DEFAULT_STATE",
 }
 
 export const mutations: MutationTree<WatchlistState> = {
@@ -33,5 +34,13 @@ export const mutations: MutationTree<WatchlistState> = {
   },
   [MutationTypes.SET_PAGE](state, page: number) {
     state.page = page;
+  },
+  [MutationTypes.SET_DEFAULT_STATE](state) {
+    state.error = null;
+    state.watchlists = [];
+    state.loading = false;
+    state.nextPage = null;
+    state.prevPage = null;
+    state.page = 1;
   },
 };

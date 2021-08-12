@@ -8,6 +8,7 @@ export enum MutationTypes {
   SET_TARGETS = "SET_TARGETS",
   SET_PAGINATION_DATA = "SET_PAGINATION_DATA",
   APPEND_TARGETS = "APPEND_TARGETS",
+  SET_DEFAULT_STATE = "SET_DEFAULT_STATE",
 }
 
 export const mutations: MutationTree<TargetsState> = {
@@ -27,5 +28,12 @@ export const mutations: MutationTree<TargetsState> = {
   },
   [MutationTypes.APPEND_TARGETS](state, targets: ITargetData[]) {
     state.targets = state.targets.concat(targets);
+  },
+  [MutationTypes.SET_DEFAULT_STATE](state) {
+    state.targets = [];
+    state.error = null;
+    state.loading = false;
+    state.nextPage = null;
+    state.prevPage = null;
   },
 };

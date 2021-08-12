@@ -10,4 +10,5 @@ export const mockMutations: MutationTree<WatchlistState> = {
   [MutationTypes.SET_NEXT]: jest.fn(),
   [MutationTypes.SET_PAGE]: jest.fn(),
   [MutationTypes.SET_PREV]: jest.fn(),
+  [MutationTypes.SET_DEFAULT_STATE]: jest.fn(),
 };
