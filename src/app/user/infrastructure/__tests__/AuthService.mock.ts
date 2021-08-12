@@ -89,7 +89,8 @@ export class MockAuthService implements IUserRepository {
     });
   }
   logout(): Result<IUserData, Error> {
-    throw new Error("Method not implemented.");
+    if (this.actionType === "ok") return ok({} as IUserData);
+    else return err(new Error("error"));
   }
   activate(): Promise<Result<IUserData, ParseError | HttpError>> {
     if (this.actionType === "ok") {

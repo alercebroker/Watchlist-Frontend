@@ -15,6 +15,9 @@ import { cid, container } from "inversify-props";
 import { ActionTree } from "vuex";
 import { IRootState } from "../Store.types";
 import { MutationTypes } from "./mutations";
+import { MutationTypes as WatchlistMutationTypes } from "../watchlist/mutations";
+import { MutationTypes as TargetMutationTypes } from "../targets/mutations";
+import { MutationTypes as MatchesMutationTypes } from "../matches/mutations";
 import { UserState } from "./state";
 
 export enum ActionTypes {
@@ -134,6 +137,15 @@ export const actions: ActionTree<UserState, IRootState> = {
       respondWithSuccess: (userData) => {
         commit(MutationTypes.SET_USER_DATA, userData);
         commit(MutationTypes.SET_ERROR, false);
+        commit("watchlists/" + WatchlistMutationTypes.SET_DEFAULT_STATE, null, {
+          root: true,
+        });
+        commit("targets/" + TargetMutationTypes.SET_DEFAULT_STATE, null, {
+          root: true,
+        });
+        commit("matches/" + MatchesMutationTypes.SET_DEFAULT_STATE, null, {
+          root: true,
+        });
       },
       respondWithAppError: (error) => {
         commit(MutationTypes.SET_USER_DATA, {});

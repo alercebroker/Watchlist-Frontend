@@ -92,8 +92,7 @@ export class AuthService implements IUserRepository {
 
   logout(): Result<IUserData, Error> {
     try {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
+      localStorage.clear();
       return ok({} as IUserData);
     } catch (error) {
       return err(error);

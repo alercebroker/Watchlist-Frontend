@@ -31,8 +31,8 @@
             <v-col v-if="afterRegister" cols="12">
               <v-alert icon="mdi-email" color="blue-grey" dismissible>
                 Registered user successfully. Check the email we sent to
-                <strong>{{ email }} </strong> to activate the account. <br />
-                Enjoy ALeRCE Watchlist.
+                <strong>{{ userData.email }}</strong> to activate the account.
+                <br />Enjoy ALeRCE Watchlist.
               </v-alert>
             </v-col>
           </v-row>
@@ -93,19 +93,30 @@ export default Vue.extend({
   },
   methods: {
     ...userHelper.mapActions([ActionTypes.login]),
-    onLoginClick(): void {
+    async onLoginClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         const userInput = {
           username: this.username,
           password: this.password,
         };
-        this.login(userInput);
+        await this.login(userInput);
+        this.$emit("loginClick");
       }
     },
   },
   computed: {
-    ...userHelper.mapState(["email", "loading"]),
+    ...userHelper.mapState(["userData", "loading"]),
     ...userHelper.mapGetters(["genericError", "detailError", "errored"]),
+    logged: function (): boolean {
+      return this.userData.accessToken != null;
+    },
+  },
+  watch: {
+    logged(newVal) {
+      if (newVal) {
+        this.$router.push("/");
+      }
+    },
   },
 });
 </script>
