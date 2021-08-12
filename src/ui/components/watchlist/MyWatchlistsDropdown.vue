@@ -1,46 +1,33 @@
 <template>
   <v-card height="100%">
-    <v-card-title>My Watchlists</v-card-title>
-    <v-virtual-scroll :items="watchlists" item-height="50" bench="1">
-      <template v-slot:default="{ item, index }">
-        <div
-          class="watchlistItem"
-          :class="{ selectedItem: index === watchlist }"
-        >
-          <v-list-item :key="index" @click="onItemClick(index)">
-            <template v-slot:default>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title"></v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-btn
-                  v-show="index === watchlist"
-                  @click="clickDeleteWatchlist"
-                  icon
-                >
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-action>
+    <v-card-text>
+      <v-row>
+        <v-col cols="12" sm="8">
+          <v-select
+            :value="
+              watchlists.length > 0 ? watchlists[selectedItem].title : null
+            "
+            :items="watchlists.map((watchlist) => watchlist.title)"
+            @change="updateSelectedItem"
+            label="My Watchlists"
+          >
+            <template v-slot:append-item>
+              <v-card v-intersect="onIntersect"></v-card>
             </template>
-          </v-list-item>
-        </div>
-        <v-card
-          v-if="watchlists.length === index + 1"
-          id="hiddenCard"
-          v-intersect="onIntersect"
-        ></v-card>
-      </template>
-    </v-virtual-scroll>
-    <v-btn
-      @click="clickCreateWatchlist"
-      color="primary"
-      absolute
-      bottom
-      right
-      fab
-    >
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
+          </v-select>
+        </v-col>
+        <v-col cols="6" sm="1">
+          <v-btn icon fab outlined @click="clickCreateWatchlist">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-col>
+        <v-col cols="6" sm="1">
+          <v-btn icon fab outlined color="red" @click="clickDeleteWatchlist">
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card-text>
 
     <v-dialog v-model="watchlist_dialog" max-width="500">
       <create-watchlist
@@ -86,12 +73,20 @@
 import Vue, { VueConstructor } from "vue";
 import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist.vue";
 import MyWatchlistsMixin from "@/ui/mixins/watchlist/MyWatchlistsMixin";
+import { IWatchlistData } from "@/app/watchlist/domain";
 
 export default (Vue as VueConstructor<
   Vue & InstanceType<typeof MyWatchlistsMixin>
 >).extend({
   components: { CreateWatchlist },
   mixins: [MyWatchlistsMixin],
+  methods: {
+    updateSelectedItem(itemTitle: string) {
+      this.$data.selectedItem = this.watchlists.findIndex(
+        (w: IWatchlistData) => w.title === itemTitle
+      );
+    },
+  },
 });
 </script>
 

@@ -1,11 +1,9 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col xs="12">
-        <target-list />
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-row>
+    <v-col xs="12">
+      <target-list />
+    </v-col>
+  </v-row>
 </template>
 
 <script>

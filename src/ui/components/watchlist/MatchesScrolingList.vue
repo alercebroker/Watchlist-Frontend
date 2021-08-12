@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title>Matches</v-card-title>
     <v-card-text>
-      <v-simple-table height="800">
+      <v-simple-table :height="$vuetify.breakpoint.height - 250" dense>
         <template v-slot:default>
           <thead>
             <tr>

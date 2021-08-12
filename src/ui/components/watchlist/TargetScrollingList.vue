@@ -2,7 +2,12 @@
   <v-card id="targetsCard">
     <v-card-title>Targets</v-card-title>
     <v-card-text>
-      <v-simple-table height="800">
+      <v-simple-table
+        ref="targetsTable"
+        :height="$vuetify.breakpoint.height - 250"
+        dense
+        fixed-header
+      >
         <template v-slot:default>
           <thead>
             <tr>
@@ -29,7 +34,12 @@
               <td>{{ item.nMatches }}</td>
             </tr>
           </tbody>
-          <v-card v-if="targets" v-intersect="onIntersect"></v-card>
+          <v-card
+            id="hiddenTargetsCard"
+            ref="hiddenTargetsCard"
+            v-if="targets"
+            v-intersect="onIntersect"
+          ></v-card>
           <tfoot id="targetFoot">
             <tr>
               <td colspan="3">
@@ -55,8 +65,10 @@ export default Vue.extend({
   },
   data: (): {
     selectedTarget: ITargetData | null;
+    scrolled: boolean;
   } => ({
     selectedTarget: null,
+    scrolled: false,
   }),
   methods: {
     onTargetClick(item: ITargetData) {
@@ -70,6 +82,14 @@ export default Vue.extend({
       if (entries[0].isIntersecting) {
         this.debouncedFunction()();
       }
+      this.scrolled = entries[0].isIntersecting;
+    },
+  },
+  watch: {
+    targets() {
+      if (this.scrolled) {
+        this.debouncedFunction()();
+      }
     },
   },
 });
@@ -78,5 +98,8 @@ export default Vue.extend({
 <style>
 .rowSelected {
   background-color: grey;
+}
+.targetTable {
+  height: 50%;
 }
 </style>
