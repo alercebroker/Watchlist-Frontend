@@ -14,6 +14,7 @@ type IHttpRequest = {
   config?: AxiosRequestConfig;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: any;
 };
 
@@ -30,6 +31,10 @@ export interface IHttpService {
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
   post<T, M>(
+    request: IHttpRequest,
+    parser: Parser<T, M>
+  ): Promise<Result<M, ParseError | HttpError>>;
+  put<T, M>(
     request: IHttpRequest,
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
@@ -94,6 +99,18 @@ export class HttpService implements IHttpService {
         });
       }
       return err(error);
+    }
+  }
+
+  public async put<T, M>(
+    { url, data, config }: IHttpRequest,
+    parser: Parser<T, M>
+  ): Promise<Result<M, ParseError | HttpError>> {
+    try {
+      const response = await this.axiosService.put<T>(url, data, config);
+      return this._parseFailable<T, M>(response.data, parser.parseTo);
+    } catch (error) {
+      return this._retryOrReturnError<T, M>(error, parser);
     }
   }
 

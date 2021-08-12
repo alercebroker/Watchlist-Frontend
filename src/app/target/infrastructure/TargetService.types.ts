@@ -15,3 +15,11 @@ export interface WatchlistTargetsApiResponse {
   previous: string | null;
   results: TargetListApiResponse[];
 }
+
+export interface TargetEditApiResponse {
+  id: number;
+  name: string;
+  radius: number;
+  ra: number;
+  dec: number;
+}

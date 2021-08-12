@@ -25,4 +25,9 @@ export interface ITargetRepository {
     params: { watchlistId?: number; url?: string },
     paginationParams?: { ordering?: string; page?: number; page_size?: number }
   ): Promise<Result<ITargetList, ParseError | HttpError>>;
+  editTarget(params: {
+    target: ITargetData;
+    watchlist: number;
+    url?: string;
+  }): Promise<Result<ITargetData, ParseError | HttpError>>;
 }

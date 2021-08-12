@@ -11,6 +11,10 @@
       :options.sync="tableOptions"
       item-key="id"
     >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small class="mr-2" @click="editTarget(item)">mdi-pencil</v-icon>
+        <v-icon small @click="deleteTarget(item)">mdi-delete</v-icon>
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -39,7 +43,7 @@ export default Vue.extend({
       { text: "Dec", value: "dec", sortable: false },
       { text: "radius", value: "radius", sortable: false },
       { text: "N matches", value: "nMatches", sortable: false },
-      { text: "", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: false },
     ],
     tableOptions: {} as DataOptions,
     currentPage: 1,

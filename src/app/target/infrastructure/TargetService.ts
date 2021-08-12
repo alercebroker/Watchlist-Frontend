@@ -9,7 +9,10 @@ import {
   ITargetRepository,
 } from "../domain/Target.types";
 import { TargetParser } from "./TargetParser";
-import { WatchlistTargetsApiResponse } from "./TargetService.types";
+import {
+  TargetEditApiResponse,
+  WatchlistTargetsApiResponse,
+} from "./TargetService.types";
 
 type PaginationParams = {
   ordering?: string;
@@ -24,6 +27,32 @@ export class TargetService implements ITargetRepository {
     this.httpService = usersApiService;
     this.parser = new TargetParser();
   }
+
+  editTarget(params: {
+    target: ITargetData;
+    watchlist: number;
+    url?: string;
+  }): Promise<Result<ITargetData, ParseError | HttpError>> {
+    const parseTo = (response: TargetEditApiResponse) => {
+      response;
+      return this.parser.toDomain(response);
+    };
+    if (params.url)
+      return this.httpService.put(
+        { url: params.url, data: params.target },
+        { parseTo }
+      );
+    else
+      return this.httpService.put(
+        {
+          url:
+            "/watchlists/" + params.watchlist + "/targets/" + params.target.id,
+          data: params.target,
+        },
+        { parseTo }
+      );
+  }
+
   getAllTargets(
     params: { watchlistId?: number; url?: string },
     paginationParams?: PaginationParams
@@ -37,6 +66,7 @@ export class TargetService implements ITargetRepository {
       return this.getTargetsFromUrl(params.url || "", paginationParams);
     }
   }
+
   private async getTargetsFromWatchlistId(
     id: number,
     params?: PaginationParams

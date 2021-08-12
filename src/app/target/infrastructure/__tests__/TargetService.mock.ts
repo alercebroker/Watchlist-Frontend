@@ -36,6 +36,11 @@ export class MockTargetService implements ITargetRepository {
   constructor(@inject("ActionType") actionType: TestActions) {
     this.actionType = actionType;
   }
+  editTarget(params: {
+    target: ITargetData;
+  }): Promise<Result<ITargetData, ParseError | HttpError>> {
+    throw new Error("Method not implemented.");
+  }
   getAllTargets(
     params: any,
     paginationParams: any
