@@ -10,8 +10,10 @@ import flushPromises from "flush-promises";
 import { Modules } from "@/ui/store/RegisterModules";
 import { IRootState } from "@/ui/store/Store.types";
 import { ActionTypes } from "@/ui/store/targets/actions";
+import { getters } from "@/ui/store/targets/getters";
+import { mockActions } from "@/ui/store/targets/__tests__/actions.mock";
 
-const modules = {
+const modules = (): Modules => ({
   modules: {
     singleWatchlist: {
       namespaced: true,
@@ -24,21 +26,20 @@ const modules = {
     },
     targets: {
       namespaced: true,
-      actions: {
-        [ActionTypes.getTargets]: jest.fn(),
-      },
+      actions: mockActions(),
       mutations: {},
       state: {
         targets: [
           {
+            id: 1,
             name: "test",
           },
         ],
       },
-      getters: {},
+      getters: getters,
     },
   },
-};
+});
 
 describe("List Targets", () => {
   containerBuilder();
@@ -53,7 +54,7 @@ describe("List Targets", () => {
     containerBuilder();
     vuetify = new Vuetify();
     container.unbind("Modules");
-    container.bind<Modules>("Modules").toConstantValue(modules);
+    container.bind<Modules>("Modules").toConstantValue(modules());
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     store = storeCreator.create();
   });
@@ -79,7 +80,7 @@ describe("List Targets", () => {
           state: {
             targets: [],
           },
-          getters: {},
+          getters: getters,
         },
       },
     };
@@ -113,5 +114,129 @@ describe("List Targets", () => {
     trs.wrappers.forEach((tr) => {
       expect(tr.find("td").text()).toBe("test");
     });
+  });
+});
+describe("Edit Targets", () => {
+  containerBuilder();
+  const localVue = createLocalVue();
+  localVue.use(Vuex);
+  Vue.use(Vuetify);
+  let vuetify: Vuetify;
+  let store: Store<IRootState>;
+  let localModules: Modules;
+
+  beforeEach(() => {
+    resetContainer();
+    containerBuilder();
+    vuetify = new Vuetify();
+    container.unbind("Modules");
+    localModules = modules();
+    container.bind<Modules>("Modules").toConstantValue(localModules);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
+  });
+  it("should call editTarget action when saving form opened from the edit button", async () => {
+    const wrapper = mount(TargetList, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    const editBtn = wrapper.find("#edit1");
+    await editBtn.trigger("click");
+    const saveBtn = wrapper.find("#saveButton");
+    await saveBtn.trigger("click");
+    expect(
+      localModules.modules.targets.actions.editTarget
+    ).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Create Target", () => {
+  containerBuilder();
+  const localVue = createLocalVue();
+  localVue.use(Vuex);
+  Vue.use(Vuetify);
+  let vuetify: Vuetify;
+  let store: Store<IRootState>;
+  let localModules: Modules;
+
+  beforeEach(() => {
+    resetContainer();
+    containerBuilder();
+    vuetify = new Vuetify();
+    container.unbind("Modules");
+    localModules = modules();
+    container.bind<Modules>("Modules").toConstantValue(localModules);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
+  });
+  it("should call createTarget action when saving form opened from the create button", async () => {
+    const wrapper = mount(TargetList, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    const createBtn = wrapper.find("#createBtn");
+    await createBtn.trigger("click");
+    const saveBtn = wrapper.find("#saveButton");
+    await saveBtn.trigger("click");
+    expect(
+      localModules.modules.targets.actions.createTarget
+    ).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Delete Target", () => {
+  containerBuilder();
+  const localVue = createLocalVue();
+  localVue.use(Vuex);
+  Vue.use(Vuetify);
+  let vuetify: Vuetify;
+  let store: Store<IRootState>;
+  let localModules: Modules;
+
+  beforeEach(() => {
+    resetContainer();
+    containerBuilder();
+    vuetify = new Vuetify();
+    container.unbind("Modules");
+    localModules = modules();
+    container.bind<Modules>("Modules").toConstantValue(localModules);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
+  });
+  it("should call deleteTarget action when dialog opened from the delete button is confirmed", async () => {
+    const wrapper = mount(TargetList, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    const deleteBtn = wrapper.find("#deleteButton");
+    await deleteBtn.trigger("click");
+    const okBtn = wrapper.find("#deleteConfirm");
+    await okBtn.trigger("click");
+    expect(
+      localModules.modules.targets.actions.deleteTarget
+    ).toHaveBeenCalledTimes(1);
+  });
+  it("should not call deleteTarget action when dialog opened from the delete button is canceled", async () => {
+    const wrapper = mount(TargetList, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    const deleteBtn = wrapper.find("#deleteButton");
+    await deleteBtn.trigger("click");
+    expect(wrapper.vm.$data.dialogDelete).toBeTruthy();
+    const okBtn = wrapper.find("#deleteCancel");
+    await okBtn.trigger("click");
+    expect(
+      localModules.modules.targets.actions.deleteTarget
+    ).toHaveBeenCalledTimes(0);
+    expect(wrapper.vm.$data.dialogDelete).toBeFalsy();
   });
 });

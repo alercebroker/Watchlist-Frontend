@@ -9,13 +9,15 @@ export enum MutationTypes {
   SET_PAGINATION_DATA = "SET_PAGINATION_DATA",
   APPEND_TARGETS = "APPEND_TARGETS",
   SET_DEFAULT_STATE = "SET_DEFAULT_STATE",
+  UPDATE_TARGET = "UPDATE_TARGET",
+  DELETE_TARGET = "DELETE_TARGET",
 }
 
 export const mutations: MutationTree<TargetsState> = {
   [MutationTypes.SET_TARGETS](state, targets: ITargetData[]) {
     state.targets = targets;
   },
-  [MutationTypes.SET_ERROR](state, error: string) {
+  [MutationTypes.SET_ERROR](state, error: Error) {
     state.error = error;
   },
   [MutationTypes.SET_LOADING](state, loading: boolean) {
@@ -35,5 +37,17 @@ export const mutations: MutationTree<TargetsState> = {
     state.loading = false;
     state.nextPage = null;
     state.prevPage = null;
+  },
+  [MutationTypes.UPDATE_TARGET](state, newTarget: ITargetData) {
+    const target = state.targets.find((t) => t.id === newTarget.id);
+    if (target) {
+      target.name = newTarget.name;
+      target.ra = newTarget.ra;
+      target.dec = newTarget.dec;
+      target.radius = newTarget.radius;
+    }
+  },
+  [MutationTypes.DELETE_TARGET](state, target: number) {
+    state.targets = state.targets.filter((t) => t.id != target);
   },
 };

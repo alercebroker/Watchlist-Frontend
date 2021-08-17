@@ -23,3 +23,6 @@ export interface TargetEditApiResponse {
   ra: number;
   dec: number;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface TargetCreateApiResponse extends TargetEditApiResponse {}
