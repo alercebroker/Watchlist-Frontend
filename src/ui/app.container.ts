@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { container } from "inversify-props";
-import { IHttpService } from "@/shared/http";
+import { cid, container, mockSingleton } from "inversify-props";
+import { IHttpService, TestActions } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
@@ -23,6 +23,10 @@ import { UsersApiService } from "@/shared/http/UsersApiService";
 import { modules, Modules } from "./store/RegisterModules";
 import { IStoreCreator, StoreCreator } from "./store/StoreCreator";
 import { Activate } from "@/app/user/use_case/Activate";
+import { EditTarget } from "@/app/target/use_case/EditTarget";
+import { CreateTarget } from "@/app/target/use_case/CreateTarget";
+import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
+import { DeleteTarget } from "@/app/target/use_case/DeleteTarget";
 
 export function containerBuilder(): void {
   container.addSingleton<IHttpService>(UsersApiService);
@@ -33,13 +37,19 @@ export function containerBuilder(): void {
   container.addSingleton<IWatchlistRepository>(WatchlistService);
   container.addSingleton<UseCaseInteractor>(GetAllWatchlists);
   container.addSingleton<UseCaseInteractor>(CreateWatchlist);
-  container.addSingleton<ITargetRepository>(TargetService);
-  container.addSingleton<UseCaseInteractor>(GetTargets);
   container.addSingleton<UseCaseInteractor>(SelectWatchlist);
   container.addSingleton<UseCaseInteractor>(DeleteWatchlist);
+  container.addSingleton<ITargetRepository>(TargetService);
+  container.addSingleton<UseCaseInteractor>(GetTargets);
+  container.addSingleton<UseCaseInteractor>(EditTarget);
+  container.addSingleton<UseCaseInteractor>(CreateTarget);
+  container.addSingleton<UseCaseInteractor>(DeleteTarget);
   container.addSingleton<IMatchRepository>(MatchService);
   container.addSingleton<UseCaseInteractor>(GetMatches);
   container.addSingleton<UseCaseInteractor>(Activate);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
+
+  // container.bind<TestActions>("ActionType").toConstantValue("clientError");
+  // mockSingleton<ITargetRepository>(cid.TargetService, MockTargetService);
 }

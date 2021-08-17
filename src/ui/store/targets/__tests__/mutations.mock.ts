@@ -8,4 +8,6 @@ export const mockMutations = (): MutationTree<TargetsState> => ({
   [MutationTypes.SET_ERROR]: jest.fn(),
   [MutationTypes.SET_LOADING]: jest.fn(),
   [MutationTypes.SET_DEFAULT_STATE]: jest.fn(),
+  [MutationTypes.UPDATE_TARGET]: jest.fn(),
+  [MutationTypes.DELETE_TARGET]: jest.fn(),
 });

@@ -19,4 +19,13 @@ export class Target implements ITargetData {
     this.nMatches = data.nMatches;
     this.lastMatch = data.lastMatch;
   }
+  validate(): boolean {
+    return (
+      this.id != undefined &&
+      this.name != undefined &&
+      this.radius != undefined &&
+      this.ra != undefined &&
+      this.dec != undefined
+    );
+  }
 }
