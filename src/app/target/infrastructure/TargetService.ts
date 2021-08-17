@@ -67,6 +67,24 @@ export class TargetService implements ITargetRepository {
     }
   }
 
+  async bulkUpdateTargets(
+    params: {
+      targetsList: ITargetData[];
+      watchlistId: number;
+    },
+    paginationParams?: PaginationParams
+  ): Promise<Result<ITargetList, ParseError | HttpError>> {
+    const result = await this.httpService.put(
+      {
+        url: "/watchlists/" + params.watchlistId + "/batch_targets/",
+        data: params.targetsList,
+      },
+      { parseTo: (): Result<ITargetList, ParseError> => ok({} as ITargetList) }
+    );
+    console.log(result);
+    return this.getAllTargets(params, paginationParams);
+  }
+
   private async getTargetsFromWatchlistId(
     id: number,
     params?: PaginationParams
@@ -96,7 +114,7 @@ export class TargetService implements ITargetRepository {
       }
     };
     return await this.httpService.get<WatchlistTargetsApiResponse, ITargetList>(
-      { url: "/watchlists/" + id + "/targets", params },
+      { url: "/watchlists/" + id + "/targets/", params },
       { parseTo }
     );
   }

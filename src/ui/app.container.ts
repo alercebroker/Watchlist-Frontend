@@ -13,6 +13,7 @@ import { CreateWatchlist } from "@/app/watchlist/use_case/CreateWatchlist";
 import { ITargetRepository } from "@/app/target/domain/Target.types";
 import { TargetService } from "@/app/target/infrastructure/TargetService";
 import { GetTargets } from "@/app/target/use_case/GetTargets";
+import { BulkUpdateTargets } from "@/app/target/use_case/BulkUpdateTargets";
 import { SelectWatchlist } from "@/app/watchlist/use_case/SelectWatchlist";
 import { DeleteWatchlist } from "@/app/watchlist/use_case/DeleteWatchlist";
 import { Logout } from "@/app/user/use_case/Logout";
@@ -35,6 +36,7 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(CreateWatchlist);
   container.addSingleton<ITargetRepository>(TargetService);
   container.addSingleton<UseCaseInteractor>(GetTargets);
+  container.addSingleton<UseCaseInteractor>(BulkUpdateTargets);
   container.addSingleton<UseCaseInteractor>(SelectWatchlist);
   container.addSingleton<UseCaseInteractor>(DeleteWatchlist);
   container.addSingleton<IMatchRepository>(MatchService);
