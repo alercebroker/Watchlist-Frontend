@@ -4,12 +4,15 @@ import { UsersApiService } from "@/shared/http/UsersApiService";
 import { inject } from "inversify-props";
 import { combine, err, ok, Result } from "neverthrow";
 import {
+  CreateTargetParams,
+  DeleteTargetParams,
   ITargetData,
   ITargetList,
   ITargetRepository,
 } from "../domain/Target.types";
 import { TargetParser } from "./TargetParser";
 import {
+  TargetCreateApiResponse,
   TargetEditApiResponse,
   WatchlistTargetsApiResponse,
 } from "./TargetService.types";
@@ -27,6 +30,34 @@ export class TargetService implements ITargetRepository {
     this.httpService = usersApiService;
     this.parser = new TargetParser();
   }
+  async deleteTarget(
+    params: DeleteTargetParams
+  ): Promise<Result<number, ParseError | HttpError>> {
+    const result = await this.httpService.delete({
+      url:
+        "/watchlists/" + params.watchlist + "/targets/" + params.target + "/",
+    });
+    if (result.isOk()) {
+      return ok(params.target);
+    } else {
+      return result;
+    }
+  }
+
+  createTarget(
+    params: CreateTargetParams
+  ): Promise<Result<ITargetData, ParseError | HttpError>> {
+    const parseTo = (response: TargetCreateApiResponse) => {
+      return this.parser.toDomain(response);
+    };
+    return this.httpService.post(
+      {
+        url: "/watchlists/" + params.watchlist + "/targets/",
+        data: params.target,
+      },
+      { parseTo }
+    );
+  }
 
   editTarget(params: {
     target: ITargetData;
@@ -34,7 +65,6 @@ export class TargetService implements ITargetRepository {
     url?: string;
   }): Promise<Result<ITargetData, ParseError | HttpError>> {
     const parseTo = (response: TargetEditApiResponse) => {
-      response;
       return this.parser.toDomain(response);
     };
     if (params.url)
@@ -46,7 +76,11 @@ export class TargetService implements ITargetRepository {
       return this.httpService.put(
         {
           url:
-            "/watchlists/" + params.watchlist + "/targets/" + params.target.id,
+            "/watchlists/" +
+            params.watchlist +
+            "/targets/" +
+            params.target.id +
+            "/",
           data: params.target,
         },
         { parseTo }

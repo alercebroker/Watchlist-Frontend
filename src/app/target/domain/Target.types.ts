@@ -20,14 +20,34 @@ export interface ITargetList {
   count: number;
 }
 
+export type EditTargetParams = {
+  target: ITargetData;
+  watchlist: number;
+  url?: string;
+};
+
+export type CreateTargetParams = {
+  target: ITargetData;
+  watchlist: number;
+};
+
+export type DeleteTargetParams = {
+  target: number;
+  watchlist: number;
+};
+
 export interface ITargetRepository {
   getAllTargets(
     params: { watchlistId?: number; url?: string },
     paginationParams?: { ordering?: string; page?: number; page_size?: number }
   ): Promise<Result<ITargetList, ParseError | HttpError>>;
-  editTarget(params: {
-    target: ITargetData;
-    watchlist: number;
-    url?: string;
-  }): Promise<Result<ITargetData, ParseError | HttpError>>;
+  editTarget(
+    params: EditTargetParams
+  ): Promise<Result<ITargetData, ParseError | HttpError>>;
+  createTarget(
+    params: CreateTargetParams
+  ): Promise<Result<ITargetData, ParseError | HttpError>>;
+  deleteTarget(
+    params: DeleteTargetParams
+  ): Promise<Result<number, ParseError | HttpError>>;
 }
