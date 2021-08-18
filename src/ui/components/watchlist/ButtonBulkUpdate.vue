@@ -24,7 +24,7 @@
         :error="csvError.message"
         :line="csvError.row"
       />
-      <generic-error v-if="genericError" :error="genericError" />
+      <generic-error v-if="genericError && !csvError" :error="genericError" />
       <v-card-text>
         <v-form ref="form">
           <v-container>
@@ -73,7 +73,7 @@ import {
 } from "@/ui/store/targets/actions";
 import { createNamespacedHelpers } from "vuex";
 import { ITargetData } from "@/app/target/domain/Target.types";
-import { MutationTypes } from "@/ui/store/watchlist/mutations";
+import { MutationTypes } from "@/ui/store/targets/mutations";
 import { parse, ParseError, ParseResult } from "papaparse";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import { TargetsState } from "@/ui/store/targets/state";
@@ -127,11 +127,13 @@ export default Vue.extend({
       MutationTypes.SET_ERROR,
       MutationTypes.SET_LOADING,
     ]),
-    handleError(error: ParseError | null) {
-      this.SET_ERROR(error);
-    },
     async handleComplete(results: ParseResult<CsvTarget>) {
       this.parsedCsv = results.data;
+      if (results.errors.length) {
+        this.SET_ERROR(results.errors[0]);
+        this.SET_LOADING(false);
+        return;
+      }
       const targets: BulkUpdateTargetsInput = {
         targetsList: this.parsedCsv.map(
           (value) =>
@@ -164,9 +166,7 @@ export default Vue.extend({
           parse(this.selectedFile, {
             header: true,
             skipEmptyLines: true,
-            error: this.handleError,
             complete: this.handleComplete,
-            worker: true,
           });
         }
       }

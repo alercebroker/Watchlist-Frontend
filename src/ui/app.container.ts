@@ -1,6 +1,4 @@
 import "reflect-metadata";
-// import { cid, container, mockSingleton } from "inversify-props";
-// import { IHttpService, TestActions } from "@/shared/http";
 import { container } from "inversify-props";
 import { IHttpService } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
@@ -28,7 +26,6 @@ import { IStoreCreator, StoreCreator } from "./store/StoreCreator";
 import { Activate } from "@/app/user/use_case/Activate";
 import { EditTarget } from "@/app/target/use_case/EditTarget";
 import { CreateTarget } from "@/app/target/use_case/CreateTarget";
-// import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
 import { DeleteTarget } from "@/app/target/use_case/DeleteTarget";
 
 export function containerBuilder(): void {
@@ -48,13 +45,9 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(CreateTarget);
   container.addSingleton<UseCaseInteractor>(DeleteTarget);
   container.addSingleton<UseCaseInteractor>(BulkUpdateTargets);
-  container.addSingleton<UseCaseInteractor>(DeleteWatchlist);
   container.addSingleton<IMatchRepository>(MatchService);
   container.addSingleton<UseCaseInteractor>(GetMatches);
   container.addSingleton<UseCaseInteractor>(Activate);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
-
-  // container.bind<TestActions>("ActionType").toConstantValue("clientError");
-  // mockSingleton<ITargetRepository>(cid.TargetService, MockTargetService);
 }
