@@ -2,6 +2,7 @@
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ on, attrs }">
       <v-btn
+        id="openUpload"
         color="primary"
         small
         dark
@@ -12,7 +13,7 @@
         Update targets
       </v-btn>
     </template>
-    <v-card>
+    <v-card id="uploadCard">
       <v-card-title class="headline">Update targets via CSV</v-card-title>
       <targets-error
         v-if="detailError.targets != undefined"

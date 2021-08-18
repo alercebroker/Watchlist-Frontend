@@ -68,9 +68,12 @@ export class MockUserApi extends HttpService {
       const response = mockCreateWatchlistResponse;
       return [201, JSON.stringify(response)];
     });
-    this.mock.onGet("/watchlists/1/targets").reply((_config: any) => {
+    this.mock.onGet("/watchlists/1/targets/").reply((_config: any) => {
       const response = mockTargetsByWatchlist;
       return [200, JSON.stringify(response)];
+    });
+    this.mock.onPut("/watchlists/1/batch_targets/").reply((_config: any) => {
+      return [200];
     });
     this.mock.onGet("/watchlists/1").reply((_config: any) => {
       const response = mockSingleWatchlist;
@@ -131,6 +134,7 @@ export class MockUserApi extends HttpService {
     this.mock.onGet("/users/").networkError();
     this.mock.onPost("/watchlists/").networkError();
     this.mock.onGet("/watchlists/1/targets").networkError();
+    this.mock.onPut("/watchlists/1/targets/").networkError();
     this.mock.onGet("/watchlists/1").networkError();
     this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).networkError();
     this.mock.onPut(/\/watchlists\/\w+\/targets\/\w+/).networkError();
@@ -166,6 +170,7 @@ export class MockUserApi extends HttpService {
     this.mock.onGet("/users/").timeout();
     this.mock.onPost("/watchlists/").timeout();
     this.mock.onGet("/watchlists/1/targets").timeout();
+    this.mock.onPut("/watchlists/1/targets/").timeout();
     this.mock.onGet("/watchlists/1").timeout();
     this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).timeout();
     this.mock.onPut(/\/watchlists\/\w+\/targets\/\w+/).timeout();
