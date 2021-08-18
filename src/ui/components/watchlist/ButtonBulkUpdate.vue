@@ -1,7 +1,14 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" small dark v-bind="attrs" v-on="on">
+      <v-btn
+        color="primary"
+        small
+        dark
+        v-bind="attrs"
+        v-on="on"
+        class="mb-2 mr-1"
+      >
         Update targets
       </v-btn>
     </template>
@@ -28,6 +35,10 @@
                 accept=".csv"
                 label="Upload  CSV"
                 v-model="selectedFile"
+                :error-messages="detailError.message"
+                show-size
+                truncate-length="50"
+                :loading="loading"
               >
               </v-file-input>
             </v-col>
@@ -63,11 +74,12 @@ import { createNamespacedHelpers } from "vuex";
 import { ITargetData } from "@/app/target/domain/Target.types";
 import { MutationTypes } from "@/ui/store/watchlist/mutations";
 import { parse, ParseError, ParseResult } from "papaparse";
+import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
+import { TargetsState } from "@/ui/store/targets/state";
 
-const watchlistHelper = createNamespacedHelpers("watchlists");
 const targetsHelper = createNamespacedHelpers("targets");
+const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 
-// this must be in utils (copied from CreateWatchlist.vue)
 type CsvTarget = {
   id: number;
   name?: string;
@@ -77,7 +89,7 @@ type CsvTarget = {
 };
 
 export default Vue.extend({
-  components: { TargetsError, CsvError, GenericError },
+  components: { CsvError, GenericError, TargetsError },
   data: (): {
     dialog: boolean;
     selectedFile: File | null;
@@ -91,16 +103,29 @@ export default Vue.extend({
     parsedCsv: [],
   }),
   computed: {
-    ...watchlistHelper.mapGetters([
+    ...targetsHelper.mapGetters([
       "genericError",
       "csvError",
       "detailError",
       "errored",
     ]),
+    ...targetsHelper.mapState({
+      loading: function (state: TargetsState): boolean {
+        return state.loading;
+      },
+    }),
+    ...watchlistHelper.mapState({
+      watchlistId: function (state: SingleWatchlistState): number {
+        return state.id;
+      },
+    }),
   },
   methods: {
     ...targetsHelper.mapActions([ActionTypes.bulkUpdateTargets]),
-    ...watchlistHelper.mapMutations([MutationTypes.SET_ERROR]),
+    ...targetsHelper.mapMutations([
+      MutationTypes.SET_ERROR,
+      MutationTypes.SET_LOADING,
+    ]),
     handleError(error: ParseError | null) {
       this.SET_ERROR(error);
     },
@@ -117,14 +142,15 @@ export default Vue.extend({
               radius: value.radius,
             } as ITargetData)
         ),
-        watchlistId: 76,
+        watchlistId: this.watchlistId,
       };
-      console.log(targets);
       await this.bulkUpdateTargets(targets);
+      if (!this.errored) this.onCloseClick();
     },
     toDefaultValues() {
       this.selectedFile = null;
       this.parsedCsv = [];
+      this.SET_ERROR(null);
     },
     onCloseClick() {
       this.toDefaultValues();
@@ -133,15 +159,16 @@ export default Vue.extend({
     onUploadClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         if (this.selectedFile != null) {
+          this.SET_LOADING(true);
           parse(this.selectedFile, {
             header: true,
             skipEmptyLines: true,
             error: this.handleError,
             complete: this.handleComplete,
+            worker: true,
           });
         }
       }
-      //this.toDefaultValues();
     },
   },
 });

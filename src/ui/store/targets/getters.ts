@@ -31,4 +31,12 @@ export const getters: GetterTree<TargetsState, IRootState> & Getters = {
   errored: (state) => {
     return state.error !== null;
   },
+  csvError: (state) => {
+    if (state.error != null && !isHttpError(state.error)) {
+      if (Object.keys(state.error).find((key) => key === "row")) {
+        return state.error;
+      }
+    }
+    return null;
+  },
 };

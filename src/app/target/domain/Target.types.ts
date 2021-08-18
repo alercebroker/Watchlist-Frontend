@@ -50,4 +50,8 @@ export interface ITargetRepository {
   deleteTarget(
     params: DeleteTargetParams
   ): Promise<Result<number, ParseError | HttpError>>;
+  bulkUpdateTargets(
+    params: { watchlistId?: number; targetsList?: ITargetData[] },
+    paginationParams?: { ordering?: string; page?: number; page_size?: number }
+  ): Promise<Result<ITargetList, ParseError | HttpError>>;
 }

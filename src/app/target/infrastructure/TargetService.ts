@@ -1,5 +1,5 @@
 import { ParseError } from "@/shared/error/ParseError";
-import { HttpError, IHttpService } from "@/shared/http";
+import { HttpError, IHttpService, isHttpError } from "@/shared/http";
 import { UsersApiService } from "@/shared/http/UsersApiService";
 import { inject } from "inversify-props";
 import { combine, err, ok, Result } from "neverthrow";
@@ -115,7 +115,9 @@ export class TargetService implements ITargetRepository {
       },
       { parseTo: (): Result<ITargetList, ParseError> => ok({} as ITargetList) }
     );
-    console.log(result);
+    if (result.isErr()) {
+      return result;
+    }
     return this.getAllTargets(params, paginationParams);
   }
 

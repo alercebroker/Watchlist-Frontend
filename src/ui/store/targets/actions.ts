@@ -173,7 +173,7 @@ export const actions: ActionTree<TargetsState, IRootState> = {
     interactor.execute(payload, callbacks);
   },
   async [ActionTypes.bulkUpdateTargets](
-    { commit, state },
+    { commit },
     payload: BulkUpdateTargetsPayload
   ) {
     commit(MutationTypes.SET_LOADING, true);
@@ -183,43 +183,25 @@ export const actions: ActionTree<TargetsState, IRootState> = {
         commit(MutationTypes.SET_TARGETS, targets.targets);
         commit(MutationTypes.SET_ERROR, null);
         commit(MutationTypes.SET_LOADING, false);
-        commit(MutationTypes.SET_PAGINATION_DATA, {
-          count: targets.count,
-          nextPage: targets.next,
-          prevPage: targets.prev,
-        });
       },
       respondWithClientError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_TARGETS, []);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
-        commit(MutationTypes.SET_PAGINATION_DATA, {
-          count: 0,
-          nextPage: null,
-          prevPage: null,
-        });
       },
       respondWithServerError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_TARGETS, []);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
-        commit(MutationTypes.SET_PAGINATION_DATA, {
-          count: 0,
-          nextPage: null,
-          prevPage: null,
-        });
       },
       respondWithParseError: (error: ParseError) => {
-        commit(MutationTypes.SET_ERROR, error.message);
-        commit(MutationTypes.SET_TARGETS, []);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
-        commit(MutationTypes.SET_PAGINATION_DATA, {
-          count: 0,
-          nextPage: null,
-          prevPage: null,
-        });
       },
     };
-    interactor.execute(payload, callbacks);
+    try {
+      await interactor.execute(payload, callbacks);
+    } catch (error) {
+      commit(MutationTypes.SET_ERROR, error);
+      commit(MutationTypes.SET_LOADING, false);
+    }
   },
 };
