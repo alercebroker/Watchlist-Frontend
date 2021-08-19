@@ -59,7 +59,8 @@ router.beforeEach((to: Route, _from: Route, next) => {
   if (to.meta) {
     document.title = to.meta.title;
   }
-  if (to.name !== "login" && !isLogged()) next("/login");
+  if (to.name !== "login" && to.name !== "activate" && !isLogged())
+    next("/login");
   else next();
 });
 
