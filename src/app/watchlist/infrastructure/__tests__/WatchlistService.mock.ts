@@ -14,6 +14,8 @@ const watchlistArray: IWatchlistData[] = [
     id: 1,
     title: "watchlist 1",
     owner: "owner 1",
+    notificationRate: "hourly",
+    lastNotified: "date",
     targets: "test",
     url: "test",
     nTargets: "test",
@@ -23,6 +25,8 @@ const watchlistArray: IWatchlistData[] = [
     id: 2,
     title: "watchlist 2",
     owner: "owner 1",
+    notificationRate: "hourly",
+    lastNotified: "date",
     targets: "test",
     url: "test",
     nTargets: "test",
@@ -34,6 +38,8 @@ const watchlist: IWatchlistData = {
   id: 3,
   title: "watchlist 3",
   owner: "owner 1",
+  notificationRate: "hourly",
+  lastNotified: "date",
   targets: "test",
   url: "test",
   nTargets: "test",
@@ -134,6 +140,8 @@ export class MockWatchlistService implements IWatchlistRepository {
           id: 3,
           title: params.title,
           owner: "owner 1",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           url: "test",
           nTargets: "test",
@@ -196,6 +204,48 @@ export class MockWatchlistService implements IWatchlistRepository {
     } else if (this.actionType === "clientError") {
       return new Promise((resolve) => {
         resolve(err(new HttpError(400, {}, "Client Error")));
+      });
+    } else if (this.actionType === "timeout") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
+      });
+    }
+    return new Promise((resolve) => {
+      resolve(err(new ParseError("Parse Error")));
+    });
+  }
+
+  async editWatchlist(
+    params: any
+  ): Promise<Result<IWatchlistData, ParseError | HttpError>> {
+    if (this.actionType === "ok") {
+      return new Promise((resolve) => {
+        resolve(
+          ok({
+            id: 1,
+            title: "watchlist 1",
+            owner: "owner 1",
+            notificationRate: "hourly",
+            lastNotified: "date",
+            targets: "test",
+            url: "test",
+            nTargets: "test",
+            lastMatch: "test",
+          } as IWatchlistData)
+        );
+      });
+    } else if (
+      this.actionType === "error" ||
+      this.actionType === "serverError"
+    ) {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(500, {}, "Server Error")));
+      });
+    } else if (this.actionType === "clientError") {
+      return new Promise((resolve) => {
+        resolve(
+          err(new HttpError(400, { detail: "not found" }, "Client Error"))
+        );
       });
     } else if (this.actionType === "timeout") {
       return new Promise((resolve) => {

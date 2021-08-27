@@ -121,6 +121,20 @@ export class MockUserApi extends HttpService {
     this.mock.onDelete(/\/watchlists\/\w+\/targets\/\w+/).reply(() => {
       return [204];
     });
+    
+    this.mock.onPut('watchlists/1').reply(() => {
+      const response = {
+        url: "watchlists/1",
+        id: 1,
+        title: "Test1",
+        targets: "test",
+        n_targets: "test",
+        last_match: "test",
+        notification_rate: "hourly",
+        last_notified: "date"
+      };
+      return [200, JSON.stringify(response)];
+    })
   }
 
   setErrorActions(): void {

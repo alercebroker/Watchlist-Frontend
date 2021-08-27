@@ -3,7 +3,7 @@ import { HttpService, MockUserApi, TestActions } from "@/shared/http";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { WatchlistService } from "../WatchlistService";
 import { Watchlist } from "../../domain";
-import { CreateWatchlistRequestModel } from "../WatchlistService.types";
+import { CreateWatchlistRequestModel, EditWatchlistRequestModel } from "../WatchlistService.types";
 
 beforeEach(() => {
   resetContainer();
@@ -24,6 +24,8 @@ describe("WatchlistService", () => {
           id: 1,
           owner: "owner",
           title: "Test1",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           nTargets: "test",
           url: "watchlists/1",
@@ -33,6 +35,8 @@ describe("WatchlistService", () => {
           id: 2,
           owner: "owner",
           title: "Test2",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           nTargets: "test",
           url: "watchlists/2",
@@ -70,6 +74,8 @@ describe("WatchlistService", () => {
           id: 1,
           owner: "owner",
           title: "Test1",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           nTargets: "test",
           url: "watchlists/1",
@@ -79,6 +85,8 @@ describe("WatchlistService", () => {
           id: 2,
           owner: "owner",
           title: "Test2",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           nTargets: "test",
           url: "watchlists/2",
@@ -96,6 +104,7 @@ describe("WatchlistService", () => {
       container.bind<TestActions>("ActionType").toConstantValue("ok");
       const request: CreateWatchlistRequestModel = {
         title: "Test3",
+        notification_rate: "hourly",
         targets: [
           {
             name: "target",
@@ -114,6 +123,8 @@ describe("WatchlistService", () => {
           id: 1,
           owner: "owner",
           title: "Test1",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           nTargets: "test",
           url: "watchlists/1",
@@ -124,6 +135,8 @@ describe("WatchlistService", () => {
           owner: "owner",
           title: "Test2",
           targets: "test",
+          notificationRate: "hourly",
+          lastNotified: "date",
           nTargets: "test",
           url: "watchlists/2",
           lastMatch: "test",
@@ -137,6 +150,7 @@ describe("WatchlistService", () => {
       container.bind<TestActions>("ActionType").toConstantValue("error");
       const request: CreateWatchlistRequestModel = {
         title: "Test3",
+        notification_rate: "hourly",
         targets: [
           {
             name: "target",
@@ -158,6 +172,7 @@ describe("WatchlistService", () => {
       container.bind<TestActions>("ActionType").toConstantValue("timeout");
       const request: CreateWatchlistRequestModel = {
         title: "Test3",
+        notification_rate: "hourly",
         targets: [
           {
             name: "target",
@@ -188,6 +203,8 @@ describe("WatchlistService", () => {
         id: 1,
         owner: "owner",
         title: "title",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "watchlists/1/targets",
         nTargets: "test",
         url: "watchlists/1",
@@ -225,6 +242,8 @@ describe("WatchlistService", () => {
           id: 1,
           owner: "owner",
           title: "Test1",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           nTargets: "test",
           url: "watchlists/1",
@@ -234,6 +253,8 @@ describe("WatchlistService", () => {
           id: 2,
           owner: "owner",
           title: "Test2",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           nTargets: "test",
           url: "watchlists/2",
@@ -242,6 +263,55 @@ describe("WatchlistService", () => {
       ];
       result.map((watchlists) => {
         expect(watchlists.watchlists).toStrictEqual(expected);
+      });
+    });
+
+    it("should return errored result", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const httpService = container.get<HttpService>(cid.UsersApiService);
+      const service = new WatchlistService(httpService);
+      const result = await service.deleteWatchlist("watchlists/1");
+      expect(result.isOk()).toBeFalsy();
+    });
+
+    it("should return errored result", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const httpService = container.get<HttpService>(cid.UsersApiService);
+      const service = new WatchlistService(httpService);
+      const result = await service.deleteWatchlist("watchlists/1");
+      expect(result.isOk()).toBeFalsy();
+    });
+  });
+
+  describe("EditWatchlist", () => {
+    it("should return watchlists", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const httpService = container.get<HttpService>(cid.UsersApiService);
+      const service = new WatchlistService(httpService);
+      const params = {
+        params: {
+          title: "watchlist 1",
+          notification_rate: "hourly"
+        },
+        watchlist: 1,
+      }
+      const result = await service.editWatchlist(params);
+      console.log(result);
+      expect(result.isOk()).toBeTruthy();
+      const expected = 
+        new Watchlist({
+          id: 1,
+          owner: "owner",
+          title: "Test1",
+          notificationRate: "hourly",
+          lastNotified: "date",
+          targets: "test",
+          nTargets: "test",
+          url: "watchlists/1",
+          lastMatch: "test",
+        });
+      result.map((watchlists) => {
+        expect(watchlists).toStrictEqual(expected);
       });
     });
 

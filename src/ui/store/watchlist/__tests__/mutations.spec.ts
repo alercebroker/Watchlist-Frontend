@@ -40,6 +40,8 @@ describe("SET_WATCHLISTS", () => {
         id: 1,
         title: "titulo",
         owner: "owner",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",

@@ -35,6 +35,7 @@ export interface GetAllWatchlistsPayload {
 
 export interface WatchlistInput {
   title: string;
+  notificationRate: string;
   targets: Array<ITargetData>;
 }
 export const actions: ActionTree<WatchlistState, IRootState> = {
@@ -113,6 +114,7 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
     };
     try {
       const requestModel: CreateWatchlistRequestModel = {
+        notification_rate: watchlistInput.notificationRate,
         title: watchlistInput.title ?? throwExpression("title required"),
         targets: watchlistInput.targets,
       };
