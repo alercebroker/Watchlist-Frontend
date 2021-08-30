@@ -7,6 +7,7 @@ export enum MutationTypes {
   SET_ERROR = "SET_ERROR",
   SET_WATCHLISTS = "SET_WATCHLISTS",
   APPEND_WATCHLISTS = "APPEND_WATCHLISTS",
+  UPDATE_WATCHLIST = "UPDATE_WATCHLIST",
   SET_NEXT = "SET_NEXT",
   SET_PREV = "SET_PREV",
   SET_PAGE = "SET_PAGE",
@@ -25,6 +26,13 @@ export const mutations: MutationTree<WatchlistState> = {
   },
   [MutationTypes.APPEND_WATCHLISTS](state, watchlists: IWatchlistData[]) {
     state.watchlists.concat(watchlists);
+  },
+  [MutationTypes.UPDATE_WATCHLIST](state, newWatchlist: IWatchlistData) {
+    const watchlist = state.watchlists.find((w) => w.id === newWatchlist.id);
+    if (watchlist) {
+      watchlist.title = newWatchlist.title;
+      watchlist.notificationRate = newWatchlist.notificationRate;
+    }
   },
   [MutationTypes.SET_NEXT](state, next: string) {
     state.nextPage = next;

@@ -10,8 +10,8 @@ export interface IWatchlistData {
   lastMatch: string;
   title: string;
   owner: string;
-  notificationRate: string | null,
-  lastNotified: string | null,
+  notificationRate: string | null;
+  lastNotified: string | null;
   targets: string | null; // url to targets
 }
 

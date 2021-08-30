@@ -3,7 +3,10 @@ import { HttpService, MockUserApi, TestActions } from "@/shared/http";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { WatchlistService } from "../WatchlistService";
 import { Watchlist } from "../../domain";
-import { CreateWatchlistRequestModel, EditWatchlistRequestModel } from "../WatchlistService.types";
+import {
+  CreateWatchlistRequestModel,
+  EditWatchlistRequestModel,
+} from "../WatchlistService.types";
 
 beforeEach(() => {
   resetContainer();
@@ -104,7 +107,6 @@ describe("WatchlistService", () => {
       container.bind<TestActions>("ActionType").toConstantValue("ok");
       const request: CreateWatchlistRequestModel = {
         title: "Test3",
-        notification_rate: "hourly",
         targets: [
           {
             name: "target",
@@ -150,7 +152,6 @@ describe("WatchlistService", () => {
       container.bind<TestActions>("ActionType").toConstantValue("error");
       const request: CreateWatchlistRequestModel = {
         title: "Test3",
-        notification_rate: "hourly",
         targets: [
           {
             name: "target",
@@ -172,7 +173,6 @@ describe("WatchlistService", () => {
       container.bind<TestActions>("ActionType").toConstantValue("timeout");
       const request: CreateWatchlistRequestModel = {
         title: "Test3",
-        notification_rate: "hourly",
         targets: [
           {
             name: "target",
@@ -291,25 +291,23 @@ describe("WatchlistService", () => {
       const params = {
         params: {
           title: "watchlist 1",
-          notification_rate: "hourly"
-        },
+          notification_rate: "hourly",
+        } as EditWatchlistRequestModel,
         watchlist: 1,
-      }
+      };
       const result = await service.editWatchlist(params);
-      console.log(result);
       expect(result.isOk()).toBeTruthy();
-      const expected = 
-        new Watchlist({
-          id: 1,
-          owner: "owner",
-          title: "Test1",
-          notificationRate: "hourly",
-          lastNotified: "date",
-          targets: "test",
-          nTargets: "test",
-          url: "watchlists/1",
-          lastMatch: "test",
-        });
+      const expected = new Watchlist({
+        id: 1,
+        owner: "owner",
+        title: "Test1",
+        notificationRate: "hourly",
+        lastNotified: "date",
+        targets: "test",
+        nTargets: "test",
+        url: "watchlists/1",
+        lastMatch: "test",
+      });
       result.map((watchlists) => {
         expect(watchlists).toStrictEqual(expected);
       });

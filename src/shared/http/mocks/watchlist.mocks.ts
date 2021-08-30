@@ -35,7 +35,6 @@ export const mockApiWatchlists: WatchlistApiResponse = {
 
 export const mockCreateWatchlistRequestModel: CreateWatchlistRequestModel = {
   title: "title",
-  notification_rate: "hourly",
   targets: [
     {
       name: "target",

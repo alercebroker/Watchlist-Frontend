@@ -36,7 +36,6 @@ export default Vue.extend({
         title: "Settings",
         content: "Settings",
       },
-
     ],
   }),
 });

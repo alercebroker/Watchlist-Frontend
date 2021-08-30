@@ -144,12 +144,10 @@ export class WatchlistService implements IWatchlistRepository {
     else
       return this.httpService.put(
         {
-          url:
-            "/watchlists/" +
-            params.watchlist,
+          url: "/watchlists/" + params.watchlist,
           data: params.params,
         },
         { parseTo }
-    );
+      );
   }
 }

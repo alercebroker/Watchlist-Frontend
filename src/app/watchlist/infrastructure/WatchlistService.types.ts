@@ -28,7 +28,6 @@ export interface CreateWatchlistTargetRequest {
 }
 export interface CreateWatchlistRequestModel {
   title: string;
-  notification_rate: string;
   targets: CreateWatchlistTargetRequest[];
 }
 

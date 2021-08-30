@@ -5,6 +5,7 @@ export const state = () => ({
   n_targets: "",
   last_match: "",
   title: "",
+  notification_rate: "",
   error: null as string | null,
   targets: "",
 });
