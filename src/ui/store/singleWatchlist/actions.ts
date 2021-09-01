@@ -31,7 +31,7 @@ export const actions: ActionTree<SingleWatchlistState, IRootState> = {
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlist: IWatchlistData) => {
         commit(MutationTypes.SET_TITLE, watchlist.title);
-        commit(MutationTypes.SET_NOTIFICATION_RATE, watchlist);
+        commit(MutationTypes.SET_NOTIFICATION_RATE, watchlist.notificationRate);
         commit(
           "watchlists/" + WatchlistMutationType.UPDATE_WATCHLIST,
           watchlist,
@@ -56,16 +56,6 @@ export const actions: ActionTree<SingleWatchlistState, IRootState> = {
         commit(MutationTypes.SET_LOADING, false);
       },
     };
-    try {
-      interactor.execute(payload, callbacks);
-    } catch (error) {
-      commit(MutationTypes.SET_TITLE, "");
-      commit(MutationTypes.SET_NOTIFICATION_RATE, "");
-      commit(MutationTypes.SET_LAST_MATCH, "");
-      commit(MutationTypes.SET_N_TARGETS, "");
-      commit(MutationTypes.SET_URL, "");
-      commit(MutationTypes.SET_ERROR, error);
-      commit(MutationTypes.SET_LOADING, false);
-    }
+    await interactor.execute(payload, callbacks);
   },
 };
