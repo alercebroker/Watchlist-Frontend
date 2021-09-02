@@ -256,6 +256,11 @@ export const actions: ActionTree<WatchlistState, IRootState> = {
         false,
         { root: true }
       );
+      commit(
+        "singleWatchlist/" + SingleWatchlistMutationType.SET_NOTIFICATION_RATE,
+        watchlist.notificationRate,
+        { root: true }
+      );
       interactor.execute(watchlist.url, callbacks);
     } catch (error) {
       commit(SingleWatchlistMutationType.SET_TITLE, "");

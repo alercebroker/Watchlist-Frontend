@@ -19,7 +19,7 @@ export enum ActionTypes {
 export type EditWatchlistPayload = {
   params: {
     title: string;
-    notification_rate: string;
+    notification_rate: string | null;
   };
   watchlist: number;
 };

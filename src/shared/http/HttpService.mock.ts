@@ -122,9 +122,9 @@ export class MockUserApi extends HttpService {
       return [204];
     });
 
-    this.mock.onPut("watchlists/1").reply(() => {
+    this.mock.onPut("watchlists/1/").reply(() => {
       const response = {
-        url: "watchlists/1",
+        url: "watchlists/1/",
         id: 1,
         title: "Test1",
         targets: "test",

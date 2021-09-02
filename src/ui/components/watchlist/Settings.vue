@@ -12,12 +12,12 @@
             <v-select
               v-model="select"
               :items="notificationRates"
-              :rules="[(v) => !!v || 'Notification rate is required']"
               label="Notification rate"
               required
+              :loading = "loading"
             ></v-select>
             <v-col class="text-right">
-              <v-btn color="warning" @click="updateSettings"> Update </v-btn>
+              <v-btn id="updateButton" color="warning" @click="update"> Update </v-btn>
             </v-col>
           </v-form>
         </v-card-text>
@@ -26,33 +26,69 @@
   </v-row>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
-export default Vue.extend({
-  data: () => ({
-    valid: true,
-    name: "",
-    email: "",
-    emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
-    select: null,
-    notificationRates: ["hourly", "12 hours", "daily", "weekly", "monthly"],
-  }),
-  // methods: {
-  //   updateSettings(){
-  //     console.log('Updated')
-  //   }
-  // },
-  // computed: {
-  //   notificationRate(){
-  //     // return this.state.watchlist.notification_rate
-  //   }
-  // },
-  // watch: {
+import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
+import {
+  ActionTypes,
+  EditWatchlistPayload,
+} from "@/ui/store/singleWatchlist/actions";
+import { MutationTypes } from "@/ui/store/singleWatchlist/mutations";
+import { createNamespacedHelpers } from "vuex";
+import GenericError from "../shared/GenericError.vue";
+const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 
-  // },
+export default Vue.extend({
+  data: (): {
+    select: string,
+    valid: boolean,
+    notificationRates: Array<Record<string, string>>,
+    } => ({
+    valid: true,
+    select: "disabled",
+    notificationRates: [{text: "Disabled", value: "disabled"},
+    {text: "Hourly", value: "hourly"}, 
+    {text: "12 hours", value: "12 hours"}, 
+    {text: "Daily", value: "daily"}, 
+    {text: "Weekly", value: "weekly"}, 
+    {text: "Monthly", value: "monthly"}],
+  }),
+  computed: {
+    ...watchlistHelper.mapState({
+      watchlistId: function (state: SingleWatchlistState): number {
+        return state.id;
+      },
+      watchlistTitle: function (state: SingleWatchlistState): string {
+        return state.title;
+      },
+      notificationRate: function (state: SingleWatchlistState): string {
+        return state.notification_rate;
+      },
+      loading:function (state: SingleWatchlistState): boolean {
+        return state.loading;
+      }
+    }),
+  },
+  methods: {
+    ...watchlistHelper.mapActions([
+      ActionTypes.editWatchlist,
+    ]),
+    async update(){
+      const payload: EditWatchlistPayload = {
+        params: {title: this.watchlistTitle, notification_rate: this.select},
+        watchlist: this.watchlistId,
+      }
+      await this.editWatchlist(payload);
+    },
+  },
+  watch: {
+    watchlistId:{
+      handler(val) {
+        this.select = this.notificationRate? this.notificationRate:"disabled";
+      },
+      immediate: true
+    }
+  },
 });
 </script>
 

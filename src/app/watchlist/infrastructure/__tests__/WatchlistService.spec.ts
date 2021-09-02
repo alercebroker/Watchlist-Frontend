@@ -305,7 +305,7 @@ describe("WatchlistService", () => {
         lastNotified: "date",
         targets: "test",
         nTargets: "test",
-        url: "watchlists/1",
+        url: "watchlists/1/",
         lastMatch: "test",
       });
       result.map((watchlists) => {
