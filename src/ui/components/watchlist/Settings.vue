@@ -14,10 +14,12 @@
               :items="notificationRates"
               label="Notification rate"
               required
-              :loading = "loading"
+              :loading="loading"
             ></v-select>
             <v-col class="text-right">
-              <v-btn id="updateButton" color="warning" @click="update"> Update </v-btn>
+              <v-btn id="updateButton" color="warning" @click="update">
+                Update
+              </v-btn>
             </v-col>
           </v-form>
         </v-card-text>
@@ -40,18 +42,20 @@ const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 
 export default Vue.extend({
   data: (): {
-    select: string,
-    valid: boolean,
-    notificationRates: Array<Record<string, string>>,
-    } => ({
+    select: string;
+    valid: boolean;
+    notificationRates: Array<Record<string, string>>;
+  } => ({
     valid: true,
     select: "disabled",
-    notificationRates: [{text: "Disabled", value: "disabled"},
-    {text: "Hourly", value: "hourly"}, 
-    {text: "12 hours", value: "12 hours"}, 
-    {text: "Daily", value: "daily"}, 
-    {text: "Weekly", value: "weekly"}, 
-    {text: "Monthly", value: "monthly"}],
+    notificationRates: [
+      { text: "Disabled", value: "disabled" },
+      { text: "Hourly", value: "hourly" },
+      { text: "12 hours", value: "12 hours" },
+      { text: "Daily", value: "daily" },
+      { text: "Weekly", value: "weekly" },
+      { text: "Monthly", value: "monthly" },
+    ],
   }),
   computed: {
     ...watchlistHelper.mapState({
@@ -64,30 +68,30 @@ export default Vue.extend({
       notificationRate: function (state: SingleWatchlistState): string {
         return state.notification_rate;
       },
-      loading:function (state: SingleWatchlistState): boolean {
+      loading: function (state: SingleWatchlistState): boolean {
         return state.loading;
-      }
+      },
     }),
   },
   methods: {
-    ...watchlistHelper.mapActions([
-      ActionTypes.editWatchlist,
-    ]),
-    async update(){
+    ...watchlistHelper.mapActions([ActionTypes.editWatchlist]),
+    async update() {
       const payload: EditWatchlistPayload = {
-        params: {title: this.watchlistTitle, notification_rate: this.select},
+        params: { title: this.watchlistTitle, notification_rate: this.select },
         watchlist: this.watchlistId,
-      }
+      };
       await this.editWatchlist(payload);
     },
   },
   watch: {
-    watchlistId:{
+    watchlistId: {
       handler(val) {
-        this.select = this.notificationRate? this.notificationRate:"disabled";
+        this.select = this.notificationRate
+          ? this.notificationRate
+          : "disabled";
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
 });
 </script>
