@@ -6,6 +6,7 @@ export enum MutationTypes {
   SET_LOADING = "SET_LOADING",
   SET_ERROR = "SET_ERROR",
   SET_TITLE = "SET_TITLE",
+  SET_NOTIFICATION_RATE = "SET_NOTIFICATION_RATE",
   SET_URL = "SET_URL",
   SET_TARGETS = "SET_TARGETS",
   SET_N_TARGETS = "SET_N_TARGETS",
@@ -18,6 +19,9 @@ export const mutations: MutationTree<SingleWatchlistState> = {
   },
   [MutationTypes.SET_TITLE](state, title: string) {
     state.title = title;
+  },
+  [MutationTypes.SET_NOTIFICATION_RATE](state, notification_rate: string) {
+    state.notification_rate = notification_rate;
   },
   [MutationTypes.SET_URL](state, url: string) {
     state.url = url;

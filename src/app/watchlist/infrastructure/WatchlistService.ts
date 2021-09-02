@@ -10,6 +10,7 @@ import { inject } from "inversify-props";
 import {
   WatchlistApiResponse,
   CreateWatchlistRequestModel,
+  EditWatchlistRequestModel,
   CreateWatchlistApiResponse,
   OneWatchlistApiResponse,
 } from "./WatchlistService.types";
@@ -124,5 +125,29 @@ export class WatchlistService implements IWatchlistRepository {
     } else {
       return err(result.error);
     }
+  }
+
+  async editWatchlist(params: {
+    params: EditWatchlistRequestModel;
+    watchlist: number;
+    url?: string;
+  }): Promise<Result<IWatchlistData, ParseError | HttpError>> {
+    const parseTo = (response: OneWatchlistApiResponse) => {
+      const owner = "owner";
+      return this.parser.toDomain(response, owner);
+    };
+    if (params.url)
+      return this.httpService.put(
+        { url: params.url, data: params.params },
+        { parseTo }
+      );
+    else
+      return this.httpService.put(
+        {
+          url: "/watchlists/" + params.watchlist + "/",
+          data: params.params,
+        },
+        { parseTo }
+      );
   }
 }

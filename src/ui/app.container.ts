@@ -27,6 +27,7 @@ import { EditTarget } from "@/app/target/use_case/EditTarget";
 import { CreateTarget } from "@/app/target/use_case/CreateTarget";
 import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
 import { DeleteTarget } from "@/app/target/use_case/DeleteTarget";
+import { EditWatchlist } from "@/app/watchlist/use_case/EditWatchlist";
 
 export function containerBuilder(): void {
   container.addSingleton<IHttpService>(UsersApiService);
@@ -39,6 +40,7 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(CreateWatchlist);
   container.addSingleton<UseCaseInteractor>(SelectWatchlist);
   container.addSingleton<UseCaseInteractor>(DeleteWatchlist);
+  container.addSingleton<UseCaseInteractor>(EditWatchlist);
   container.addSingleton<ITargetRepository>(TargetService);
   container.addSingleton<UseCaseInteractor>(GetTargets);
   container.addSingleton<UseCaseInteractor>(EditTarget);

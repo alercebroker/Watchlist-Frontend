@@ -32,6 +32,10 @@ export default Vue.extend({
         title: "Overview",
         content: "Overview",
       },
+      {
+        title: "Settings",
+        content: "Settings",
+      },
     ],
   }),
 });

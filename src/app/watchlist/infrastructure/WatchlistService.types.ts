@@ -8,6 +8,8 @@ export interface WatchlistApiResult {
   url: string;
   title: string;
   targets: string;
+  notification_rate: string;
+  last_notified: string;
   n_targets: string;
   last_match: string;
 }
@@ -33,6 +35,7 @@ export interface CreateWatchlistApiResponse {
   url: string;
   title: string;
   owner: string;
+  notification_rate: string;
   targets: CreateWatchlistTargetApiResult[];
 }
 
@@ -41,6 +44,8 @@ export interface OneWatchlistApiResponse {
   url: string;
   title: string;
   owner: string;
+  notification_rate: string;
+  last_notified: string;
   targets: string;
   n_targets: string;
   last_match: string;
@@ -53,4 +58,9 @@ export interface CreateWatchlistTargetApiResult {
   ra: number;
   dec: number;
   n_matches: number;
+}
+
+export interface EditWatchlistRequestModel {
+  title: string;
+  notification_rate: string;
 }
