@@ -28,6 +28,7 @@ import { CreateTarget } from "@/app/target/use_case/CreateTarget";
 import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
 import { DeleteTarget } from "@/app/target/use_case/DeleteTarget";
 import { EditWatchlist } from "@/app/watchlist/use_case/EditWatchlist";
+import { GetGoogleUrl } from "@/app/user/use_case/GetGoogleUrl";
 
 export function containerBuilder(): void {
   container.addSingleton<IHttpService>(UsersApiService);
@@ -51,6 +52,7 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(Activate);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
+  container.addSingleton<UseCaseInteractor>(GetGoogleUrl);
 
   // container.bind<TestActions>("ActionType").toConstantValue("clientError");
   // mockSingleton<ITargetRepository>(cid.TargetService, MockTargetService);

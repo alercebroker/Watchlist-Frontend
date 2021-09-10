@@ -58,6 +58,21 @@
               >
             </v-col>
           </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-btn
+                :loading="loading"
+                :disabled="loading"
+                color="primary"
+                class="ma-2 white--text"
+                @click="onGoogleClick"
+                block
+              >
+                <v-icon left> mdi-google </v-icon>
+                Log in with Google
+              </v-btn>
+            </v-col>
+          </v-row>
           <v-row v-if="genericError">
             <v-col>
               <generic-error :error="genericError" />
@@ -92,7 +107,7 @@ export default Vue.extend({
     };
   },
   methods: {
-    ...userHelper.mapActions([ActionTypes.login]),
+    ...userHelper.mapActions([ActionTypes.login, ActionTypes.getGoogleAuthUrl]),
     async onLoginClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         const userInput = {
@@ -102,6 +117,11 @@ export default Vue.extend({
         await this.login(userInput);
         this.$emit("loginClick");
       }
+    },
+    async onGoogleClick() {
+      const loginWindow = window.open("", "_self");
+      await this.getGoogleAuthUrl(loginWindow);
+      this.$emit("loginClick");
     },
   },
   computed: {

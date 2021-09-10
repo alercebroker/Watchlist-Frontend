@@ -34,6 +34,12 @@ export class MockAuthService implements IUserRepository {
   constructor(@inject("ActionType") actionType: TestActions) {
     this.actionType = actionType;
   }
+  getGoogleUrl(): Promise<Result<string, ParseError | HttpError>> {
+    throw new Error("Method not implemented.");
+  }
+  googleLogin(): Promise<Result<IUserData, ParseError | HttpError>> {
+    throw new Error("Method not implemented.");
+  }
   login(): Promise<Result<IUserData, ParseError | HttpError>> {
     if (this.actionType === "ok") {
       localStorage.setItem("access_token", "token");

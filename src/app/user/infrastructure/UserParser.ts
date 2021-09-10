@@ -59,4 +59,14 @@ export class UserParser {
       return err(new ParseError(error.message));
     }
   }
+
+  parseAuthorizationUrl(
+    response: Record<string, string>
+  ): Result<string, ParseError> {
+    if (response.authorization_url) {
+      return ok(response.authorization_url);
+    } else {
+      return err(new ParseError("No authorization url"));
+    }
+  }
 }

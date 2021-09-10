@@ -25,6 +25,8 @@ export enum ActionTypes {
   registerUser = "registerUser",
   login = "login",
   logout = "logout",
+  getGoogleAuthUrl = "getGoogleAuthUrl",
+  loginGoogle = "loginGoogle"
 }
 
 export interface ActivateInput {
@@ -45,6 +47,11 @@ export interface RegisterInput {
   lastName: string;
   institution: string;
   role: string;
+}
+
+export interface GoogleLoginPayload {
+  code: string,
+  state: string
 }
 
 function throwExpression(errorMessage: string) {
@@ -185,4 +192,44 @@ export const actions: ActionTree<UserState, IRootState> = {
       commit(MutationTypes.SET_LOADING, false);
     }
   },
-};
+
+  async [ActionTypes.getGoogleAuthUrl]({ commit }, loginWindow: Window) {
+    const interactor = container.get<UseCaseInteractor>(cid.GetGoogleUrl);
+    const callbacks: Callbacks = {
+      respondWithSuccess: (url: string) => {
+        loginWindow.location.href = url;
+      },
+      respondWithClientError: (error) => {
+        commit(MutationTypes.SET_ERROR, error);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    };
+    await interactor.execute(null, callbacks);
+  },
+
+  async [ActionTypes.loginGoogle]({ commit }, payload: GoogleLoginPayload) {
+    const interactor = container.get<UseCaseInteractor>(cid.GoogleLogin);
+    const callbacks: Callbacks = {
+      respondWithSuccess: () => {
+        // get user data from token
+      },
+      respondWithClientError: (error) => {
+        commit(MutationTypes.SET_ERROR, error);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    }
+  };

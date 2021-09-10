@@ -18,6 +18,20 @@ export class AuthService implements IUserRepository {
   constructor(@inject() private usersApiService: UsersApiService) {
     this.parser = new UserParser();
   }
+  getGoogleUrl(): Promise<Result<string, ParseError | HttpError>> {
+    return this.usersApiService.get(
+      {
+        url:
+          "/users/social/o/google-oauth2/?redirect_uri=" +
+          process.env.VUE_APP_GOOGLE_REDIRECT_URI,
+        //"http://localhost:8080/google-login",
+      },
+      { parseTo: this.parser.parseAuthorizationUrl }
+    );
+  }
+  googleLogin(): Promise<Result<IUserData, HttpError | ParseError>> {
+    throw new Error("Method not implemented.");
+  }
 
   async login(
     params: LoginUserApiRequestModel
