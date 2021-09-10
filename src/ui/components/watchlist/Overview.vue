@@ -18,7 +18,7 @@
       />
     </template>
     <template v-slot:alertInfo>
-      <v-card height="100%">
+      <v-card>
         <v-card-title>Alert Info</v-card-title>
         <v-card-text>
           Link to Explorer:
