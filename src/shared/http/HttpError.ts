@@ -9,8 +9,13 @@ interface IHttpError {
 
 export class HttpError extends Error implements IHttpError {
   public status: number;
+  public detail: Record<string, unknown>;
 
-  constructor(status: number, message?: string) {
+  constructor(
+    status: number,
+    detail?: Record<string, unknown>,
+    message?: string
+  ) {
     super(message);
 
     Object.setPrototypeOf(this, HttpError.prototype);
@@ -18,6 +23,7 @@ export class HttpError extends Error implements IHttpError {
     this.status = status;
     this.name = HttpStatusCode[status];
     this.message = message || HttpStatusCode[status];
+    this.detail = detail || {};
   }
 
   public isClientError(): boolean {
@@ -28,8 +34,12 @@ export class HttpError extends Error implements IHttpError {
     return this.status >= 500 && this.status <= 599;
   }
 
-  public static fromStatus(status: number, message?: string): HttpError {
-    return new this(status, message);
+  public static fromStatus(
+    status: number,
+    detail: Record<string, unknown>,
+    message?: string
+  ): HttpError {
+    return new this(status, detail, message);
   }
 }
 

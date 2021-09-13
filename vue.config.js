@@ -1,15 +1,16 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const TerserPlugin = require("terser-webpack-plugin");
 module.exports = {
   configureWebpack: (config) => {
-    config.optimization.minimize = false
+    config.optimization.minimize = false;
     config.optimization.minimizer = [
       new TerserPlugin({
         terserOptions: {
           keep_classnames: true,
-          keep_fnames: true
-        }
-      })
-    ]
+          keep_fnames: true,
+        },
+      }),
+    ];
   },
 
   transpileDependencies: ["vuetify"],
@@ -20,7 +21,7 @@ module.exports = {
       awsProfile: "default",
       overrideEndpoint: false,
       region: "us-east-1",
-      bucket: "watchlist-frontend-staging",
+      bucket: process.env.AWS_BUCKET_NAME,
       createBucket: false,
       staticHosting: true,
       staticIndexPage: "index.html",

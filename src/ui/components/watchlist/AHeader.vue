@@ -3,9 +3,7 @@
     <a @click="$router.push('/')">
       <v-img :src="logo" max-width="40px" class="mr-4" />
     </a>
-    <v-toolbar-title class="mr-4">
-      {{ title }}
-    </v-toolbar-title>
+    <v-toolbar-title class="mr-4">{{ title }}</v-toolbar-title>
     <v-spacer />
     <v-toolbar-items v-if="items">
       <v-btn
@@ -15,12 +13,12 @@
         class="pl-5 pr-5 d-none d-md-flex text-capitalize"
         target="_blank"
         text
+        >{{ item.title }}</v-btn
       >
-        {{ item.title }}
-      </v-btn>
     </v-toolbar-items>
     <v-spacer></v-spacer>
-    <v-btn @click="logout"> Logout </v-btn>
+    <v-btn @click="$router.push('/how-to')">How-to</v-btn>
+    <v-btn @click="logout">Logout</v-btn>
   </v-app-bar>
 </template>
 <script>
@@ -53,6 +51,7 @@ export default Vue.extend({
     logout() {
       this.$store.dispatch("users/" + ActionTypes.logout);
       this.$emit("loggedout");
+      this.$router.push("/login");
     },
   },
 });

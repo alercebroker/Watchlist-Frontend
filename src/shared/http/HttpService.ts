@@ -14,6 +14,7 @@ type IHttpRequest = {
   config?: AxiosRequestConfig;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: any;
 };
 
@@ -33,11 +34,15 @@ export interface IHttpService {
     request: IHttpRequest,
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>>;
+  put<T, M>(
+    request: IHttpRequest,
+    parser: Parser<T, M>
+  ): Promise<Result<M, ParseError | HttpError>>;
   delete(request: IHttpRequest): Promise<Result<number, HttpError>>;
 }
 
 export class HttpService implements IHttpService {
-  private axiosService!: AxiosInstance;
+  protected axiosService!: AxiosInstance;
 
   constructor(
     @unmanaged() baseUrl: string,
@@ -97,6 +102,18 @@ export class HttpService implements IHttpService {
     }
   }
 
+  public async put<T, M>(
+    { url, data, config }: IHttpRequest,
+    parser: Parser<T, M>
+  ): Promise<Result<M, ParseError | HttpError>> {
+    try {
+      const response = await this.axiosService.put<T>(url, data, config);
+      return this._parseFailable<T, M>(response.data, parser.parseTo);
+    } catch (error) {
+      return this._retryOrReturnError<T, M>(error, parser);
+    }
+  }
+
   private _parseFailable<T, M>(
     data: T,
     parser: FailableParser<T, M>
@@ -149,7 +166,11 @@ export class HttpService implements IHttpService {
         }
         context._refreshToken();
       } else {
-        throw HttpError.fromStatus(error.response.status, error.response.data);
+        throw HttpError.fromStatus(
+          error.response.status,
+          error.response.data,
+          error.response.statusText
+        );
       }
     }
     throw error;
@@ -178,7 +199,11 @@ export class HttpService implements IHttpService {
       if (verb === "post") {
         if (error.config.url === "/users/login/") {
           return err(
-            HttpError.fromStatus(error.response.status, error.response.data)
+            HttpError.fromStatus(
+              error.response.status,
+              error.response.data,
+              error.response.statusText
+            )
           );
         }
         return this.post<T, M>(

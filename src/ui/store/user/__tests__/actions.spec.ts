@@ -1,7 +1,7 @@
 import { containerBuilder } from "@/ui/app.container";
 import { IUserRepository } from "@/app/user/domain/User.types";
 import { MockAuthService } from "@/app/user/infrastructure/__tests__/AuthService.mock";
-import { TestActions } from "@/shared/http";
+import { HttpError, TestActions } from "@/shared/http";
 import { createLocalVue } from "@vue/test-utils";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import Vuex from "vuex";
@@ -9,7 +9,14 @@ import { Modules } from "../../RegisterModules";
 import { IStoreCreator } from "../../StoreCreator";
 import { actions, ActionTypes } from "../actions";
 import { MutationTypes } from "../mutations";
+import { MutationTypes as WatchlistMutationTypes } from "../../watchlist/mutations";
+import { MutationTypes as TargetsMutationTypes } from "../../targets/mutations";
+import { MutationTypes as MatchesMutationTypes } from "../../matches/mutations";
 import { mockMutations } from "./mutations.mock";
+import { mockMutations as mockWatchlistMutations } from "../../watchlist/__tests__/mutations.mock";
+import { mockMutations as mockTargetsMutations } from "../../targets/__tests__/mutations.mock";
+import { mockMutations as mockMatchesMutations } from "../../matches/__tests__/mutations.mock";
+import { ParseError } from "@/shared/error/ParseError";
 
 const localVue = createLocalVue();
 
@@ -24,6 +31,27 @@ const modules = {
       state: {},
       getters: {},
     },
+    watchlists: {
+      namespaced: true,
+      actions: {},
+      mutations: mockWatchlistMutations,
+      state: {},
+      getters: {},
+    },
+    targets: {
+      namespaced: true,
+      actions: {},
+      mutations: mockTargetsMutations(),
+      state: {},
+      getters: {},
+    },
+    matches: {
+      namespaced: true,
+      actions: {},
+      mutations: mockMatchesMutations(),
+      state: {},
+      getters: {},
+    },
   },
 };
 
@@ -35,6 +63,9 @@ beforeEach(() => {
   mockMutations[MutationTypes.SET_USER_DATA] = jest.fn();
   mockMutations[MutationTypes.SET_ERROR] = jest.fn();
   mockMutations[MutationTypes.SET_LOADING] = jest.fn();
+  mockWatchlistMutations[WatchlistMutationTypes.SET_DEFAULT_STATE] = jest.fn();
+  modules.modules.targets.mutations = mockTargetsMutations();
+  modules.modules.matches.mutations = mockMatchesMutations();
   container.bind<Modules>("Modules").toConstantValue(modules);
 });
 
@@ -93,7 +124,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Client Error"
+        new HttpError(400, {}, "Client Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -116,7 +147,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Server Error"
+        new HttpError(500, {}, "Server Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -139,7 +170,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Parse Error"
+        new ParseError("Parse Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -162,7 +193,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "username required"
+        new ParseError("username required")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -226,7 +257,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Client Error"
+        new HttpError(400, {}, "Client Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -252,7 +283,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Server Error"
+        new HttpError(500, {}, "Server Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -278,7 +309,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "Parse Error"
+        new ParseError("Parse Error")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -303,7 +334,7 @@ describe("UserActions", () => {
       );
       expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
         {},
-        "password required"
+        new ParseError("password required")
       );
       expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
         1,
@@ -314,6 +345,98 @@ describe("UserActions", () => {
         {},
         false
       );
+    });
+  });
+  describe("Activate", () => {
+    it("should call success callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.activate, {
+        uid: "uid",
+        token: "token",
+      });
+      expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        null
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
+        1,
+        {},
+        true
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenLastCalledWith(
+        {},
+        false
+      );
+    });
+    it("should call client error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("clientError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.activate, {
+        uid: "uid",
+        token: "token",
+      });
+      expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        HttpError.fromStatus(403, {}, "Client Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
+        1,
+        {},
+        true
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenLastCalledWith(
+        {},
+        false
+      );
+    });
+    it("should call server error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("serverError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.activate, {
+        uid: "uid",
+        token: "token",
+      });
+      expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        HttpError.fromStatus(500, {}, "Server Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
+        1,
+        {},
+        true
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenLastCalledWith(
+        {},
+        false
+      );
+    });
+  });
+  describe("Logout", () => {
+    it("should set default state if logout is successful", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.logout);
+      expect(
+        mockWatchlistMutations[WatchlistMutationTypes.SET_DEFAULT_STATE]
+      ).toHaveBeenCalled();
+      expect(
+        modules.modules.targets.mutations[
+          TargetsMutationTypes.SET_DEFAULT_STATE
+        ]
+      ).toHaveBeenCalled();
+      expect(
+        modules.modules.matches.mutations[
+          MatchesMutationTypes.SET_DEFAULT_STATE
+        ]
+      ).toHaveBeenCalled();
     });
   });
 });

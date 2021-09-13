@@ -1,14 +1,14 @@
 <template>
-  <v-row>
-    <v-col>
+  <overview-layout>
+    <template v-slot:targets>
       <target-scrolling-list
         :targets="targets"
         :loading="loadingTargets"
         @targetSelected="onTargetClick"
         @nextPage="onTargetsNextPage"
       />
-    </v-col>
-    <v-col>
+    </template>
+    <template v-slot:matches>
       <matches-scroling-list
         :matches="matches"
         :loading="loadingMatches"
@@ -16,9 +16,9 @@
         @matchSelected="onMatchClick"
         @nextPage="onMatchesNextPage"
       />
-    </v-col>
-    <v-col>
-      <v-card height="100%">
+    </template>
+    <template v-slot:alertInfo>
+      <v-card>
         <v-card-title>Alert Info</v-card-title>
         <v-card-text>
           Link to Explorer:
@@ -27,8 +27,8 @@
           }}</a>
         </v-card-text>
       </v-card>
-    </v-col>
-  </v-row>
+    </template>
+  </overview-layout>
 </template>
 
 <script lang="ts">
@@ -43,12 +43,13 @@ import { MutationTypes } from "@/ui/store/matches/mutations";
 import TargetScrollingList from "./TargetScrollingList.vue";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 import MatchesScrolingList from "./MatchesScrolingList.vue";
+import OverviewLayout from "@/ui/layouts/OverviewLayout.vue";
 
 const targetsHelper = createNamespacedHelpers("targets");
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const matchesHelper = createNamespacedHelpers("matches");
 export default Vue.extend({
-  components: { TargetScrollingList, MatchesScrolingList },
+  components: { TargetScrollingList, MatchesScrolingList, OverviewLayout },
   data: (): {
     selectedMatch: IMatchData | null;
     selectedTarget: ITargetData | null;
@@ -80,7 +81,7 @@ export default Vue.extend({
       loadingMatches: function (state: MatchesState): boolean {
         return state.loading;
       },
-      matchesNextPage: function (state: MatchesState): boolean {
+      matchesNextPage: function (): boolean {
         // TODO return state next page
         return false;
       },

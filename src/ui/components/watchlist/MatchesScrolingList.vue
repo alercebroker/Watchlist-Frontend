@@ -2,19 +2,21 @@
   <v-card>
     <v-card-title>Matches</v-card-title>
     <v-card-text>
-      <v-simple-table height="800">
+      <v-simple-table :height="$vuetify.breakpoint.height - 250" dense>
         <template v-slot:default>
           <thead>
             <tr>
               <th class="text-left">Object</th>
-              <th class="text-left">Date</th>
-              <th class="text-left">Candid</th>
+              <th class="text-left">
+                Date
+                <v-btn plain @click="toggleDateFormat">{{ dateFormat }}</v-btn>
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr
               :id="'m' + item.candid"
-              v-for="(item, index) in matches"
+              v-for="(item, index) in formattedMatches"
               :key="index"
               @click="onMatchClick(item)"
               :class="{
@@ -23,7 +25,6 @@
             >
               <td>{{ item.object_id }}</td>
               <td>{{ item.date }}</td>
-              <td>{{ item.candid }}</td>
             </tr>
           </tbody>
           <v-card v-intersect="onIntersect"></v-card>
@@ -32,7 +33,7 @@
               <td colspan="3">
                 <p
                   v-if="
-                    matches.length == 0 &&
+                    formattedMatches.length == 0 &&
                     selectedTarget != undefined &&
                     !loading
                   "
@@ -57,6 +58,8 @@
 import Vue from "vue";
 import { IMatchData } from "@/app/match/domain/Match.types";
 import { debounce } from "ts-debounce";
+import { createNamespacedHelpers } from "vuex";
+const matchesHelper = createNamespacedHelpers("matches");
 export default Vue.extend({
   props: {
     matches: Array,
@@ -65,15 +68,17 @@ export default Vue.extend({
   },
   data: (): {
     selectedMatch: IMatchData | null;
+    dateFormat: string;
   } => ({
     selectedMatch: null,
+    dateFormat: "mjd",
   }),
-  mounted() {
-    console.log(
-      this.matches.length == 0 &&
-        this.selectedTarget != undefined &&
-        !this.loading
-    );
+  computed: {
+    ...matchesHelper.mapGetters(["formattedUTCMatches", "formattedMJDMatches"]),
+    formattedMatches: function (): IMatchData[] {
+      if (this.dateFormat == "mjd") return this.formattedMJDMatches;
+      return this.formattedUTCMatches;
+    },
   },
   methods: {
     onMatchClick(item: IMatchData) {
@@ -87,6 +92,11 @@ export default Vue.extend({
       if (entries[0].isIntersecting) {
         this.debouncedFunction()();
       }
+    },
+    toggleDateFormat() {
+      this.dateFormat == "mjd"
+        ? (this.dateFormat = "UTC")
+        : (this.dateFormat = "mjd");
     },
   },
 });

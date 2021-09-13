@@ -1,5 +1,3 @@
-export interface TargetRequestModel {}
-
 export interface TargetListApiResponse {
   id: number;
   url: string;
@@ -17,3 +15,14 @@ export interface WatchlistTargetsApiResponse {
   previous: string | null;
   results: TargetListApiResponse[];
 }
+
+export interface TargetEditApiResponse {
+  id: number;
+  name: string;
+  radius: number;
+  ra: number;
+  dec: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface TargetCreateApiResponse extends TargetEditApiResponse {}

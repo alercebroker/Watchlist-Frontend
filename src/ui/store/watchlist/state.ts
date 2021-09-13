@@ -3,7 +3,7 @@ import { IWatchlistData } from "@/app/watchlist/domain";
 export type WatchlistState = {
   loading: boolean;
   watchlists: IWatchlistData[];
-  error: string | null;
+  error: Error | null;
   page: number;
   nextPage: string | null;
   prevPage: string | null;

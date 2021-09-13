@@ -1,13 +1,18 @@
 <template>
   <v-card height="100%">
     <v-card-title>My Watchlists</v-card-title>
-    <v-virtual-scroll :items="watchlists" height="800" item-height="50">
+    <v-virtual-scroll
+      :items="watchlists"
+      item-height="50"
+      bench="1"
+      :height="$vuetify.breakpoint.height - 250"
+    >
       <template v-slot:default="{ item, index }">
         <div
           class="watchlistItem"
           :class="{ selectedItem: index === watchlist }"
         >
-          <v-list-item :key="item.id" @click="onItemClick(index)">
+          <v-list-item :key="index" @click="onItemClick(index)">
             <template v-slot:default>
               <v-list-item-content>
                 <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -25,7 +30,8 @@
           </v-list-item>
         </div>
         <v-card
-          v-if="index === watchlists.length - 1"
+          v-if="watchlists.length === index + 1"
+          id="hiddenCard"
           v-intersect="onIntersect"
         ></v-card>
       </template>
@@ -49,21 +55,20 @@
     </v-dialog>
     <v-dialog v-model="delete_watchlist_dialog" max-width="290">
       <v-card>
-        <v-card-title class="headline">
-          Are you sure you want to delete this?
-        </v-card-title>
+        <v-card-title class="headline"
+          >Are you sure you want to delete this?</v-card-title
+        >
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             color="green darken-1"
             text
             @click="delete_watchlist_dialog = false"
+            >Cancel</v-btn
           >
-            Cancel
-          </v-btn>
-          <v-btn color="green darken-1" text @click="onDeleteClick">
-            Confirm
-          </v-btn>
+          <v-btn color="green darken-1" text @click="onDeleteClick"
+            >Confirm</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -83,100 +88,15 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue, { VueConstructor } from "vue";
 import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist.vue";
-import { ActionTypes } from "@/ui/store/watchlist/actions";
-import { IWatchlistData } from "@/app/watchlist/domain";
-import { WatchlistState } from "@/ui/store/watchlist/state";
-import { createNamespacedHelpers } from "vuex";
-import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
-import { TargetsState } from "@/ui/store/targets/state";
-const watchlistHelper = createNamespacedHelpers("watchlists");
-const singleWatchlistHelper = createNamespacedHelpers("singleWatchlist");
-const targetsHelper = createNamespacedHelpers("targets");
+import MyWatchlistsMixin from "@/ui/mixins/watchlist/MyWatchlistsMixin";
 
-export default Vue.extend({
+export default (Vue as VueConstructor<
+  Vue & InstanceType<typeof MyWatchlistsMixin>
+>).extend({
   components: { CreateWatchlist },
-  data: () => ({
-    selectedItem: 0,
-    watchlist_dialog: false,
-    delete_watchlist_dialog: false,
-  }),
-  async mounted() {
-    await this.getAllWatchlists({});
-  },
-  computed: {
-    ...singleWatchlistHelper.mapState({
-      selectedWatchlist: function (state: SingleWatchlistState): string {
-        return state.url;
-      },
-    }),
-    ...watchlistHelper.mapState({
-      watchlists: function (state: WatchlistState): IWatchlistData[] {
-        return state.watchlists;
-      },
-      watchlistLoading: function (state: WatchlistState): boolean {
-        return state.loading;
-      },
-      nextPage: function (state: WatchlistState): string | null {
-        return state.nextPage;
-      },
-    }),
-    ...targetsHelper.mapState({
-      targetsLoading: function (state: TargetsState): boolean {
-        return state.loading;
-      },
-    }),
-    loading: function (): boolean {
-      return this.watchlistLoading || this.targetsLoading;
-    },
-    watchlist: {
-      get: function (): number {
-        const index = this.watchlists
-          .map((x: IWatchlistData) => x.url)
-          .indexOf(this.selectedWatchlist);
-        if (index === -1 && this.watchlists.length >= 1) {
-          this.selectWatchlist(0);
-          return 0;
-        }
-        return index;
-      },
-      set: function (newWatchlistIndex) {
-        this.selectWatchlist(newWatchlistIndex);
-      },
-    },
-  },
-  methods: {
-    ...watchlistHelper.mapActions([
-      ActionTypes.getAllWatchlists,
-      ActionTypes.createWatchlist,
-      ActionTypes.deleteWatchlist,
-      ActionTypes.selectWatchlist,
-    ]),
-    clickCreateWatchlist() {
-      this.watchlist_dialog = true;
-    },
-    clickDeleteWatchlist() {
-      this.delete_watchlist_dialog = true;
-    },
-    async onDeleteClick() {
-      await this.deleteWatchlist(this.selectedWatchlist);
-      this.delete_watchlist_dialog = false;
-    },
-    async onIntersect(entries: IntersectionObserverEntry[]) {
-      if (entries[0].isIntersecting && this.nextPage) {
-        await this.getAllWatchlists({ url: this.nextPage, append: true });
-      }
-    },
-    onItemClick(index: number) {
-      this.selectWatchlist(index);
-    },
-  },
-  watch: {
-    selectedItem: function (newSelectedItem) {
-      this.selectWatchlist(newSelectedItem);
-    },
-  },
+  mixins: [MyWatchlistsMixin],
 });
 </script>
 

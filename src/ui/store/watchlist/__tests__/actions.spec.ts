@@ -1,7 +1,7 @@
 import { containerBuilder } from "@/ui/app.container";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { MockWatchlistService } from "@/app/watchlist/infrastructure/__tests__/WatchlistService.mock";
-import { TestActions } from "@/shared/http";
+import { HttpError, TestActions } from "@/shared/http";
 import { createLocalVue } from "@vue/test-utils";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import Vuex from "vuex";
@@ -10,6 +10,7 @@ import { actions } from "../actions";
 import { mockMutations } from "./mutations.mock";
 import { MutationTypes } from "../mutations";
 import { Modules } from "../../RegisterModules";
+import { ParseError } from "@/shared/error/ParseError";
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
@@ -64,6 +65,8 @@ describe("getAllWatchlists", () => {
         id: 1,
         title: "watchlist 1",
         owner: "owner 1",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
@@ -73,6 +76,8 @@ describe("getAllWatchlists", () => {
         id: 2,
         title: "watchlist 2",
         owner: "owner 1",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
@@ -108,7 +113,7 @@ describe("getAllWatchlists", () => {
     );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Client Error"
+      new HttpError(400, {}, "Client Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -131,7 +136,7 @@ describe("getAllWatchlists", () => {
     );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Server Error"
+      new HttpError(500, {}, "Server Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -154,7 +159,7 @@ describe("getAllWatchlists", () => {
     );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Parse Error"
+      new ParseError("Parse Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -190,6 +195,8 @@ describe("createWatchlist", () => {
         id: 1,
         title: "watchlist 1",
         owner: "owner 1",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
@@ -199,6 +206,8 @@ describe("createWatchlist", () => {
         id: 2,
         title: "watchlist 2",
         owner: "owner 1",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
@@ -208,6 +217,8 @@ describe("createWatchlist", () => {
         id: 3,
         title: "title",
         owner: "owner 1",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
@@ -249,13 +260,9 @@ describe("createWatchlist", () => {
       ],
     };
     await store.dispatch("watchlists/createWatchlist", watchlistInput);
-    expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
-      {},
-      []
-    );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Client Error"
+      new HttpError(400, {}, "BAD_REQUEST")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -283,13 +290,9 @@ describe("createWatchlist", () => {
       ],
     };
     await store.dispatch("watchlists/createWatchlist", watchlistInput);
-    expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
-      {},
-      []
-    );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Server Error"
+      new HttpError(500, {}, "Server Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -317,13 +320,9 @@ describe("createWatchlist", () => {
       ],
     };
     await store.dispatch("watchlists/createWatchlist", watchlistInput);
-    expect(mockMutations[MutationTypes.SET_WATCHLISTS]).toHaveBeenCalledWith(
-      {},
-      []
-    );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Parse Error"
+      new ParseError("Parse Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -351,6 +350,8 @@ describe("deleteWatchlist", () => {
           lastMatch: "test",
           nTargets: "test",
           owner: "owner 1",
+          notificationRate: "hourly",
+          lastNotified: "date",
           targets: "test",
           title: "watchlist 1",
           url: "test",
@@ -383,7 +384,7 @@ describe("deleteWatchlist", () => {
     );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Client Error"
+      new HttpError(400, {}, "Client Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -406,7 +407,7 @@ describe("deleteWatchlist", () => {
     );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Server Error"
+      new HttpError(500, {}, "Server Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -429,7 +430,7 @@ describe("deleteWatchlist", () => {
     );
     expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
       {},
-      "Parse Error"
+      new ParseError("Parse Error")
     );
     expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenNthCalledWith(
       1,
@@ -442,5 +443,3 @@ describe("deleteWatchlist", () => {
     );
   });
 });
-
-describe("selectWatchlist", () => {});

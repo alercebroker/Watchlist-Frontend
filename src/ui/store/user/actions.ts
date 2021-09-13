@@ -1,5 +1,6 @@
 import { IUserData } from "@/app/user/domain/User.types";
 import {
+  ActivateUserApiRequestModel,
   LoginUserApiRequestModel,
   RegisterUserRequestModel,
 } from "@/app/user/infrastructure/AuthService.types";
@@ -14,12 +15,21 @@ import { cid, container } from "inversify-props";
 import { ActionTree } from "vuex";
 import { IRootState } from "../Store.types";
 import { MutationTypes } from "./mutations";
+import { MutationTypes as WatchlistMutationTypes } from "../watchlist/mutations";
+import { MutationTypes as TargetMutationTypes } from "../targets/mutations";
+import { MutationTypes as MatchesMutationTypes } from "../matches/mutations";
 import { UserState } from "./state";
 
 export enum ActionTypes {
+  activate = "activate",
   registerUser = "registerUser",
   login = "login",
   logout = "logout",
+}
+
+export interface ActivateInput {
+  uid: string;
+  token: string;
 }
 
 export interface LoginInput {
@@ -53,17 +63,17 @@ export const actions: ActionTree<UserState, IRootState> = {
       },
       respondWithClientError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithServerError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithParseError: (error: ParseError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
     };
@@ -80,7 +90,7 @@ export const actions: ActionTree<UserState, IRootState> = {
       registerUser.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
     }
   },
@@ -94,17 +104,17 @@ export const actions: ActionTree<UserState, IRootState> = {
       },
       respondWithClientError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithServerError: (error: HttpError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
       respondWithParseError: (error: ParseError) => {
         commit(MutationTypes.SET_USER_DATA, {} as IUserData);
-        commit(MutationTypes.SET_ERROR, error.message);
+        commit(MutationTypes.SET_ERROR, error);
         commit(MutationTypes.SET_LOADING, false);
       },
     };
@@ -117,7 +127,7 @@ export const actions: ActionTree<UserState, IRootState> = {
       login.execute(requestModel, callbacks);
     } catch (error) {
       commit(MutationTypes.SET_USER_DATA, {});
-      commit(MutationTypes.SET_ERROR, error.message);
+      commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
     }
   },
@@ -127,11 +137,52 @@ export const actions: ActionTree<UserState, IRootState> = {
       respondWithSuccess: (userData) => {
         commit(MutationTypes.SET_USER_DATA, userData);
         commit(MutationTypes.SET_ERROR, false);
+        commit("watchlists/" + WatchlistMutationTypes.SET_DEFAULT_STATE, null, {
+          root: true,
+        });
+        commit("targets/" + TargetMutationTypes.SET_DEFAULT_STATE, null, {
+          root: true,
+        });
+        commit("matches/" + MatchesMutationTypes.SET_DEFAULT_STATE, null, {
+          root: true,
+        });
       },
       respondWithAppError: (error) => {
         commit(MutationTypes.SET_USER_DATA, {});
         commit(MutationTypes.SET_ERROR, error);
       },
     } as Callbacks);
+  },
+  async [ActionTypes.activate]({ commit }, activateInput: ActivateInput) {
+    const activateUser = container.get<UseCaseInteractor>(cid.Activate);
+    const callbacks: Callbacks = {
+      respondWithSuccess: () => {
+        commit(MutationTypes.SET_ERROR, null);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithClientError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    };
+    commit(MutationTypes.SET_LOADING, true);
+    try {
+      const requestModel: ActivateUserApiRequestModel = {
+        uid: activateInput.uid ?? throwExpression("uid required"),
+        token: activateInput.token ?? throwExpression("token required"),
+      };
+      await activateUser.execute(requestModel, callbacks);
+    } catch (error) {
+      commit(MutationTypes.SET_ERROR, error);
+      commit(MutationTypes.SET_LOADING, false);
+    }
   },
 };

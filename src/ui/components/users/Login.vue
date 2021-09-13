@@ -5,28 +5,35 @@
       <v-form ref="form">
         <v-container>
           <v-row>
-            <v-col>
+            <v-col cols="12">
               <v-text-field
+                id="username"
                 v-model="username"
                 label="Username"
                 :rules="rules"
-                :error-messages="error"
+                :error-messages="detailError.detail"
                 :loading="loading"
               ></v-text-field>
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
+            <v-col cols="12">
               <v-text-field
+                id="password"
                 v-model="password"
                 label="Password"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
                 :rules="rules"
-                :error-messages="error"
+                :error-messages="detailError.detail"
                 :loading="loading"
               ></v-text-field>
+            </v-col>
+            <v-col v-if="afterRegister" cols="12">
+              <v-alert icon="mdi-email" color="blue-grey" dismissible>
+                Registered user successfully. Check the email we sent to
+                <strong>{{ userData.email }}</strong> to activate the account.
+                <br />Enjoy ALeRCE Watchlist.
+              </v-alert>
             </v-col>
           </v-row>
           <v-row>
@@ -51,6 +58,11 @@
               >
             </v-col>
           </v-row>
+          <v-row v-if="genericError">
+            <v-col>
+              <generic-error :error="genericError" />
+            </v-col>
+          </v-row>
         </v-container>
       </v-form>
     </v-card-text>
@@ -60,7 +72,17 @@
 <script lang="ts">
 import { ActionTypes } from "@/ui/store/user/actions";
 import Vue from "vue";
+import GenericError from "../shared/GenericError.vue";
+import { createNamespacedHelpers } from "vuex";
+const userHelper = createNamespacedHelpers("users");
 export default Vue.extend({
+  components: { GenericError },
+  props: {
+    afterRegister: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       username: "",
@@ -70,22 +92,30 @@ export default Vue.extend({
     };
   },
   methods: {
-    onLoginClick(): void {
+    ...userHelper.mapActions([ActionTypes.login]),
+    async onLoginClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         const userInput = {
           username: this.username,
           password: this.password,
         };
-        this.$store.dispatch("users/" + ActionTypes.login, userInput);
+        await this.login(userInput);
+        this.$emit("loginClick");
       }
     },
   },
   computed: {
-    error: function (): string {
-      return this.$store.state.users.error?.detail;
+    ...userHelper.mapState(["userData", "loading"]),
+    ...userHelper.mapGetters(["genericError", "detailError", "errored"]),
+    logged: function (): boolean {
+      return this.userData.accessToken != null;
     },
-    loading: function (): boolean {
-      return this.$store.state.users.loading;
+  },
+  watch: {
+    logged(newVal) {
+      if (newVal) {
+        this.$router.push("/");
+      }
     },
   },
 });

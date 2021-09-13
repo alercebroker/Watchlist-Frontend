@@ -1,7 +1,7 @@
 import { containerBuilder } from "@/ui/app.container";
 import { IHttpService, MockUserApi, TestActions } from "@/shared/http";
 import { cid, container, mockSingleton, resetContainer } from "inversify-props";
-import { ITargetRepository } from "../../domain/Target.types";
+import { ITargetData, ITargetRepository } from "../../domain/Target.types";
 import { Target } from "../../domain/Target";
 import { ParseError } from "@/shared/error/ParseError";
 
@@ -69,6 +69,190 @@ describe("TargetService", () => {
       result.mapErr((x) => {
         expect(x).toBeInstanceOf(ParseError);
       });
+    });
+  });
+
+  describe("Edit Target", () => {
+    it("should return result with edited target if server response is successful", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.editTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+      });
+      expect(result.isOk()).toBeTruthy();
+    });
+    it("should work if I pass an url", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.editTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+        url: "/watchlists/1/targets/1",
+      });
+      expect(result.isOk()).toBeTruthy();
+    });
+    it("should return err if http request failed with error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.editTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+        url: "/watchlists/1/targets/1",
+      });
+      expect(result.isErr()).toBeTruthy();
+    });
+    it("should return err if http request failed with timeout", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.editTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+        url: "/watchlists/1/targets/1",
+      });
+      expect(result.isErr()).toBeTruthy();
+    });
+    it("should return err if parse error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("parseError");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.editTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+        url: "/watchlists/1/targets/1",
+      });
+      expect(result.isErr()).toBeTruthy();
+      result.mapErr((x) => {
+        expect(x).toBeInstanceOf(ParseError);
+      });
+    });
+  });
+
+  describe("Create Target", () => {
+    it("should return result with created target if server response is successful", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.createTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+      });
+      expect(result.isOk()).toBeTruthy();
+    });
+    it("should return err if http request failed with error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.createTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+      });
+      expect(result.isErr()).toBeTruthy();
+    });
+    it("should return err if http request failed with timeout", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.createTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+      });
+      expect(result.isErr()).toBeTruthy();
+    });
+    it("should return err if parse error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("parseError");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.createTarget({
+        target: {
+          id: 1,
+          name: "target",
+          ra: 10,
+          dec: 20,
+          radius: 30,
+        } as ITargetData,
+        watchlist: 1,
+      });
+      expect(result.isErr()).toBeTruthy();
+      result.mapErr((x) => {
+        expect(x).toBeInstanceOf(ParseError);
+      });
+    });
+  });
+
+  describe("Delete Target", () => {
+    it("should return ok result with server response is successful", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.deleteTarget({
+        target: 1,
+        watchlist: 1,
+      });
+      expect(result.isOk()).toBeTruthy();
+      result.map((val) => {
+        expect(val).toBe(1);
+      });
+    });
+    it("should return err if http request failed with error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.deleteTarget({
+        target: 1,
+        watchlist: 1,
+      });
+      expect(result.isErr()).toBeTruthy();
+    });
+    it("should return err if http request failed with timeout", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const targetService = container.get<ITargetRepository>(cid.TargetService);
+      const result = await targetService.deleteTarget({
+        target: 1,
+        watchlist: 1,
+      });
+      expect(result.isErr()).toBeTruthy();
     });
   });
 });

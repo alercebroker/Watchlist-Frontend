@@ -40,6 +40,8 @@ describe("SET_WATCHLISTS", () => {
         id: 1,
         title: "titulo",
         owner: "owner",
+        notificationRate: "hourly",
+        lastNotified: "date",
         targets: "test",
         nTargets: "test",
         lastMatch: "test",
@@ -52,7 +54,7 @@ describe("SET_WATCHLISTS", () => {
   it("should set state with error", () => {
     const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
     const store = storeCreator.create();
-    const error = new HttpError(400, "Bad request");
+    const error = new HttpError(400, {}, "Bad request");
     store.commit("watchlists/SET_ERROR", error.message);
     expect(store.state.watchlists.error).toEqual(error.message);
   });

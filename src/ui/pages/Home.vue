@@ -1,23 +1,31 @@
 <template>
-  <v-container>
-    <a-header title="ALeRCE Watchlist"></a-header>
-    <v-row v-if="!logged" align="center" align-content="center">
+  <v-container v-if="!logged">
+    <v-row align="center" align-content="center">
       <v-col cols="4">
-        <login @registerClick="dialog = true" />
-        <v-dialog v-model="dialog" max-width="500">
-          <register-user @registered="dialog = false" />
+        <login
+          @registerClick="registerDialog = true"
+          :afterRegister="afterRegister"
+        />
+        <v-dialog v-model="registerDialog" max-width="500">
+          <register-user
+            @registered="registered"
+            @registerCancel="registerDialog = false"
+          />
         </v-dialog>
       </v-col>
     </v-row>
-    <v-row v-else>
-      <v-col xs="12" lg="3">
-        <my-watchlists @createWatchlist="watchlist_dialog = true" />
-      </v-col>
-      <v-col xs="12" lg="9">
-        <watchlist-details />
-      </v-col>
-    </v-row>
   </v-container>
+  <main-layout v-else>
+    <template v-slot:left>
+      <my-watchlists @createWatchlist="watchlistDialog = true" />
+    </template>
+    <template v-slot:top>
+      <my-watchlists-dropdown @createWatchlist="watchlistDialog = true" />
+    </template>
+    <template v-slot:right>
+      <watchlist-details />
+    </template>
+  </main-layout>
 </template>
 
 <script lang="ts">
@@ -26,21 +34,36 @@ import MyWatchlists from "@/ui/components/watchlist/MyWatchlists.vue";
 import WatchlistDetails from "../components/watchlist/WatchlistDetails.vue";
 import Login from "../components/users/Login.vue";
 import RegisterUser from "../components/users/RegisterUser.vue";
-import AHeader from "@/ui/components/watchlist/AHeader.vue";
 import { IUserData } from "@/app/user/domain/User.types";
+import MainLayout from "../layouts/MainLayout.vue";
+import MyWatchlistsDropdown from "../components/watchlist/MyWatchlistsDropdown.vue";
 
 export default Vue.extend({
-  components: { AHeader, MyWatchlists, WatchlistDetails, Login, RegisterUser },
+  components: {
+    MyWatchlists,
+    WatchlistDetails,
+    Login,
+    RegisterUser,
+    MainLayout,
+    MyWatchlistsDropdown,
+  },
   data: (): {
-    dialog: boolean;
-    watchlist_dialog: boolean;
+    registerDialog: boolean;
+    watchlistDialog: boolean;
     accessToken: string | null;
+    afterRegister: boolean;
   } => ({
-    dialog: false,
-    watchlist_dialog: false,
+    registerDialog: false,
+    watchlistDialog: false,
     accessToken: null,
+    afterRegister: false,
   }),
-
+  methods: {
+    registered() {
+      this.afterRegister = true;
+      this.registerDialog = false;
+    },
+  },
   computed: {
     logged: function (): boolean {
       return this.accessToken != null;
