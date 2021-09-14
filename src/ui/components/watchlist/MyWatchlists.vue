@@ -1,7 +1,12 @@
 <template>
   <v-card height="100%">
     <v-card-title>My Watchlists</v-card-title>
-    <v-virtual-scroll :items="watchlists" item-height="50" bench="1">
+    <v-virtual-scroll
+      :items="watchlists"
+      item-height="50"
+      bench="1"
+      :height="$vuetify.breakpoint.height - 250"
+    >
       <template v-slot:default="{ item, index }">
         <div
           class="watchlistItem"
