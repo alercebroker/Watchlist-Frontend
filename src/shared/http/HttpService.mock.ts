@@ -135,6 +135,15 @@ export class MockUserApi extends HttpService {
       };
       return [200, JSON.stringify(response)];
     });
+
+    this.mock
+      .onGet(/\/users\/social\/o\/google-oauth2\/\?redirect_uri=.+/)
+      .reply(() => {
+        return [200, JSON.stringify({ authorization_url: "google_auth_url" })];
+      });
+    this.mock.onPost("/users/social/o/google-oauth2/").reply(() => {
+      return [200, JSON.stringify(mockLoginResponse)];
+    });
   }
 
   setErrorActions(): void {
@@ -150,6 +159,8 @@ export class MockUserApi extends HttpService {
     this.mock.onPut(/\/watchlists\/\w+\/targets\/\w+/).networkError();
     this.mock.onPost(/\/watchlists\/\w+\/targets\//).networkError();
     this.mock.onDelete(/\/watchlists\/\w+\/targets\/\w+/).networkError();
+    this.mock.onGet("users/social/o/google-oauth2").networkError();
+    this.mock.onPost("/users/social/o/google-oauth2/").networkError();
   }
 
   setClientErrorActions(): void {
@@ -164,12 +175,17 @@ export class MockUserApi extends HttpService {
       institution: ["This field may not be blank."],
       role: ["This field may not be blank."],
     });
+
+    this.mock.onGet("users/social/o/google-oauth2").reply(400);
+    this.mock.onPost("/users/social/o/google-oauth2/").reply(400);
   }
 
   setServerErrorActions(): void {
     this.mock.onPost("/users/login/").reply(500);
     this.mock.onPost("/users/").reply(500);
     this.mock.onPost("/users/activation/").reply(500);
+    this.mock.onGet("users/social/o/google-oauth2").reply(500);
+    this.mock.onPost("/users/social/o/google-oauth2/").reply(500);
   }
 
   setTimeoutActions(): void {
@@ -185,6 +201,8 @@ export class MockUserApi extends HttpService {
     this.mock.onPut(/\/watchlists\/\w+\/targets\/\w+/).timeout();
     this.mock.onDelete(/\/watchlists\/\w+\/targets\/\w+/).timeout();
     this.mock.onPost(/\/watchlists\/\w+\/targets\//).timeout();
+    this.mock.onGet("users/social/o/google-oauth2").timeout();
+    this.mock.onPost("/users/social/o/google-oauth2/").timeout();
   }
 
   setParseErrorActions(): void {
@@ -198,6 +216,12 @@ export class MockUserApi extends HttpService {
     });
     this.mock.onPost(/\/watchlists\/\w+\/targets\//).reply(() => {
       return [200, JSON.stringify({})];
+    });
+    this.mock.onGet("users/social/o/google-oauth2").reply(() => {
+      return [200, JSON.stringify({ unknown_field: "unknown_value" })];
+    });
+    this.mock.onPost("/users/social/o/google-oauth2/").reply(() => {
+      return [200, JSON.stringify({ unknown_field: "unknown_value" })];
     });
   }
 

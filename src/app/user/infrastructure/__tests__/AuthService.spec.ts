@@ -82,6 +82,7 @@ describe("AuthService", () => {
       });
     });
   });
+
   describe("Login", () => {
     it("should get user and save token if response success", async () => {
       container.bind<TestActions>("ActionType").toConstantValue("ok");
@@ -118,6 +119,7 @@ describe("AuthService", () => {
       expect(localStorage.getItem("token")).toBeNull();
     });
   });
+
   describe("Activate", () => {
     it("should return nothing if response is success (204)", async () => {
       container.bind<TestActions>("ActionType").toConstantValue("ok");
@@ -154,6 +156,69 @@ describe("AuthService", () => {
       result.mapErr((error) => {
         if (error instanceof HttpError) expect(error.status).toEqual(500);
       });
+    });
+  });
+
+  describe("GetGoogleUrl", () => {
+    it("should return authorization URL if response is success", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const result = await service.getGoogleUrl();
+      expect(result.isOk()).toBeTruthy();
+      result.map((url) => {
+        expect(url).toBe("google_auth_url");
+      });
+    });
+
+    it("should return error if http has error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const result = await service.getGoogleUrl();
+      expect(result.isErr()).toBeTruthy();
+    });
+
+    it("should return error if timeout", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const result = await service.getGoogleUrl();
+      expect(result.isErr()).toBeTruthy();
+    });
+  });
+
+  describe("GoogleLogin", () => {
+    it("should get user and save token if response success", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const request = {
+        code: "test",
+        state: "test",
+      };
+      const result = await service.googleLogin(request);
+      expect(result.isOk()).toBeTruthy();
+      expect(localStorage.getItem("access_token")).toBe("token");
+      expect(localStorage.getItem("refresh_token")).toBe("token");
+    });
+    it("should return error if http has error", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("error");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const request = {
+        code: "test",
+        state: "test",
+      };
+      const result = await service.googleLogin(request);
+      expect(result.isErr()).toBeTruthy();
+      expect(localStorage.getItem("token")).toBeNull();
+    });
+    it("should return error if timeout", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("timeout");
+      const service = container.get<IUserRepository>(cid.AuthService);
+      const request = {
+        code: "test",
+        state: "test",
+      };
+      const result = await service.googleLogin(request);
+      expect(result.isErr()).toBeTruthy();
+      expect(localStorage.getItem("token")).toBeNull();
     });
   });
 });

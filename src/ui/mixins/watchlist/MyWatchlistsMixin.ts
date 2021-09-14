@@ -85,8 +85,8 @@ export default Vue.extend({
       },
     },
     watchlists: {
-      handler: function () {
-        this.selectWatchlist(0);
+      handler: function (newVal) {
+        if (newVal.length) this.selectWatchlist(0);
       },
     },
   },
