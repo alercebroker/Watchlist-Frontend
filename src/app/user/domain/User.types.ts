@@ -36,5 +36,7 @@ export interface IUserRepository {
     params: ActivateUserApiRequestModel
   ): Promise<Result<IUserData, ParseError | HttpError>>;
   getGoogleUrl(): Promise<Result<string, ParseError | HttpError>>;
-  googleLogin(): Promise<Result<IUserData, ParseError | HttpError>>;
+  googleLogin(
+    params: unknown
+  ): Promise<Result<IUserData, ParseError | HttpError>>;
 }

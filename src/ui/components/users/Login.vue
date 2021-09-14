@@ -61,6 +61,7 @@
           <v-row>
             <v-col cols="12">
               <v-btn
+                id="googleLogin"
                 :loading="loading"
                 :disabled="loading"
                 color="primary"

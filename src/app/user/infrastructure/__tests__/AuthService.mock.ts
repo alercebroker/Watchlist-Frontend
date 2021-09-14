@@ -35,10 +35,56 @@ export class MockAuthService implements IUserRepository {
     this.actionType = actionType;
   }
   getGoogleUrl(): Promise<Result<string, ParseError | HttpError>> {
-    throw new Error("Method not implemented.");
+    if (this.actionType === "ok") {
+      return new Promise((resolve) => {
+        resolve(ok("test"));
+      });
+    } else if (
+      this.actionType === "error" ||
+      this.actionType === "serverError"
+    ) {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(500, {}, "Server Error")));
+      });
+    } else if (this.actionType === "clientError") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(400, {}, "Client Error")));
+      });
+    } else if (this.actionType === "timeout") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
+      });
+    }
+    return new Promise((resolve) => {
+      resolve(err(new ParseError("Parse Error")));
+    });
   }
   googleLogin(): Promise<Result<IUserData, ParseError | HttpError>> {
-    throw new Error("Method not implemented.");
+    if (this.actionType === "ok") {
+      localStorage.setItem("access_token", "token");
+      localStorage.setItem("refresh_token", "token");
+      return new Promise((resolve) => {
+        resolve(ok(loginUserData));
+      });
+    } else if (
+      this.actionType === "error" ||
+      this.actionType === "serverError"
+    ) {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(500, {}, "Server Error")));
+      });
+    } else if (this.actionType === "clientError") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(400, {}, "Client Error")));
+      });
+    } else if (this.actionType === "timeout") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
+      });
+    }
+    return new Promise((resolve) => {
+      resolve(err(new ParseError("Parse Error")));
+    });
   }
   login(): Promise<Result<IUserData, ParseError | HttpError>> {
     if (this.actionType === "ok") {

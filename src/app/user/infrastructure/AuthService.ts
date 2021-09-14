@@ -7,6 +7,8 @@ import { User } from "../domain/User";
 import { IUserData, IUserRepository } from "../domain/User.types";
 import {
   ActivateUserApiRequestModel,
+  LoginApiResponse,
+  LoginGoogleApiRequestModel,
   LoginUserApiRequestModel,
   RegisterUserRequestModel,
   UsersApiResponse,
@@ -15,22 +17,40 @@ import { UserParser } from "./UserParser";
 
 export class AuthService implements IUserRepository {
   parser: UserParser;
+
   constructor(@inject() private usersApiService: UsersApiService) {
     this.parser = new UserParser();
   }
+
   getGoogleUrl(): Promise<Result<string, ParseError | HttpError>> {
     return this.usersApiService.get(
       {
         url:
           "/users/social/o/google-oauth2/?redirect_uri=" +
           process.env.VUE_APP_GOOGLE_REDIRECT_URI,
-        //"http://localhost:8080/google-login",
       },
       { parseTo: this.parser.parseAuthorizationUrl }
     );
   }
-  googleLogin(): Promise<Result<IUserData, HttpError | ParseError>> {
-    throw new Error("Method not implemented.");
+
+  async googleLogin(
+    params: LoginGoogleApiRequestModel
+  ): Promise<Result<IUserData, HttpError | ParseError>> {
+    const data = new URLSearchParams();
+    data.append("code", params.code);
+    data.append("state", params.state);
+    const tokenResult = await this.usersApiService.post(
+      {
+        url: "/users/social/o/google-oauth2/",
+        data: data,
+        config: {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        },
+      },
+      { parseTo: this.parser.parseToken }
+    );
+
+    return this._getCurrentUser(tokenResult);
   }
 
   async login(
@@ -43,7 +63,12 @@ export class AuthService implements IUserRepository {
       },
       { parseTo: this.parser.parseToken }
     );
+    return this._getCurrentUser(tokenResult);
+  }
 
+  async _getCurrentUser(
+    tokenResult: Result<LoginApiResponse, ParseError | HttpError>
+  ): Promise<Result<IUserData, ParseError | HttpError>> {
     if (tokenResult.isOk()) {
       const token = tokenResult.value;
       const parseUser = (response: UsersApiResponse) => {

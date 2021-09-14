@@ -143,7 +143,6 @@ export class HttpService implements IHttpService {
   }
 
   private _handleResponse(response: AxiosResponse) {
-    console.log(response.headers);
     return response;
   }
 

@@ -40,3 +40,8 @@ export interface ActivateUserApiRequestModel {
   uid: string;
   token: string;
 }
+
+export interface LoginGoogleApiRequestModel {
+  code: string;
+  state: string;
+}

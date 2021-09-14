@@ -84,6 +84,31 @@ describe("Login Component", () => {
       button.trigger("click");
       expect(wrapper.emitted().registerClick).toBeTruthy();
     });
+    it("should open google auth window on google login click", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const url = "http://dummy.com";
+      const mockWindow = Object.create(window);
+      Object.defineProperty(mockWindow, "location", {
+        value: {
+          href: url,
+        },
+        writable: true,
+      });
+      Object.defineProperty(window, "open", {
+        value: jest.fn(() => mockWindow),
+      });
+      const wrapper = mount(Login, {
+        localVue,
+        store,
+        vuetify,
+        router,
+      });
+      const button = wrapper.find("#googleLogin");
+      button.trigger("click");
+      await flushPromises();
+      await wrapper.vm.$nextTick();
+      expect(mockWindow.location.href).toBe("test");
+    });
   });
 
   describe("With Error", () => {
