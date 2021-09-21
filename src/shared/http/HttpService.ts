@@ -151,7 +151,7 @@ export class HttpService implements IHttpService {
     if (token != null) {
       config.headers = { Authorization: "Bearer " + token };
     }
-    //config.withCredentials = true;
+    config.withCredentials = true;
     return config;
   }
 
