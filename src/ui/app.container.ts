@@ -29,6 +29,7 @@ import { DeleteTarget } from "@/app/target/use_case/DeleteTarget";
 import { EditWatchlist } from "@/app/watchlist/use_case/EditWatchlist";
 import { GetGoogleUrl } from "@/app/user/use_case/GetGoogleUrl";
 import { GoogleLogin } from "@/app/user/use_case/GoogleLogin";
+import { DownloadTargetsCsv } from "@/app/target/use_case/DownloadTargetsCsv";
 
 export function containerBuilder(): void {
   container.addSingleton<IHttpService>(UsersApiService);
@@ -49,6 +50,7 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(EditTarget);
   container.addSingleton<UseCaseInteractor>(CreateTarget);
   container.addSingleton<UseCaseInteractor>(DeleteTarget);
+  container.addSingleton<UseCaseInteractor>(DownloadTargetsCsv);
   container.addSingleton<IMatchRepository>(MatchService);
   container.addSingleton<UseCaseInteractor>(GetMatches);
   container.addSingleton<UseCaseInteractor>(Activate);

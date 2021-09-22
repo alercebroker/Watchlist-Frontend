@@ -39,6 +39,11 @@ export class MockTargetService implements ITargetRepository {
   constructor(@inject("ActionType") actionType: TestActions) {
     this.actionType = actionType;
   }
+  downloadTargetsCsv(params: {
+    watchlistId: number;
+  }): Promise<Result<Blob, HttpError>> {
+    throw new Error("Method not implemented.");
+  }
   deleteTarget(
     params: DeleteTargetParams
   ): Promise<Result<number, ParseError | HttpError>> {

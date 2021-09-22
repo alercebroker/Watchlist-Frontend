@@ -30,6 +30,32 @@ export class TargetService implements ITargetRepository {
     this.httpService = usersApiService;
     this.parser = new TargetParser();
   }
+
+  async downloadTargetsCsv(params: {
+    watchlistId: number;
+    watchlistName: string;
+  }): Promise<Result<boolean, ParseError | HttpError>> {
+    const result = await this.httpService.get(
+      { url: "/watchlists/" + params.watchlistId + "/csv_targets/" },
+      { parseTo: this.parser.parseCsvToBlob }
+    );
+
+    if (result.isOk()) {
+      const url = window.URL.createObjectURL(result.value);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        "watchlist_" + params.watchlistName + "_targets.csv"
+      );
+      document.body.appendChild(link);
+      link.click();
+      return ok(true);
+    } else {
+      return err(result.error);
+    }
+  }
+
   async deleteTarget(
     params: DeleteTargetParams
   ): Promise<Result<number, ParseError | HttpError>> {

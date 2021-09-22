@@ -16,6 +16,7 @@ export enum ActionTypes {
   editTarget = "editTarget",
   createTarget = "createTarget",
   deleteTarget = "deleteTarget",
+  downloadTargets = "downloadTargets",
 }
 
 export type GetTargetsPayload = {
@@ -37,6 +38,10 @@ export type CreateTargetPayload = {
 export type DeleteTargetPayload = {
   target: number;
   watchlist: number;
+};
+
+export type DownloadTargetsPayload = {
+  watchlistId: number;
 };
 
 export const actions: ActionTree<TargetsState, IRootState> = {
@@ -160,5 +165,44 @@ export const actions: ActionTree<TargetsState, IRootState> = {
       },
     };
     interactor.execute(payload, callbacks);
+  },
+  [ActionTypes.downloadTargets](
+    { commit, rootState },
+    payload: DownloadTargetsPayload
+  ) {
+    const interactor = container.get<UseCaseInteractor>(cid.DownloadTargetsCsv);
+    commit(MutationTypes.SET_LOADING, true);
+    interactor.execute(
+      {
+        watchlistId: payload.watchlistId,
+        watchlistName: rootState.singleWatchlist.title,
+      },
+      {
+        respondWithSuccess: (val: boolean) => {
+          commit(MutationTypes.SET_ERROR, null);
+          commit(MutationTypes.SET_LOADING, false);
+        },
+        respondWithClientError: (error: HttpError) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+        respondWithServerError: (error: HttpError) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+        respondWithParseError: (error: ParseError) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+        respondWithAppError: (error: Error) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+      } as Callbacks
+    );
   },
 };

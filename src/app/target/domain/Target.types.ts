@@ -50,4 +50,8 @@ export interface ITargetRepository {
   deleteTarget(
     params: DeleteTargetParams
   ): Promise<Result<number, ParseError | HttpError>>;
+  downloadTargetsCsv(params: {
+    watchlistId: number;
+    watchlistName: string;
+  }): Promise<Result<boolean, ParseError | HttpError>>;
 }

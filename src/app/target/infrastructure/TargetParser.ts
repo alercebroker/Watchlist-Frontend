@@ -28,4 +28,13 @@ export class TargetParser {
       return err(new ParseError(error.message));
     }
   }
+
+  parseCsvToBlob(response: string): Result<Blob, ParseError> {
+    try {
+      const csvFile = new Blob([response], { type: "text/csv" });
+      return ok(csvFile);
+    } catch (error) {
+      return err(new ParseError(error.message));
+    }
+  }
 }

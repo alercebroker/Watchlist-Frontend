@@ -15,6 +15,18 @@
         <v-toolbar-title>Targets</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
+
+        <v-btn
+          id="downloadBtn"
+          color="primary"
+          class="mb-2 mr-2"
+          :loading="loading"
+          @click="downloadTargets({ watchlistId })"
+        >
+          <v-icon left> mdi-cloud-download </v-icon>
+          Download Targets
+        </v-btn>
+
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -25,6 +37,7 @@
               v-bind="attrs"
               v-on="on"
             >
+              <v-icon left> mdi-plus </v-icon>
               New Target
             </v-btn>
           </template>
@@ -212,6 +225,7 @@ export default Vue.extend({
       ActionTypes.editTarget,
       ActionTypes.createTarget,
       ActionTypes.deleteTarget,
+      ActionTypes.downloadTargets,
     ]),
     ...targetsHelper.mapMutations([MutationTypes.SET_ERROR]),
     onPageUpdate(page: number) {
