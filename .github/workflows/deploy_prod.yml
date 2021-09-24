@@ -13,6 +13,8 @@ env:
   NODE_ENV: staging
   VUE_APP_APP_TITLE: ALeRCE Watchlist - Production Build
   VUE_APP_USER_API: ${{ secrets.USER_API }}
+  VUE_APP_GOOGLE_REDIRECT_URI: ${{ secrets.VUE_APP_GOOGLE_REDIRECT_URI }}
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
