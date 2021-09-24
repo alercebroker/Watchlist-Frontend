@@ -54,6 +54,7 @@ export class HttpService implements IHttpService {
       this.axiosService = axios.create({
         baseURL: baseUrl,
         headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
     }
     this._initializeRequestInterceptor();
@@ -135,11 +136,15 @@ export class HttpService implements IHttpService {
 
   private _initializeResponseInterceptor() {
     this.axiosService.interceptors.response.use(
-      (response: AxiosResponse) => response,
+      this._handleResponse,
       (error: AxiosError) => {
         this._handleError(error, this);
       }
     );
+  }
+
+  private _handleResponse(response: AxiosResponse) {
+    return response;
   }
 
   private _handleRequest(config: AxiosRequestConfig) {

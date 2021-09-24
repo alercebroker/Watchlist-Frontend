@@ -439,4 +439,169 @@ describe("UserActions", () => {
       ).toHaveBeenCalled();
     });
   });
+  describe("GetGoogleAuthUrl", () => {
+    it("should call success callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      const url = "http://dummy.com";
+      const mockWindow = Object.create(window);
+      Object.defineProperty(mockWindow, "location", {
+        value: {
+          href: url,
+        },
+        writable: true,
+      });
+      await store.dispatch("users/" + ActionTypes.getGoogleAuthUrl, mockWindow);
+      expect(mockWindow.location.href).toBe("test");
+    });
+    it("should call client error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("clientError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      const mockWindow = Object.create(window);
+      const url = "http://dummy.com";
+      Object.defineProperty(mockWindow, "location", {
+        value: {
+          href: url,
+        },
+        writable: true,
+      });
+      await store.dispatch("users/" + ActionTypes.getGoogleAuthUrl, mockWindow);
+      expect(mockWindow.location.href).toBe("http://dummy.com");
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        new HttpError(400, {}, "Client Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenCalledWith(
+        {},
+        false
+      );
+    });
+    it("should call server error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("serverError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      const mockWindow = Object.create(window);
+      const url = "http://dummy.com";
+      Object.defineProperty(mockWindow, "location", {
+        value: {
+          href: url,
+        },
+        writable: true,
+      });
+      await store.dispatch("users/" + ActionTypes.getGoogleAuthUrl, mockWindow);
+      expect(mockWindow.location.href).toBe("http://dummy.com");
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        new HttpError(500, {}, "Server Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenCalledWith(
+        {},
+        false
+      );
+    });
+    it("should call parse error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("parseError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      const mockWindow = Object.create(window);
+      const url = "http://dummy.com";
+      Object.defineProperty(mockWindow, "location", {
+        value: {
+          href: url,
+        },
+        writable: true,
+      });
+      await store.dispatch("users/" + ActionTypes.getGoogleAuthUrl, mockWindow);
+      expect(mockWindow.location.href).toBe("http://dummy.com");
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        new ParseError("Parse Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenCalledWith(
+        {},
+        false
+      );
+    });
+  });
+  describe("LoginGoogle", () => {
+    it("should call success callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("ok");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.loginGoogle, {
+        code: "test",
+        state: "test",
+      });
+      expect(mockMutations[MutationTypes.SET_USER_DATA]).toHaveBeenCalledWith(
+        {},
+        {
+          username: "username",
+          name: "name",
+          email: "email",
+          password: null,
+          lastName: "last name",
+          refreshToken: "token",
+          accessToken: "token",
+          institution: "institution",
+          role: "role",
+        }
+      );
+    });
+    it("should call client error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("clientError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.loginGoogle, {
+        code: "test",
+        state: "test",
+      });
+      expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        HttpError.fromStatus(400, {}, "Client Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenCalledWith(
+        {},
+        false
+      );
+    });
+    it("should call server error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("serverError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.loginGoogle, {
+        code: "test",
+        state: "test",
+      });
+      expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        HttpError.fromStatus(500, {}, "Server Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenCalledWith(
+        {},
+        false
+      );
+    });
+    it("should call parse error callback", async () => {
+      container.bind<TestActions>("ActionType").toConstantValue("parseError");
+      const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+      const store = storeCreator.create();
+      await store.dispatch("users/" + ActionTypes.loginGoogle, {
+        code: "test",
+        state: "test",
+      });
+      expect(mockMutations[MutationTypes.SET_USER_DATA]).not.toHaveBeenCalled();
+      expect(mockMutations[MutationTypes.SET_ERROR]).toHaveBeenCalledWith(
+        {},
+        new ParseError("Parse Error")
+      );
+      expect(mockMutations[MutationTypes.SET_LOADING]).toHaveBeenCalledWith(
+        {},
+        false
+      );
+    });
+  });
 });

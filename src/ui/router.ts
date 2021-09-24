@@ -4,6 +4,7 @@ import Home from "./pages/Home.vue";
 import Howto from "./components/watchlist/HowTo.vue";
 import Activate from "./pages/Activate.vue";
 import Login from "./pages/Login.vue";
+import GoogleOAuth2 from "./pages/GoogleOAuth2.vue";
 Vue.use(VueRouter);
 
 export const routes = [
@@ -43,6 +44,15 @@ export const routes = [
       title: process.env.VUE_APP_APP_TITLE + " - Login",
     },
   },
+  {
+    path: "/oauth",
+    name: "oauth",
+    component: GoogleOAuth2,
+    exact: true,
+    metea: {
+      title: process.env.VUE_APP_APP_TITLE + " - OAuth",
+    },
+  },
 ];
 
 const router = new VueRouter({
@@ -59,7 +69,12 @@ router.beforeEach((to: Route, _from: Route, next) => {
   if (to.meta) {
     document.title = to.meta.title;
   }
-  if (to.name !== "login" && to.name !== "activate" && !isLogged())
+  if (
+    to.name !== "login" &&
+    to.name !== "activate" &&
+    to.name !== "oauth" &&
+    !isLogged()
+  )
     next("/login");
   else next();
 });

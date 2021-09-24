@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { cid, container, mockSingleton } from "inversify-props";
-import { IHttpService, TestActions } from "@/shared/http";
+import { container } from "inversify-props";
+import { IHttpService } from "@/shared/http";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
@@ -25,9 +25,10 @@ import { IStoreCreator, StoreCreator } from "./store/StoreCreator";
 import { Activate } from "@/app/user/use_case/Activate";
 import { EditTarget } from "@/app/target/use_case/EditTarget";
 import { CreateTarget } from "@/app/target/use_case/CreateTarget";
-import { MockTargetService } from "@/app/target/infrastructure/__tests__/TargetService.mock";
 import { DeleteTarget } from "@/app/target/use_case/DeleteTarget";
 import { EditWatchlist } from "@/app/watchlist/use_case/EditWatchlist";
+import { GetGoogleUrl } from "@/app/user/use_case/GetGoogleUrl";
+import { GoogleLogin } from "@/app/user/use_case/GoogleLogin";
 
 export function containerBuilder(): void {
   container.addSingleton<IHttpService>(UsersApiService);
@@ -35,6 +36,8 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(RegisterUser);
   container.addSingleton<UseCaseInteractor>(Login);
   container.addSingleton<UseCaseInteractor>(Logout);
+  container.addSingleton<UseCaseInteractor>(GetGoogleUrl);
+  container.addSingleton<UseCaseInteractor>(GoogleLogin);
   container.addSingleton<IWatchlistRepository>(WatchlistService);
   container.addSingleton<UseCaseInteractor>(GetAllWatchlists);
   container.addSingleton<UseCaseInteractor>(CreateWatchlist);
@@ -51,7 +54,4 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(Activate);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
-
-  // container.bind<TestActions>("ActionType").toConstantValue("clientError");
-  // mockSingleton<ITargetRepository>(cid.TargetService, MockTargetService);
 }
