@@ -4,8 +4,8 @@
       <v-card class="mx-auto">
         <v-card-title>Settings for notification</v-card-title>
         <v-card-text>
-          Here you can change your email account or the notification
-          rate.</v-card-text
+          Here you can change your notification rate to receive email with your
+          matches.</v-card-text
         >
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
@@ -83,7 +83,7 @@ export default Vue.extend({
   },
   watch: {
     watchlistId: {
-      handler(val) {
+      handler() {
         this.select = this.notificationRate ? this.notificationRate : null;
       },
       immediate: true,
