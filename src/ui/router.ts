@@ -73,6 +73,7 @@ router.beforeEach((to: Route, _from: Route, next) => {
     to.name !== "login" &&
     to.name !== "activate" &&
     to.name !== "oauth" &&
+    to.name !== "howto" &&
     !isLogged()
   )
     next("/login");
