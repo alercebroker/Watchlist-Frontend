@@ -54,6 +54,7 @@ export class HttpService implements IHttpService {
       this.axiosService = axios.create({
         baseURL: baseUrl,
         headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
     }
     this._initializeRequestInterceptor();
@@ -151,7 +152,6 @@ export class HttpService implements IHttpService {
     if (token != null) {
       config.headers = { Authorization: "Bearer " + token };
     }
-    //config.withCredentials = true;
     return config;
   }
 

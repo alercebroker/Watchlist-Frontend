@@ -89,6 +89,46 @@
           <p>target4,55,-10,1</p>
         </v-card-text>
       </v-card>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            >8. Go to Settings tab and select whether you want to disable or
+            enable the email notifications and at which
+            frequency.</v-list-item-title
+          >
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            >9. In the Filters tab you can see all your
+            targets.</v-list-item-title
+          >
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            >10. In the Overview you can see the details of the
+            alerts.</v-list-item-title
+          >
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            >11. Note that the first time that you upload a watchlist you need
+            to wait 24 h to get net notifications.</v-list-item-title
+          >
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            >Please read this and let us know if you have any modifications.
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
     </v-card>
   </v-container>
 </template>

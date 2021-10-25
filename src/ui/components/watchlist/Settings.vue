@@ -4,8 +4,8 @@
       <v-card class="mx-auto">
         <v-card-title>Settings for notification</v-card-title>
         <v-card-text>
-          Here you can change your email account or the notification
-          rate.</v-card-text
+          Here you can change your notification rate to receive email with your
+          matches.</v-card-text
         >
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
@@ -35,26 +35,24 @@ import {
   ActionTypes,
   EditWatchlistPayload,
 } from "@/ui/store/singleWatchlist/actions";
-import { MutationTypes } from "@/ui/store/singleWatchlist/mutations";
 import { createNamespacedHelpers } from "vuex";
-import GenericError from "../shared/GenericError.vue";
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 
 export default Vue.extend({
   data: (): {
-    select: string;
+    select: string | null;
     valid: boolean;
-    notificationRates: Array<Record<string, string>>;
+    notificationRates: Array<Record<string, string | null>>;
   } => ({
     valid: true,
-    select: "disabled",
+    select: null,
     notificationRates: [
-      { text: "Disabled", value: "disabled" },
-      { text: "Hourly", value: "hourly" },
-      { text: "12 hours", value: "12 hours" },
-      { text: "Daily", value: "daily" },
-      { text: "Weekly", value: "weekly" },
-      { text: "Monthly", value: "monthly" },
+      { text: "Disabled", value: null },
+      { text: "Hourly", value: "01:00:00" },
+      { text: "12 hours", value: "12:00:00" },
+      { text: "Daily", value: "1 00:00:00" },
+      { text: "Weekly", value: "7 00:00:00" },
+      { text: "Monthly", value: "30 00:00:00" },
     ],
   }),
   computed: {
@@ -85,10 +83,8 @@ export default Vue.extend({
   },
   watch: {
     watchlistId: {
-      handler(val) {
-        this.select = this.notificationRate
-          ? this.notificationRate
-          : "disabled";
+      handler() {
+        this.select = this.notificationRate ? this.notificationRate : null;
       },
       immediate: true,
     },
