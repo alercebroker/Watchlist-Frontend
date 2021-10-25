@@ -88,7 +88,7 @@ export default Vue.extend({
   methods: {
     ...watchlistHelper.mapActions([ActionTypes.createWatchlist]),
     ...watchlistHelper.mapMutations([MutationTypes.SET_ERROR]),
-    handleError(error: ParseError) {
+    handleError(error: ParseError | null) {
       this.SET_ERROR(error);
     },
     async handleComplete(results: ParseResult<CsvTarget>) {
@@ -120,7 +120,14 @@ export default Vue.extend({
         }
       }
     },
+    toDefaultValues() {
+      this.title = "";
+      this.selectedFile = null;
+      this.parsedCsv = [];
+    },
     onCancelClick() {
+      this.handleError(null);
+      this.toDefaultValues();
       this.$emit("canceled");
     },
   },
