@@ -17,6 +17,7 @@ export enum ActionTypes {
   createTarget = "createTarget",
   deleteTarget = "deleteTarget",
   downloadTargets = "downloadTargets",
+  bulkUpdateTargets = "bulkUpdateTargets",
 }
 
 export type GetTargetsPayload = {
@@ -43,6 +44,16 @@ export type DeleteTargetPayload = {
 export type DownloadTargetsPayload = {
   watchlistId: number;
 };
+
+export type BulkUpdateTargetsPayload = {
+  params: { watchlistId?: number; targetList: ITargetData[] };
+  paginationParams?: { ordering?: string; page?: number; page_size?: number };
+};
+
+export interface BulkUpdateTargetsInput {
+  watchlistId: number;
+  targetsList: Array<ITargetData>;
+}
 
 export const actions: ActionTree<TargetsState, IRootState> = {
   async [ActionTypes.getTargets]({ commit }, payload: GetTargetsPayload) {
@@ -204,5 +215,37 @@ export const actions: ActionTree<TargetsState, IRootState> = {
         },
       } as Callbacks
     );
+  },
+  async [ActionTypes.bulkUpdateTargets](
+    { commit },
+    payload: BulkUpdateTargetsPayload
+  ) {
+    commit(MutationTypes.SET_LOADING, true);
+    const interactor = container.get<UseCaseInteractor>(cid.BulkUpdateTargets);
+    const callbacks: Callbacks = {
+      respondWithSuccess: (targets: ITargetList) => {
+        commit(MutationTypes.SET_TARGETS, targets.targets);
+        commit(MutationTypes.SET_ERROR, null);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithClientError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    };
+    try {
+      await interactor.execute(payload, callbacks);
+    } catch (error) {
+      commit(MutationTypes.SET_ERROR, error);
+      commit(MutationTypes.SET_LOADING, false);
+    }
   },
 };

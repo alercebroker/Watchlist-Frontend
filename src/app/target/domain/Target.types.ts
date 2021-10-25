@@ -54,4 +54,8 @@ export interface ITargetRepository {
     watchlistId: number;
     watchlistName: string;
   }): Promise<Result<boolean, ParseError | HttpError>>;
+  bulkUpdateTargets(
+    params: { watchlistId?: number; targetsList?: ITargetData[] },
+    paginationParams?: { ordering?: string; page?: number; page_size?: number }
+  ): Promise<Result<ITargetList, ParseError | HttpError>>;
 }
