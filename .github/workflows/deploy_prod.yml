@@ -10,9 +10,11 @@ env:
   AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  NODE_ENV: production
+  NODE_ENV: staging
   VUE_APP_APP_TITLE: ALeRCE Watchlist - Production Build
   VUE_APP_USER_API: ${{ secrets.USER_API }}
+  VUE_APP_GOOGLE_REDIRECT_URI: ${{ secrets.VUE_APP_GOOGLE_REDIRECT_URI }}
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
