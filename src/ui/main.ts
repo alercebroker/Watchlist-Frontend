@@ -7,7 +7,13 @@ import vuetify from "./plugins/vuetify";
 import { cid, container } from "inversify-props";
 import { IStoreCreator } from "./store/StoreCreator";
 
-Vue.config.productionTip = false;
+if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "staging") {
+  Vue.config.devtools = false;
+  Vue.config.productionTip = false;
+} else {
+  Vue.config.devtools = true;
+  Vue.config.productionTip = true;
+}
 
 Vue.use(Vuex);
 containerBuilder();

@@ -1,11 +1,15 @@
 <template>
-  <v-container v-if="loading" fill-height>
-    <v-row justify="center" align="center" align-content="center">
-      <v-progress-circular :size="300" indeterminate></v-progress-circular>
-    </v-row>
-    <v-row justify="center"><h3>Logging in...</h3></v-row>
-  </v-container>
-  <v-alert v-else color="red">Could not login. {{ error }}</v-alert>
+  <v-div>
+    <v-container v-if="loading" fill-height>
+      <v-row justify="center" align="center" align-content="center">
+        <v-progress-circular :size="300" indeterminate></v-progress-circular>
+      </v-row>
+      <v-row justify="center"><h3>Logging in...</h3></v-row>
+    </v-container>
+    <v-alert v-if="error != null" color="red"
+      >Could not login. {{ error }}</v-alert
+    >
+  </v-div>
 </template>
 
 <script lang="ts">
