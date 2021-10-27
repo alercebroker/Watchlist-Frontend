@@ -84,8 +84,7 @@ export class MockUserApi extends HttpService {
     });
     this.mock.onGet(/\/watchlists\/\w+\/targets\/\w+/).reply((_config: any) => {
       const response = {
-        url:
-          "https://6k5dhpzcdg.execute-api.us-east-1.amazonaws.com/dev/watchlists/32/targets/103303/",
+        url: "https://6k5dhpzcdg.execute-api.us-east-1.amazonaws.com/dev/watchlists/32/targets/103303/",
         id: 103303,
         name: "M-00-103-01-0",
         radius: 0.008055555555555555,
