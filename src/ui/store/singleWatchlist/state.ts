@@ -1,4 +1,4 @@
-export const state = () => ({
+export const state = (): SingleWatchlistState => ({
   id: -1,
   loading: false,
   url: "",
@@ -10,4 +10,14 @@ export const state = () => ({
   targets: "",
 });
 
-export type SingleWatchlistState = ReturnType<typeof state>;
+export type SingleWatchlistState = {
+  id: number;
+  loading: boolean;
+  url: string;
+  n_targets: string;
+  last_match: string;
+  title: string;
+  notification_rate: string;
+  error: string | null;
+  targets: string;
+};
