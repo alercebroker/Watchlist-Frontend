@@ -189,7 +189,7 @@ export const actions: ActionTree<TargetsState, IRootState> = {
         watchlistName: rootState.singleWatchlist.title,
       },
       {
-        respondWithSuccess: (val: boolean) => {
+        respondWithSuccess: () => {
           commit(MutationTypes.SET_ERROR, null);
           commit(MutationTypes.SET_LOADING, false);
         },
