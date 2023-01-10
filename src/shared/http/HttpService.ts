@@ -156,7 +156,7 @@ export class HttpService implements IHttpService {
   private _addHttps(config: AxiosRequestConfig) {
     if (
       config.url?.startsWith("https") ||
-      process.env.FORCE_HTTPS === "false"
+      process.env.VUE_APP_FORCE_HTTPS === "false"
     ) {
       return;
     }
