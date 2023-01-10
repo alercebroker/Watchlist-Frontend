@@ -16,6 +16,8 @@ export enum ActionTypes {
   editTarget = "editTarget",
   createTarget = "createTarget",
   deleteTarget = "deleteTarget",
+  downloadTargets = "downloadTargets",
+  bulkUpdateTargets = "bulkUpdateTargets",
 }
 
 export type GetTargetsPayload = {
@@ -38,6 +40,20 @@ export type DeleteTargetPayload = {
   target: number;
   watchlist: number;
 };
+
+export type DownloadTargetsPayload = {
+  watchlistId: number;
+};
+
+export type BulkUpdateTargetsPayload = {
+  params: { watchlistId?: number; targetList: ITargetData[] };
+  paginationParams?: { ordering?: string; page?: number; page_size?: number };
+};
+
+export interface BulkUpdateTargetsInput {
+  watchlistId: number;
+  targetsList: Array<ITargetData>;
+}
 
 export const actions: ActionTree<TargetsState, IRootState> = {
   async [ActionTypes.getTargets]({ commit }, payload: GetTargetsPayload) {
@@ -160,5 +176,76 @@ export const actions: ActionTree<TargetsState, IRootState> = {
       },
     };
     interactor.execute(payload, callbacks);
+  },
+  [ActionTypes.downloadTargets](
+    { commit, rootState },
+    payload: DownloadTargetsPayload
+  ) {
+    const interactor = container.get<UseCaseInteractor>(cid.DownloadTargetsCsv);
+    commit(MutationTypes.SET_LOADING, true);
+    interactor.execute(
+      {
+        watchlistId: payload.watchlistId,
+        watchlistName: rootState.singleWatchlist.title,
+      },
+      {
+        respondWithSuccess: () => {
+          commit(MutationTypes.SET_ERROR, null);
+          commit(MutationTypes.SET_LOADING, false);
+        },
+        respondWithClientError: (error: HttpError) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+        respondWithServerError: (error: HttpError) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+        respondWithParseError: (error: ParseError) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+        respondWithAppError: (error: Error) => {
+          commit(MutationTypes.SET_ERROR, error);
+          commit(MutationTypes.SET_LOADING, false);
+          alert("Error downloading targets: " + error);
+        },
+      } as Callbacks
+    );
+  },
+  async [ActionTypes.bulkUpdateTargets](
+    { commit },
+    payload: BulkUpdateTargetsPayload
+  ) {
+    commit(MutationTypes.SET_LOADING, true);
+    const interactor = container.get<UseCaseInteractor>(cid.BulkUpdateTargets);
+    const callbacks: Callbacks = {
+      respondWithSuccess: (targets: ITargetList) => {
+        commit(MutationTypes.SET_TARGETS, targets.targets);
+        commit(MutationTypes.SET_ERROR, null);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithClientError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithServerError: (error: HttpError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+      respondWithParseError: (error: ParseError) => {
+        commit(MutationTypes.SET_ERROR, error);
+        commit(MutationTypes.SET_LOADING, false);
+      },
+    };
+    try {
+      await interactor.execute(payload, callbacks);
+    } catch (error) {
+      commit(MutationTypes.SET_ERROR, error);
+      commit(MutationTypes.SET_LOADING, false);
+    }
   },
 };

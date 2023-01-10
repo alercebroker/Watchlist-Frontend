@@ -117,9 +117,8 @@ describe("Overview", () => {
     it("should get targets on scroll", async () => {
       const localModules = modules();
       localModules.modules.targets.state.nextPage = "next";
-      localModules.modules.targets.actions[
-        TargetActionTypes.getTargets
-      ] = jest.fn();
+      localModules.modules.targets.actions[TargetActionTypes.getTargets] =
+        jest.fn();
       container.unbind("Modules");
       container.bind<Modules>("Modules").toConstantValue(localModules);
       container.unbind(cid.StoreCreator);

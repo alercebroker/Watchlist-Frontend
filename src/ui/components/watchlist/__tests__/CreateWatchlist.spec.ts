@@ -52,6 +52,7 @@ describe("CreateWatchlist Component", () => {
       await button.trigger("click");
       await flushPromises();
       await flushPromises();
+      await flushPromises();
       expect(wrapper.emitted().created).toBeTruthy();
       const watchlist = store.state.watchlists.watchlists.pop();
       expect(watchlist).not.toBeUndefined();
@@ -100,6 +101,7 @@ describe("CreateWatchlist Component", () => {
       await send.trigger("click");
       await flushPromises();
       await flushPromises();
+      await flushPromises();
       const alert = wrapper.find(".v-alert");
       expect(alert.text()).toContain("Line: 2");
     });
@@ -117,6 +119,7 @@ describe("CreateWatchlist Component", () => {
       });
       const send = wrapper.find("#send");
       await send.trigger("click");
+      await flushPromises();
       await flushPromises();
       await flushPromises();
       const alert = wrapper.find(".v-alert");

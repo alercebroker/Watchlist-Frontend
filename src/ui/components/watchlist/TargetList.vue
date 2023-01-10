@@ -14,7 +14,9 @@
       <v-toolbar flat>
         <v-toolbar-title>Targets</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
+
+        <button-download-targets />
+        <button-bulk-update />
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -24,7 +26,9 @@
               class="mb-2"
               v-bind="attrs"
               v-on="on"
+              small
             >
+              <v-icon left> mdi-plus </v-icon>
               New Target
             </v-btn>
           </template>
@@ -118,6 +122,8 @@
   </v-data-table>
 </template>
 <script lang="ts">
+import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
+import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import { ITargetData } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import {
@@ -135,7 +141,7 @@ const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
 
 export default Vue.extend({
-  components: { GenericError },
+  components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets },
   data: () => ({
     search: "",
     headers: [

@@ -52,7 +52,6 @@ export default Vue.extend({
       { text: "12 hours", value: "12:00:00" },
       { text: "Daily", value: "1 00:00:00" },
       { text: "Weekly", value: "7 00:00:00" },
-      { text: "Monthly", value: "30 00:00:00" },
     ],
   }),
   computed: {

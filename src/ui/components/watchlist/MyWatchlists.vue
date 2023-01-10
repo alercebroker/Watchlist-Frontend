@@ -92,9 +92,9 @@ import Vue, { VueConstructor } from "vue";
 import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist.vue";
 import MyWatchlistsMixin from "@/ui/mixins/watchlist/MyWatchlistsMixin";
 
-export default (Vue as VueConstructor<
-  Vue & InstanceType<typeof MyWatchlistsMixin>
->).extend({
+export default (
+  Vue as VueConstructor<Vue & InstanceType<typeof MyWatchlistsMixin>>
+).extend({
   components: { CreateWatchlist },
   mixins: [MyWatchlistsMixin],
 });
