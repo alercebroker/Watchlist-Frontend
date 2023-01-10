@@ -1,5 +1,5 @@
 import { ParseError } from "@/shared/error/ParseError";
-import { HttpError, IHttpService } from "@/shared/http";
+import { HttpError, IHttpService, isHttpError } from "@/shared/http";
 import { UsersApiService } from "@/shared/http/UsersApiService";
 import { inject } from "inversify-props";
 import { combine, err, ok, Result } from "neverthrow";
@@ -30,6 +30,32 @@ export class TargetService implements ITargetRepository {
     this.httpService = usersApiService;
     this.parser = new TargetParser();
   }
+
+  async downloadTargetsCsv(params: {
+    watchlistId: number;
+    watchlistName: string;
+  }): Promise<Result<boolean, ParseError | HttpError>> {
+    const result = await this.httpService.get(
+      { url: "/watchlists/" + params.watchlistId + "/csv_targets/" },
+      { parseTo: this.parser.parseCsvToBlob }
+    );
+
+    if (result.isOk()) {
+      const url = window.URL.createObjectURL(result.value);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        "watchlist_" + params.watchlistName + "_targets.csv"
+      );
+      document.body.appendChild(link);
+      link.click();
+      return ok(true);
+    } else {
+      return err(result.error);
+    }
+  }
+
   async deleteTarget(
     params: DeleteTargetParams
   ): Promise<Result<number, ParseError | HttpError>> {
@@ -101,6 +127,26 @@ export class TargetService implements ITargetRepository {
     }
   }
 
+  async bulkUpdateTargets(
+    params: {
+      targetsList: ITargetData[];
+      watchlistId: number;
+    },
+    paginationParams?: PaginationParams
+  ): Promise<Result<ITargetList, ParseError | HttpError>> {
+    const result = await this.httpService.put(
+      {
+        url: "/watchlists/" + params.watchlistId + "/batch_targets/",
+        data: params.targetsList,
+      },
+      { parseTo: (): Result<ITargetList, ParseError> => ok({} as ITargetList) }
+    );
+    if (result.isErr()) {
+      return result;
+    }
+    return this.getAllTargets(params, paginationParams);
+  }
+
   private async getTargetsFromWatchlistId(
     id: number,
     params?: PaginationParams
@@ -130,7 +176,7 @@ export class TargetService implements ITargetRepository {
       }
     };
     return await this.httpService.get<WatchlistTargetsApiResponse, ITargetList>(
-      { url: "/watchlists/" + id + "/targets", params },
+      { url: "/watchlists/" + id + "/targets/", params },
       { parseTo }
     );
   }
