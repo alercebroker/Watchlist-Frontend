@@ -129,7 +129,7 @@ export class HttpService implements IHttpService {
 
   private _initializeRequestInterceptor() {
     this.axiosService.interceptors.request.use(
-      this._handleRequest,
+      (config: AxiosRequestConfig) => this._handleRequest(config, this),
       (error: AxiosError) => this._handleError(error, this)
     );
   }
@@ -147,12 +147,27 @@ export class HttpService implements IHttpService {
     return response;
   }
 
-  private _handleRequest(config: AxiosRequestConfig) {
+  private _handleRequest(config: AxiosRequestConfig, context: HttpService) {
+    context._addAuthHeadersToRequest(config);
+    context._addHttps(config);
+    return config;
+  }
+
+  private _addHttps(config: AxiosRequestConfig) {
+    if (
+      config.url?.startsWith("https") ||
+      process.env.FORCE_HTTPS === "false"
+    ) {
+      return;
+    }
+    config.url?.replace("http", "https");
+  }
+
+  private _addAuthHeadersToRequest(config: AxiosRequestConfig) {
     const token = localStorage.getItem("access_token");
     if (token != null) {
       config.headers = { Authorization: "Bearer " + token };
     }
-    return config;
   }
 
   private _handleError(error: AxiosError, context: HttpService): HttpError {
