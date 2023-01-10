@@ -4,7 +4,7 @@ name: S3DeployDev
 # events but only for the develop branch
 on:
   push:
-    branches: [ develop ]
+    branches: [develop]
 
 env:
   AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
@@ -14,6 +14,7 @@ env:
   VUE_APP_APP_TITLE: ALeRCE Watchlist - Staging Build
   VUE_APP_USER_API: ${{ secrets.USER_API }}
   VUE_APP_GOOGLE_REDIRECT_URI: ${{ secrets.VUE_APP_GOOGLE_REDIRECT_URI }}
+  VUE_APP_FORCE_HTTPS: ${{ secrets.FORCE_HTTPS }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
