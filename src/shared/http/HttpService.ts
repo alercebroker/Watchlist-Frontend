@@ -158,6 +158,9 @@ export class HttpService implements IHttpService {
       if (config.baseURL?.startsWith("http://")) {
         config.baseURL = config.baseURL?.replace("http://", "https://");
       }
+      if (config.url?.startsWith("http://")) {
+        config.url = config.url?.replace("http://", "https://");
+      }
     }
   }
 
