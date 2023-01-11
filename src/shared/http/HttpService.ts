@@ -66,9 +66,6 @@ export class HttpService implements IHttpService {
     parser: Parser<T, M>
   ): Promise<Result<M, ParseError | HttpError>> {
     try {
-      if (process.env.VUE_APP_FORCE_HTTPS === "true") {
-        if (url.startsWith("http://")) url.replace("http://", "https://");
-      }
       const response = await this.axiosService.get<T>(url, config);
       return this._parseFailable<T, M>(response.data, parser.parseTo);
     } catch (error) {
@@ -158,8 +155,9 @@ export class HttpService implements IHttpService {
 
   private _addHttps(config: AxiosRequestConfig) {
     if (process.env.VUE_APP_FORCE_HTTPS === "true") {
-      if (config.url?.startsWith("http://"))
-        config.url?.replace("http://", "https://");
+      if (config.baseURL?.startsWith("http://")) {
+        config.baseURL = config.baseURL?.replace("http://", "https://");
+      }
     }
   }
 
