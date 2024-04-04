@@ -7,6 +7,7 @@ export interface TargetListApiResponse {
   dec: number;
   n_matches: number;
   last_match: string;
+  filter: JSON;
 }
 
 export interface WatchlistTargetsApiResponse {
@@ -22,6 +23,7 @@ export interface TargetEditApiResponse {
   radius: number;
   ra: number;
   dec: number;
+  filter: JSON;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

@@ -11,6 +11,7 @@ export interface ITargetData {
   dec: number;
   nMatches: number | null;
   lastMatch: string;
+  filter: JSON;
 }
 
 export interface ITargetList {

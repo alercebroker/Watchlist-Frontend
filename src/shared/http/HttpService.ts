@@ -53,8 +53,9 @@ export class HttpService implements IHttpService {
     } else {
       this.axiosService = axios.create({
         baseURL: baseUrl,
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
+        headers: { 
+          "Content-Type": "application/json"},
+        withCredentials: false,
       });
     }
     this._initializeRequestInterceptor();

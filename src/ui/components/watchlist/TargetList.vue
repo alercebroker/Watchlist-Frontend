@@ -71,6 +71,41 @@
                       :error-messages="detailError.radius"
                     ></v-text-field>
                   </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-select
+                      v-model="reference_dropdown"
+                      label="Filter"
+                      :items="['Constant', 'Difference']"
+                      :error-messages="detailError.radius"
+                    ></v-select>
+                  </v-col>
+                  <v-col
+                    v-if="reference_dropdown === 'Constant'"
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                     label="constant"
+                     v-model="context_aux"
+                     onchange="verifyFilter()"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    v-if="reference_dropdown === 'Constant'"
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-select
+                      label="Operation"
+                      :items="['less', 'less eq', 'greater', 'greater eq']"
+                      :error-messages="detailError.radius"
+                    ></v-select>
+                  </v-col>
+                  <div v-if="reference_dropdown === 'Difference'">
+                    <div>Hoy es</div>
+                  </div>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -143,6 +178,8 @@ const targetsHelper = createNamespacedHelpers("targets");
 export default Vue.extend({
   components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets },
   data: () => ({
+    reference_dropdown: "",
+    context_aux: "",
     search: "",
     headers: [
       {
@@ -155,7 +192,9 @@ export default Vue.extend({
       { text: "Dec", value: "dec", sortable: false },
       { text: "radius", value: "radius", sortable: false },
       { text: "N matches", value: "nMatches", sortable: false },
+      { text: "Filters", value: "filter", sortable: false },
       { text: "Actions", value: "actions", sortable: false },
+      
     ],
     tableOptions: {} as DataOptions,
     currentPage: 1,
@@ -164,12 +203,14 @@ export default Vue.extend({
       ra: 0,
       dec: 0,
       radius: 0,
+      filter: {},
     },
     defaultItem: {
       name: "",
       ra: 0,
       dec: 0,
       radius: 0,
+      filter: {},
     },
     editedIndex: -1,
     dialog: false,
@@ -192,7 +233,16 @@ export default Vue.extend({
     }),
     ...targetsHelper.mapState({
       targets: function (state: TargetsState): ITargetData[] {
-        return state.targets;
+        const targets_filter_name = state.targets.map(element => {
+          let aux_transformation = JSON.stringify(element.filter)
+          aux_transformation = JSON.parse(aux_transformation)
+          element.filter = aux_transformation.filters[0].type
+          console.log(element);
+          
+          return element
+        })
+        // return state.targets
+        return targets_filter_name;
       },
       targetCount: function (state: TargetsState): number {
         return state.count;
@@ -285,6 +335,10 @@ export default Vue.extend({
         this.editedIndex = -1;
       });
     },
+    verifyFilter() {
+      console.log(this.context_aux)
+      
+    }
   },
   watch: {
     dialog(val) {

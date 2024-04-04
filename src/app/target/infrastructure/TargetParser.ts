@@ -21,7 +21,10 @@ export class TargetParser {
         ra: response.ra,
         nMatches: "n_matches" in response ? response.n_matches : 0,
         lastMatch: "last_match" in response ? response.last_match : "",
+        filter: "filter" in response ? response.filter : JSON,
       });
+      
+      
       if (target.validate()) return ok(target);
       else throw new Error("Target not valid");
     } catch (error) {
