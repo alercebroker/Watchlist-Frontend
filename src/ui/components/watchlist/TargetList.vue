@@ -86,9 +86,9 @@
                     md="4"
                   >
                     <v-text-field
-                     label="constant"
-                     v-model="context_aux"
-                     onchange="verifyFilter()"
+                      label="constant"
+                      v-model="context_aux"
+                      onchange="verifyFilter()"
                     ></v-text-field>
                   </v-col>
                   <v-col
@@ -157,8 +157,6 @@
   </v-data-table>
 </template>
 <script lang="ts">
-import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
-import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import { ITargetData } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import {
@@ -172,6 +170,9 @@ import Vue from "vue";
 import { DataOptions } from "vuetify";
 import { createNamespacedHelpers } from "vuex";
 import GenericError from "../shared/GenericError.vue";
+import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
+import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
+
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
 
@@ -194,7 +195,6 @@ export default Vue.extend({
       { text: "N matches", value: "nMatches", sortable: false },
       { text: "Filters", value: "filter", sortable: false },
       { text: "Actions", value: "actions", sortable: false },
-      
     ],
     tableOptions: {} as DataOptions,
     currentPage: 1,
@@ -224,41 +224,32 @@ export default Vue.extend({
   },
   computed: {
     ...watchlistHelper.mapState({
-      watchlistId: function (state: SingleWatchlistState): number {
+      watchlistId(state: SingleWatchlistState): number {
         return state.id;
       },
-      targetsUrl: function (state: SingleWatchlistState): string {
+      targetsUrl(state: SingleWatchlistState): string {
         return state.targets;
       },
     }),
     ...targetsHelper.mapState({
-      targets: function (state: TargetsState): ITargetData[] {
-        const targets_filter_name = state.targets.map(element => {
-          let aux_transformation = JSON.stringify(element.filter)
-          aux_transformation = JSON.parse(aux_transformation)
-          element.filter = aux_transformation.filters[0].type
-          console.log(element);
-          
-          return element
-        })
-        // return state.targets
-        return targets_filter_name;
+      targets(state: TargetsState): ITargetData[] {
+        return state.targets;
       },
-      targetCount: function (state: TargetsState): number {
+      targetCount(state: TargetsState): number {
         return state.count;
       },
-      nextPage: function (state: TargetsState): string | null {
+      nextPage(state: TargetsState): string | null {
         return state.nextPage;
       },
-      prevPage: function (state: TargetsState): string | null {
+      prevPage(state: TargetsState): string | null {
         return state.prevPage;
       },
-      loading: function (state: TargetsState): boolean {
+      loading(state: TargetsState): boolean {
         return state.loading;
       },
     }),
     ...targetsHelper.mapGetters(["genericError", "detailError", "errored"]),
-    formTitle: function (): string {
+    formTitle(): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
     },
   },
@@ -336,9 +327,8 @@ export default Vue.extend({
       });
     },
     verifyFilter() {
-      console.log(this.context_aux)
-      
-    }
+      console.log(this.context_aux);
+    },
   },
   watch: {
     dialog(val) {

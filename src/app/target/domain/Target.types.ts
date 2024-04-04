@@ -1,5 +1,6 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError } from "@/shared/http";
+import { WatchlistFilter } from "@/shared/types/filter.types";
 import { Result } from "neverthrow";
 
 export interface ITargetData {
@@ -11,7 +12,7 @@ export interface ITargetData {
   dec: number;
   nMatches: number | null;
   lastMatch: string;
-  filter: JSON;
+  filter: WatchlistFilter;
 }
 
 export interface ITargetList {
