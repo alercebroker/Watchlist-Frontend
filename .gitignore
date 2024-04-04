@@ -26,3 +26,5 @@ pnpm-debug.log*
 /.log
 /coverage
 .dir-locals.el
+
+.env
