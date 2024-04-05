@@ -257,14 +257,34 @@ export default Vue.extend({
       }));
     },
     magnitudIsValid() {
-      if (Number.isInteger(this.mag_value)) {
-        console.log("si es");
+      if (Number(this.mag_value)) {
         return true;
       } else {
-        console.log("no lo es");
         return false;
       }
     },
+    filterIsValid() {
+      if (
+        this.filter_value == "Constant" ||
+        this.filter_value == "Difference"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    operationIsValid() {
+      if (
+        this.operation_value == "less" ||
+        this.operation_value == "less eq" ||
+        this.operation_value == "greater" ||
+        this.operation_value == "greater eq"
+      ){
+        return true;
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     ...targetsHelper.mapActions([
@@ -306,7 +326,11 @@ export default Vue.extend({
           watchlist: this.watchlistId,
         };
 
-        if (this.magnitudIsValid) {
+        if (
+          this.magnitudIsValid &&
+          this.filterIsValid &&
+          this.operationIsValid
+        ) {
           await this.createTarget(payload);
           this.setFilterValuesDefault();
         } else {
@@ -322,6 +346,7 @@ export default Vue.extend({
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
+        this.setFilterValuesDefault();
       });
     },
 
@@ -363,7 +388,7 @@ export default Vue.extend({
               type: this.filter_value,
               params: {
                 field: "mag",
-                constant: this.mag_value,
+                constant: Number(this.mag_value),
                 op: this.operation_value,
               },
             },
