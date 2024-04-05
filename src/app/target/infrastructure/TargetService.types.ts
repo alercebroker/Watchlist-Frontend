@@ -1,3 +1,5 @@
+import { WatchlistFilter } from "@/shared/types/filter.types";
+
 export interface TargetListApiResponse {
   id: number;
   url: string;
@@ -5,9 +7,9 @@ export interface TargetListApiResponse {
   radius: number;
   ra: number;
   dec: number;
+  filter: WatchlistFilter;
   n_matches: number;
   last_match: string;
-  filter: JSON;
 }
 
 export interface WatchlistTargetsApiResponse {
@@ -23,7 +25,7 @@ export interface TargetEditApiResponse {
   radius: number;
   ra: number;
   dec: number;
-  filter: JSON;
+  filter: WatchlistFilter;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

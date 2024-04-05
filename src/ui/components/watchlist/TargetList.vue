@@ -2,7 +2,7 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="targets"
+    :items="displayTarget"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
@@ -154,9 +154,7 @@
   </v-data-table>
 </template>
 <script lang="ts">
-import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
-import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
-import { ITargetData } from "@/app/target/domain/Target.types";
+import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import {
   ActionTypes,
@@ -169,6 +167,9 @@ import Vue from "vue";
 import { DataOptions } from "vuetify";
 import { createNamespacedHelpers } from "vuex";
 import GenericError from "../shared/GenericError.vue";
+import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
+import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
+
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
 
@@ -221,39 +222,39 @@ export default Vue.extend({
   },
   computed: {
     ...watchlistHelper.mapState({
-      watchlistId: function (state: SingleWatchlistState): number {
+      watchlistId(state: SingleWatchlistState): number {
         return state.id;
       },
-      targetsUrl: function (state: SingleWatchlistState): string {
+      targetsUrl(state: SingleWatchlistState): string {
         return state.targets;
       },
     }),
     ...targetsHelper.mapState({
-      targets: function (state: TargetsState): ITargetData[] {
-        /*  const targets_filter_name = state.targets.map((element) => {
-          const filterObject = JSON.parse(JSON.stringify(element.filter));
-          element.filter = filterObject.filters[0].type;
-
-          return element;
-        });*/
+      targets(state: TargetsState): ITargetData[] {
         return state.targets;
       },
-      targetCount: function (state: TargetsState): number {
+      targetCount(state: TargetsState): number {
         return state.count;
       },
-      nextPage: function (state: TargetsState): string | null {
+      nextPage(state: TargetsState): string | null {
         return state.nextPage;
       },
-      prevPage: function (state: TargetsState): string | null {
+      prevPage(state: TargetsState): string | null {
         return state.prevPage;
       },
-      loading: function (state: TargetsState): boolean {
+      loading(state: TargetsState): boolean {
         return state.loading;
       },
     }),
     ...targetsHelper.mapGetters(["genericError", "detailError", "errored"]),
-    formTitle: function (): string {
+    formTitle(): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
+    },
+    displayTarget(): ITargetDisplay[] {
+      return this.targets.map((target) => ({
+        ...target,
+        filter: target.filter.filters.map((filter) => filter.type).join("\n"),
+      }));
     },
     magnitudIsValid() {
       if (Number.isInteger(this.mag_value)) {
