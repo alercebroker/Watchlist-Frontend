@@ -3,7 +3,7 @@ export interface WatchlistFilter {
   filters: {
     type: string;
     params: FilterParams;
-  };
+  }[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

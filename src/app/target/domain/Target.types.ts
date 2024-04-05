@@ -15,6 +15,18 @@ export interface ITargetData {
   filter: WatchlistFilter;
 }
 
+export interface ITargetDisplay {
+  id: number;
+  url: string;
+  name: string;
+  radius: number;
+  ra: number;
+  dec: number;
+  nMatches: number | null;
+  lastMatch: string;
+  filter: string;
+}
+
 export interface ITargetList {
   targets: ITargetData[];
   next: string;

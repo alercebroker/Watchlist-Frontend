@@ -2,7 +2,7 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="targets"
+    :items="displayTarget"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
@@ -157,7 +157,7 @@
   </v-data-table>
 </template>
 <script lang="ts">
-import { ITargetData } from "@/app/target/domain/Target.types";
+import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import {
   ActionTypes,
@@ -251,6 +251,12 @@ export default Vue.extend({
     ...targetsHelper.mapGetters(["genericError", "detailError", "errored"]),
     formTitle(): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
+    },
+    displayTarget(): ITargetDisplay[] {
+      return this.targets.map((target) => ({
+        ...target,
+        filter: target.filter.filters.map((filter) => filter.type).join("\n"),
+      }));
     },
   },
   methods: {
