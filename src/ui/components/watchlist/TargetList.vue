@@ -73,26 +73,26 @@
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-select
-                      v-model="reference_dropdown"
+                      v-model="filter_value"
                       label="Filter"
                       :items="['Constant', 'Difference']"
-                      :error-messages="detailError.radius"
                     ></v-select>
                   </v-col>
                   <v-col
-                    v-if="reference_dropdown === 'Constant'"
+                    v-if="filter_value === 'Constant'"
                     cols="12"
                     sm="6"
                     md="4"
                   >
                     <v-text-field
-                     label="constant"
-                     v-model="context_aux"
-                     onchange="verifyFilter()"
+                      label="Magnitud"
+                      v-model="mag_value"
+                      type="number"
+                      :error-messages="detailError.mag_value"
                     ></v-text-field>
                   </v-col>
                   <v-col
-                    v-if="reference_dropdown === 'Constant'"
+                    v-if="filter_value === 'Constant'"
                     cols="12"
                     sm="6"
                     md="4"
@@ -100,12 +100,9 @@
                     <v-select
                       label="Operation"
                       :items="['less', 'less eq', 'greater', 'greater eq']"
-                      :error-messages="detailError.radius"
+                      v-model="operation_value"
                     ></v-select>
                   </v-col>
-                  <div v-if="reference_dropdown === 'Difference'">
-                    <div>Hoy es</div>
-                  </div>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -178,8 +175,9 @@ const targetsHelper = createNamespacedHelpers("targets");
 export default Vue.extend({
   components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets },
   data: () => ({
-    reference_dropdown: "",
-    context_aux: "",
+    filter_value: "",
+    operation_value: "",
+    mag_value: 0,
     search: "",
     headers: [
       {
@@ -194,7 +192,6 @@ export default Vue.extend({
       { text: "N matches", value: "nMatches", sortable: false },
       { text: "Filters", value: "filter", sortable: false },
       { text: "Actions", value: "actions", sortable: false },
-      
     ],
     tableOptions: {} as DataOptions,
     currentPage: 1,
@@ -233,16 +230,13 @@ export default Vue.extend({
     }),
     ...targetsHelper.mapState({
       targets: function (state: TargetsState): ITargetData[] {
-        const targets_filter_name = state.targets.map(element => {
-          let aux_transformation = JSON.stringify(element.filter)
-          aux_transformation = JSON.parse(aux_transformation)
-          element.filter = aux_transformation.filters[0].type
-          console.log(element);
-          
-          return element
-        })
-        // return state.targets
-        return targets_filter_name;
+        /*  const targets_filter_name = state.targets.map((element) => {
+          const filterObject = JSON.parse(JSON.stringify(element.filter));
+          element.filter = filterObject.filters[0].type;
+
+          return element;
+        });*/
+        return state.targets;
       },
       targetCount: function (state: TargetsState): number {
         return state.count;
@@ -261,6 +255,15 @@ export default Vue.extend({
     formTitle: function (): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
     },
+    magnitudIsValid() {
+      if (Number.isInteger(this.mag_value)) {
+        console.log("si es");
+        return true;
+      } else {
+        console.log("no lo es");
+        return false;
+      }
+    },
   },
   methods: {
     ...targetsHelper.mapActions([
@@ -277,6 +280,11 @@ export default Vue.extend({
           paginationParams: { page_size: this.tableOptions.itemsPerPage },
         });
       }
+    },
+    setFilterValuesDefault() {
+      this.filter_value = "";
+      this.operation_value = "";
+      this.mag_value = 0;
     },
     onItemsPerPageUpdate(perPage: number) {
       this.getTargets({
@@ -296,7 +304,13 @@ export default Vue.extend({
           target: this.editedItem,
           watchlist: this.watchlistId,
         };
-        await this.createTarget(payload);
+
+        if (this.magnitudIsValid) {
+          await this.createTarget(payload);
+          this.setFilterValuesDefault();
+        } else {
+          this.setFilterValuesDefault();
+        }
       }
       if (!this.errored) this.close();
     },
@@ -336,9 +350,30 @@ export default Vue.extend({
       });
     },
     verifyFilter() {
-      console.log(this.context_aux)
-      
-    }
+      let save_json = {};
+
+      if (this.filter_value == "Constant") {
+        save_json = {
+          fields: {
+            sorting_hat: ["mag"],
+          },
+          filters: [
+            {
+              type: this.filter_value,
+              params: {
+                field: "mag",
+                constant: this.mag_value,
+                op: this.operation_value,
+              },
+            },
+          ],
+        };
+      }
+
+      this.editedItem.filter = save_json;
+
+      //unir los datos en el json y mandarlos
+    },
   },
   watch: {
     dialog(val) {
