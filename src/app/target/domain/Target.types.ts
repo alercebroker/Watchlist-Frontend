@@ -24,7 +24,8 @@ export interface ITargetDisplay {
   dec: number;
   nMatches: number | null;
   lastMatch: string;
-  filter: string;
+  filter: WatchlistFilter;
+  filter_str: string;
 }
 
 export interface ITargetList {
