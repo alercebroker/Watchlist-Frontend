@@ -2,7 +2,7 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="displayTarget"
+    :items="targets"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
@@ -73,34 +73,28 @@
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-select
-                      v-model="filter_value"
+                      v-model="editedFilters.type"
                       label="Filter"
-                      :items="['Constant', 'Difference']"
+                      :items="[
+                        { text: 'Constant', value: 'constant' },
+                        { text: 'Difference', value: 'difference' },
+                      ]"
                     ></v-select>
                   </v-col>
-                  <v-col
-                    v-if="filter_value === 'Constant'"
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
+                </v-row>
+                <v-row v-if="editedFilters.type === 'constant'">
+                  <v-col cols="12" sm="6" md="4">
                     <v-text-field
-                      label="Magnitud"
-                      v-model="mag_value"
-                      type="number"
-                      :error-messages="detailError.mag_value"
+                      label="constant"
+                      v-model="editedParams.constant"
+                      :rules=[magnitudIsValid]
                     ></v-text-field>
                   </v-col>
-                  <v-col
-                    v-if="filter_value === 'Constant'"
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
+                  <v-col cols="12" sm="6" md="4">
                     <v-select
                       label="Operation"
                       :items="['less', 'less eq', 'greater', 'greater eq']"
-                      v-model="operation_value"
+                      v-model="editedParams.op"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -155,6 +149,7 @@
 </template>
 <script lang="ts">
 import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
+import { FilterParams, WatchlistFilter } from "@/shared/types/filter.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import {
   ActionTypes,
@@ -176,9 +171,7 @@ const targetsHelper = createNamespacedHelpers("targets");
 export default Vue.extend({
   components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets },
   data: () => ({
-    filter_value: "",
     operation_value: "",
-    mag_value: 0,
     search: "",
     headers: [
       {
@@ -191,7 +184,12 @@ export default Vue.extend({
       { text: "Dec", value: "dec", sortable: false },
       { text: "radius", value: "radius", sortable: false },
       { text: "N matches", value: "nMatches", sortable: false },
-      { text: "Filters", value: "filter", sortable: false },
+      {
+        text: "Filters",
+        key: "filter",
+        value: "filter.filters[0].type",
+        sortable: false,
+      },
       { text: "Actions", value: "actions", sortable: false },
     ],
     tableOptions: {} as DataOptions,
@@ -201,14 +199,23 @@ export default Vue.extend({
       ra: 0,
       dec: 0,
       radius: 0,
-      filter: {},
+      filter: {} as WatchlistFilter,
     },
+    editedFilters: {
+      type: "",
+      params: {} as FilterParams,
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    editedParams: {} as any,
     defaultItem: {
       name: "",
       ra: 0,
       dec: 0,
       radius: 0,
-      filter: {},
+      filter: {
+        fields: {},
+        filters: [],
+      } as WatchlistFilter,
     },
     editedIndex: -1,
     dialog: false,
@@ -253,20 +260,22 @@ export default Vue.extend({
     displayTarget(): ITargetDisplay[] {
       return this.targets.map((target) => ({
         ...target,
-        filter: target.filter.filters.map((filter) => filter.type).join("\n"),
+        filter_str: target.filter.filters
+          .map((filter) => filter.type)
+          .join("\n"),
       }));
     },
     magnitudIsValid() {
-      if (Number(this.mag_value)) {
+      if (Number(this.editedParams.constant)) {
         return true;
       } else {
-        return false;
+        return "Must be a number";
       }
     },
     filterIsValid() {
       if (
-        this.filter_value == "Constant" ||
-        this.filter_value == "Difference"
+        this.editedFilters.type == "constant" ||
+        this.editedFilters.type == "difference"
       ) {
         return true;
       } else {
@@ -303,9 +312,9 @@ export default Vue.extend({
       }
     },
     setFilterValuesDefault() {
-      this.filter_value = "";
       this.operation_value = "";
-      this.mag_value = 0;
+      this.editedFilters.type = "";
+      this.editedParams.constant = "";
     },
     onItemsPerPageUpdate(perPage: number) {
       this.getTargets({
@@ -314,6 +323,7 @@ export default Vue.extend({
       });
     },
     async save() {
+      // TODO: Do validation
       if (this.editedIndex > -1) {
         const payload: EditTargetPayload = {
           target: { ...this.editedItem, id: this.targets[this.editedIndex].id },
@@ -326,11 +336,7 @@ export default Vue.extend({
           watchlist: this.watchlistId,
         };
 
-        if (
-          this.magnitudIsValid &&
-          this.filterIsValid &&
-          this.operationIsValid
-        ) {
+        if (this.magnitudIsValid && this.filterIsValid && this.verifyFilter()) {
           await this.createTarget(payload);
           this.setFilterValuesDefault();
         } else {
@@ -353,11 +359,15 @@ export default Vue.extend({
     editItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
       this.editedItem = Object.assign({}, item);
+      this.editedFilters = item.filter.filters[0];
+      this.editedParams = item.filter.filters[0].params;
       this.dialog = true;
     },
     deleteItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
       this.editedItem = Object.assign({}, item);
+      this.editedFilters = item.filter.filters[0];
+      this.editedParams = item.filter.filters[0].params;
       this.dialogDelete = true;
     },
     deleteItemConfirm() {
@@ -376,27 +386,28 @@ export default Vue.extend({
       });
     },
     verifyFilter() {
-      let save_json = {};
+      let save_json = {} as WatchlistFilter;
 
-      if (this.filter_value == "Constant") {
+      if (this.editedFilters.type == "constant") {
         save_json = {
           fields: {
             sorting_hat: ["mag"],
           },
           filters: [
             {
-              type: this.filter_value,
+              type: this.editedFilters.type,
               params: {
                 field: "mag",
-                constant: Number(this.mag_value),
-                op: this.operation_value,
+                constant: Number(this.editedParams.constant),
+                op: this.editedParams.op,
               },
             },
           ],
         };
+        this.editedItem.filter = save_json;
+        return true;
       }
-
-      this.editedItem.filter = save_json;
+      return false;
 
       //unir los datos en el json y mandarlos
     },
