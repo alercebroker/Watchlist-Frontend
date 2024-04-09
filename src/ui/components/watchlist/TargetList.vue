@@ -85,7 +85,7 @@
                 <v-row v-if="editedFilters.type === 'constant'">
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field
-                      label="constant"
+                      label="Magnitud"
                       v-model="editedParams.constant"
                       :rules=[magnitudIsValid]
                     ></v-text-field>
@@ -312,7 +312,7 @@ export default Vue.extend({
       }
     },
     setFilterValuesDefault() {
-      this.operation_value = "";
+      this.editedParams.op = "";
       this.editedFilters.type = "";
       this.editedParams.constant = "";
     },
@@ -325,6 +325,8 @@ export default Vue.extend({
     async save() {
       // TODO: Do validation
       if (this.editedIndex > -1) {
+        this.verifyFilter();
+
         const payload: EditTargetPayload = {
           target: { ...this.editedItem, id: this.targets[this.editedIndex].id },
           watchlist: this.watchlistId,
@@ -359,9 +361,16 @@ export default Vue.extend({
     editItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
       this.editedItem = Object.assign({}, item);
-      this.editedFilters = item.filter.filters[0];
-      this.editedParams = item.filter.filters[0].params;
-      this.dialog = true;
+
+      if (item.filter.filters[0] === undefined) {
+        this.editedFilters = { type: "", params: {} };
+        this.editedParams = { field: "", constant: "", op: ""};
+        this.dialog = true;
+      } else {
+        this.editedFilters = item.filter.filters[0];
+        this.editedParams = item.filter.filters[0].params;
+        this.dialog = true;
+      }
     },
     deleteItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
