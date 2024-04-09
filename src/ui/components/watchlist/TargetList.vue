@@ -2,7 +2,7 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="targets"
+    :items="displayTarget"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
@@ -78,6 +78,7 @@
                       :items="[
                         { text: 'Constant', value: 'constant' },
                         { text: 'Difference', value: 'difference' },
+                        { text: 'No filter', value: 'no filter' },
                       ]"
                     ></v-select>
                   </v-col>
@@ -87,7 +88,7 @@
                     <v-text-field
                       label="Magnitud"
                       v-model="editedParams.constant"
-                      :rules=[magnitudIsValid]
+                      :rules="[magnitudIsValid]"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
@@ -171,7 +172,6 @@ const targetsHelper = createNamespacedHelpers("targets");
 export default Vue.extend({
   components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets },
   data: () => ({
-    operation_value: "",
     search: "",
     headers: [
       {
@@ -187,7 +187,7 @@ export default Vue.extend({
       {
         text: "Filters",
         key: "filter",
-        value: "filter.filters[0].type",
+        value: "filter_str",
         sortable: false,
       },
       { text: "Actions", value: "actions", sortable: false },
@@ -205,8 +205,13 @@ export default Vue.extend({
       type: "",
       params: {} as FilterParams,
     },
+    defaultEditedFilters:{
+      type: "",
+      params: {} as FilterParams,
+    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     editedParams: {} as any,
+    defaultEditedParams: {} as any,
     defaultItem: {
       name: "",
       ra: 0,
@@ -261,40 +266,55 @@ export default Vue.extend({
       return this.targets.map((target) => ({
         ...target,
         filter_str:
-          target.filter.filters.length > 0
+          target.filter?.filters?.length > 0
             ? target.filter.filters.map((filter) => filter.type).join("\n")
-            : "No filter",
+            : "no filter",
       }));
     },
     magnitudIsValid() {
+      if (typeof this.editedParams.constant !== undefined) {
+        if (Number(this.editedParams.constant)) {
+          return true;
+        } else {
+          return "Must be a number";
+        }
+      } else {
+        return "Must be defined";
+      }
+      /*
       if (Number(this.editedParams.constant)) {
         return true;
       } else {
         return "Must be a number";
-      }
+      }*/
     },
     filterIsValid() {
       if (
         this.editedFilters.type == "constant" ||
-        this.editedFilters.type == "difference"
+        this.editedFilters.type == "difference" ||
+        this.editedFilters.type == "no filter"
       ) {
-        return true;
+        if (this.verifyFilter()) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
     },
     operationIsValid() {
       if (
-        this.operation_value == "less" ||
-        this.operation_value == "less eq" ||
-        this.operation_value == "greater" ||
-        this.operation_value == "greater eq"
-      ){
+        this.editedParams == "less" ||
+        this.editedParams == "less eq" ||
+        this.editedParams == "greater" ||
+        this.editedParams == "greater eq"
+      ) {
         return true;
       } else {
         return false;
       }
-    }
+    },
   },
   methods: {
     ...targetsHelper.mapActions([
@@ -313,9 +333,8 @@ export default Vue.extend({
       }
     },
     setFilterValuesDefault() {
-      this.editedParams.op = "";
-      this.editedFilters.type = "";
-      this.editedParams.constant = "";
+      this.editedParams = Object.assign({}, this.defaultEditedParams)
+      this.editedFilters = Object.assign({}, this.defaultEditedFilters);
     },
     onItemsPerPageUpdate(perPage: number) {
       this.getTargets({
@@ -327,7 +346,6 @@ export default Vue.extend({
       // TODO: Do validation
       if (this.editedIndex > -1) {
         this.verifyFilter();
-
         const payload: EditTargetPayload = {
           target: { ...this.editedItem, id: this.targets[this.editedIndex].id },
           watchlist: this.watchlistId,
@@ -339,7 +357,7 @@ export default Vue.extend({
           watchlist: this.watchlistId,
         };
 
-        if (this.magnitudIsValid && this.filterIsValid && this.verifyFilter()) {
+        if (this.filterIsValid) {
           await this.createTarget(payload);
           this.setFilterValuesDefault();
         } else {
@@ -351,11 +369,12 @@ export default Vue.extend({
 
     close() {
       this.SET_ERROR(null);
-      this.dialog = false;
+      this.dialog = false; //poner un if porque -1 es new
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedFilters = Object.assign({}, this.defaultEditedFilters);
+        this.editedParams = Object.assign({}, this.defaultEditedParams)
         this.editedIndex = -1;
-        this.setFilterValuesDefault();
       });
     },
 
@@ -365,7 +384,7 @@ export default Vue.extend({
 
       if (item.filter.filters[0] === undefined) {
         this.editedFilters = { type: "", params: {} };
-        this.editedParams = { field: "", constant: "", op: ""};
+        this.editedParams = { field: "", constant: "", op: "" };
         this.dialog = true;
       } else {
         this.editedFilters = item.filter.filters[0];
@@ -396,10 +415,8 @@ export default Vue.extend({
       });
     },
     verifyFilter() {
-      let save_json = {} as WatchlistFilter;
-
       if (this.editedFilters.type == "constant") {
-        save_json = {
+        this.editedItem.filter = {
           fields: {
             sorting_hat: ["mag"],
           },
@@ -414,7 +431,19 @@ export default Vue.extend({
             },
           ],
         };
-        this.editedItem.filter = save_json;
+        return true;
+      } else if (this.editedFilters.type == "no filter") {
+        this.editedItem.filter = {
+          fields: {
+            sorting_hat: [],
+          },
+          filters: [
+            {
+              type: this.editedFilters.type,
+              params: {},
+            },
+          ],
+        };
         return true;
       }
       return false;
