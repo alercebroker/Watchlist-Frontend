@@ -260,9 +260,10 @@ export default Vue.extend({
     displayTarget(): ITargetDisplay[] {
       return this.targets.map((target) => ({
         ...target,
-        filter_str: target.filter.filters
-          .map((filter) => filter.type)
-          .join("\n"),
+        filter_str:
+          target.filter.filters.length > 0
+            ? target.filter.filters.map((filter) => filter.type).join("\n")
+            : "No filter",
       }));
     },
     magnitudIsValid() {
