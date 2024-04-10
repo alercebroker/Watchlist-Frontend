@@ -71,33 +71,41 @@
                       :error-messages="detailError.radius"
                     ></v-text-field>
                   </v-col>
+                </v-row>
+                <v-row>
                   <v-col cols="12" sm="6" md="4">
                     <v-select
                       v-model="editedFilters.type"
                       label="Filter"
                       :items="[
                         { text: 'Constant', value: 'constant' },
-                        { text: 'Difference', value: 'difference' },
                         { text: 'No filter', value: 'no filter' },
                       ]"
                     ></v-select>
                   </v-col>
-                </v-row>
-                <v-row v-if="editedFilters.type === 'constant'">
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      label="Magnitud"
-                      v-model="editedParams.constant"
-                      :rules="[magnitudIsValid]"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-select
-                      label="Operation"
-                      :items="['less', 'less eq', 'greater', 'greater eq']"
-                      v-model="editedParams.op"
-                    ></v-select>
-                  </v-col>
+
+                  <template v-if="editedFilters.type === 'constant'">
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        label="Magnitude"
+                        v-model="editedParams.constant"
+                        :rules="[magnitudIsValid]"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-select
+                        label="Operation"
+                        :items="[
+                          'eq',
+                          'less',
+                          'less eq',
+                          'greater',
+                          'greater eq',
+                        ]"
+                        v-model="editedParams.op"
+                      ></v-select>
+                    </v-col>
+                  </template>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -186,7 +194,6 @@ export default Vue.extend({
       { text: "N matches", value: "nMatches", sortable: false },
       {
         text: "Filters",
-        key: "filter",
         value: "filter_str",
         sortable: false,
       },
@@ -194,20 +201,30 @@ export default Vue.extend({
     ],
     tableOptions: {} as DataOptions,
     currentPage: 1,
+    /**export interface WatchlistFilter {
+  fields: Record<string, string[]>;
+  filters: {
+    type: string;
+    params: FilterParams;
+  }[]; 
+  
+  export interface FilterParams {}
+  */
     editedItem: {
       name: "",
       ra: 0,
       dec: 0,
       radius: 0,
-      filter: {} as WatchlistFilter,
+      filter: {
+        fields: {},
+        filters: [],
+      } as WatchlistFilter,
     },
     editedFilters: {
       type: "",
-      params: {} as FilterParams,
     },
-    defaultEditedFilters:{
+    defaultEditedFilters: {
       type: "",
-      params: {} as FilterParams,
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     editedParams: {} as any,
@@ -281,12 +298,6 @@ export default Vue.extend({
       } else {
         return "Must be defined";
       }
-      /*
-      if (Number(this.editedParams.constant)) {
-        return true;
-      } else {
-        return "Must be a number";
-      }*/
     },
     filterIsValid() {
       if (
@@ -294,7 +305,7 @@ export default Vue.extend({
         this.editedFilters.type == "difference" ||
         this.editedFilters.type == "no filter"
       ) {
-        if (this.verifyFilter()) {
+        if (this.setFilter()) {
           return true;
         } else {
           return false;
@@ -308,7 +319,8 @@ export default Vue.extend({
         this.editedParams == "less" ||
         this.editedParams == "less eq" ||
         this.editedParams == "greater" ||
-        this.editedParams == "greater eq"
+        this.editedParams == "greater eq" ||
+        this.editedParams == "eq"
       ) {
         return true;
       } else {
@@ -333,7 +345,7 @@ export default Vue.extend({
       }
     },
     setFilterValuesDefault() {
-      this.editedParams = Object.assign({}, this.defaultEditedParams)
+      this.editedParams = Object.assign({}, this.defaultEditedParams);
       this.editedFilters = Object.assign({}, this.defaultEditedFilters);
     },
     onItemsPerPageUpdate(perPage: number) {
@@ -345,7 +357,9 @@ export default Vue.extend({
     async save() {
       // TODO: Do validation
       if (this.editedIndex > -1) {
-        this.verifyFilter();
+        this.setFilter();
+        console.log(this.editItem);
+
         const payload: EditTargetPayload = {
           target: { ...this.editedItem, id: this.targets[this.editedIndex].id },
           watchlist: this.watchlistId,
@@ -357,7 +371,7 @@ export default Vue.extend({
           watchlist: this.watchlistId,
         };
 
-        if (this.filterIsValid) {
+        if (this.setFilter()) {
           await this.createTarget(payload);
           this.setFilterValuesDefault();
         } else {
@@ -369,21 +383,19 @@ export default Vue.extend({
 
     close() {
       this.SET_ERROR(null);
-      this.dialog = false; //poner un if porque -1 es new
+      this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedFilters = Object.assign({}, this.defaultEditedFilters);
-        this.editedParams = Object.assign({}, this.defaultEditedParams)
+        this.editedFilters = Object.assign({ }, this.defaultEditedFilters);
+        this.editedParams = Object.assign({}, this.defaultEditedParams);
         this.editedIndex = -1;
       });
     },
 
     editItem(item: ITargetData) {
-      this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
-      this.editedItem = Object.assign({}, item);
 
       if (item.filter.filters[0] === undefined) {
-        this.editedFilters = { type: "", params: {} };
+        this.editedFilters = { type: ""};
         this.editedParams = { field: "", constant: "", op: "" };
         this.dialog = true;
       } else {
@@ -391,6 +403,8 @@ export default Vue.extend({
         this.editedParams = item.filter.filters[0].params;
         this.dialog = true;
       }
+      this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
+      this.editedItem = Object.assign({}, item);
     },
     deleteItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
@@ -414,7 +428,7 @@ export default Vue.extend({
         this.editedIndex = -1;
       });
     },
-    verifyFilter() {
+    setFilter() {
       if (this.editedFilters.type == "constant") {
         this.editedItem.filter = {
           fields: {
