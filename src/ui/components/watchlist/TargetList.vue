@@ -2,7 +2,7 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="displayTarget"
+    :items="targets"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
@@ -194,22 +194,13 @@ export default Vue.extend({
       { text: "N matches", value: "nMatches", sortable: false },
       {
         text: "Filters",
-        value: "filter_str",
+        value: "filter.filters[0].type",
         sortable: false,
       },
       { text: "Actions", value: "actions", sortable: false },
     ],
     tableOptions: {} as DataOptions,
     currentPage: 1,
-    /**export interface WatchlistFilter {
-  fields: Record<string, string[]>;
-  filters: {
-    type: string;
-    params: FilterParams;
-  }[]; 
-  
-  export interface FilterParams {}
-  */
     editedItem: {
       name: "",
       ra: 0,
@@ -222,9 +213,11 @@ export default Vue.extend({
     },
     editedFilters: {
       type: "",
+      params: {} as FilterParams,
     },
     defaultEditedFilters: {
       type: "",
+      params: {} as FilterParams,
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     editedParams: {} as any,
@@ -344,10 +337,6 @@ export default Vue.extend({
         });
       }
     },
-    setFilterValuesDefault() {
-      this.editedParams = Object.assign({}, this.defaultEditedParams);
-      this.editedFilters = Object.assign({}, this.defaultEditedFilters);
-    },
     onItemsPerPageUpdate(perPage: number) {
       this.getTargets({
         params: { url: this.targetsUrl },
@@ -355,30 +344,33 @@ export default Vue.extend({
       });
     },
     async save() {
-      // TODO: Do validation
-      if (this.editedIndex > -1) {
-        this.setFilter();
-        console.log(this.editItem);
-
-        const payload: EditTargetPayload = {
-          target: { ...this.editedItem, id: this.targets[this.editedIndex].id },
-          watchlist: this.watchlistId,
-        };
-        await this.editTarget(payload);
-      } else {
-        const payload: CreateTargetPayload = {
-          target: this.editedItem,
-          watchlist: this.watchlistId,
-        };
-
-        if (this.setFilter()) {
-          await this.createTarget(payload);
-          this.setFilterValuesDefault();
+      if (this.filterIsValid) {
+        // TODO: Do validation
+        if (this.editedIndex > -1) {
+          const payload: EditTargetPayload = {
+            target: {
+              ...this.editedItem,
+              id: this.targets[this.editedIndex].id,
+            },
+            watchlist: this.watchlistId,
+          };
+          await this.editTarget(payload);
         } else {
-          this.setFilterValuesDefault();
+          const payload: CreateTargetPayload = {
+            target: this.editedItem,
+            watchlist: this.watchlistId,
+          };
+
+          await this.createTarget(payload);
         }
+        if (!this.errored) {
+          this.close();
+        }
+
+        this.close();
+      } else {
+        this.close();
       }
-      if (!this.errored) this.close();
     },
 
     close() {
@@ -386,25 +378,20 @@ export default Vue.extend({
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedFilters = Object.assign({ }, this.defaultEditedFilters);
+        this.editedFilters = Object.assign({}, this.defaultEditedFilters);
         this.editedParams = Object.assign({}, this.defaultEditedParams);
         this.editedIndex = -1;
       });
     },
 
     editItem(item: ITargetData) {
-
-      if (item.filter.filters[0] === undefined) {
-        this.editedFilters = { type: ""};
-        this.editedParams = { field: "", constant: "", op: "" };
-        this.dialog = true;
-      } else {
-        this.editedFilters = item.filter.filters[0];
-        this.editedParams = item.filter.filters[0].params;
-        this.dialog = true;
-      }
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
+      console.log(item);
+      
       this.editedItem = Object.assign({}, item);
+      this.editedFilters = item.filter.filters[0];
+      console.log(this.editedFilters);
+      this.dialog = true;
     },
     deleteItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
