@@ -86,8 +86,16 @@
 
                   <template v-if="editedFilters.type === 'constant'">
                     <v-col cols="12" sm="6" md="4">
+                      <v-select
+                        label="Field"
+                        v-model="editedParams.field"
+                        :items="validFields['constant']"
+                        :rules="[checkValidFields]"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
                       <v-text-field
-                        label="Magnitude"
+                        label="Constant"
                         v-model="editedParams.constant"
                         :rules="[magnitudIsValid]"
                       ></v-text-field>
@@ -158,7 +166,11 @@
 </template>
 <script lang="ts">
 import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
-import { FilterParams, WatchlistFilter } from "@/shared/types/filter.types";
+import {
+  ConstantFilterParams,
+  FilterParams,
+  WatchlistFilter,
+} from "@/shared/types/filter.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import {
   ActionTypes,
@@ -235,6 +247,9 @@ export default Vue.extend({
     editedIndex: -1,
     dialog: false,
     dialogDelete: false,
+    validFields: {
+      constant: ["mag", "fid"],
+    } as Record<string, string[]>,
   }),
   mounted() {
     this.getTargets({
@@ -292,21 +307,6 @@ export default Vue.extend({
         return "Must be defined";
       }
     },
-    filterIsValid() {
-      if (
-        this.editedFilters.type == "constant" ||
-        this.editedFilters.type == "difference" ||
-        this.editedFilters.type == "no filter"
-      ) {
-        if (this.setFilter()) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    },
     operationIsValid() {
       if (
         this.editedParams == "less" ||
@@ -344,33 +344,33 @@ export default Vue.extend({
       });
     },
     async save() {
-      if (this.filterIsValid) {
-        // TODO: Do validation
-        if (this.editedIndex > -1) {
-          const payload: EditTargetPayload = {
-            target: {
-              ...this.editedItem,
-              id: this.targets[this.editedIndex].id,
-            },
-            watchlist: this.watchlistId,
-          };
-          await this.editTarget(payload);
-        } else {
-          const payload: CreateTargetPayload = {
-            target: this.editedItem,
-            watchlist: this.watchlistId,
-          };
-
-          await this.createTarget(payload);
-        }
-        if (!this.errored) {
-          this.close();
-        }
-
-        this.close();
+      this.setFields();
+      this.editedItem.filter.filters = [Object.assign({}, this.editedFilters)];
+      this.editedItem.filter.filters[0].params = Object.assign(
+        {},
+        this.editedParams
+      );
+      if (this.editedIndex > -1) {
+        const payload: EditTargetPayload = {
+          target: {
+            ...this.editedItem,
+            id: this.targets[this.editedIndex].id,
+          },
+          watchlist: this.watchlistId,
+        };
+        await this.editTarget(payload);
       } else {
+        const payload: CreateTargetPayload = {
+          target: this.editedItem,
+          watchlist: this.watchlistId,
+        };
+
+        await this.createTarget(payload);
+      }
+      if (!this.errored) {
         this.close();
       }
+      this.close();
     },
 
     close() {
@@ -386,11 +386,10 @@ export default Vue.extend({
 
     editItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
-      console.log(item);
-      
+
       this.editedItem = Object.assign({}, item);
-      this.editedFilters = item.filter.filters[0];
-      console.log(this.editedFilters);
+      this.editedFilters = Object.assign({}, item.filter.filters[0]);
+      this.editedParams = Object.assign({}, item.filter.filters[0].params);
       this.dialog = true;
     },
     deleteItem(item: ITargetData) {
@@ -415,41 +414,28 @@ export default Vue.extend({
         this.editedIndex = -1;
       });
     },
-    setFilter() {
-      if (this.editedFilters.type == "constant") {
-        this.editedItem.filter = {
-          fields: {
-            sorting_hat: ["mag"],
-          },
-          filters: [
-            {
-              type: this.editedFilters.type,
-              params: {
-                field: "mag",
-                constant: Number(this.editedParams.constant),
-                op: this.editedParams.op,
-              },
-            },
-          ],
-        };
-        return true;
-      } else if (this.editedFilters.type == "no filter") {
-        this.editedItem.filter = {
-          fields: {
-            sorting_hat: [],
-          },
-          filters: [
-            {
-              type: this.editedFilters.type,
-              params: {},
-            },
-          ],
-        };
-        return true;
-      }
-      return false;
-
-      //unir los datos en el json y mandarlos
+    setFields() {
+      const fieldsMapping: Record<string, string> = {
+        mag: "sorting_hat",
+      };
+      let fields: Record<string, string[]> = {};
+      this.editedItem.filter.filters.forEach((filter) => {
+        if (filter.type === "constant" && filter.params) {
+          let params = filter.params as ConstantFilterParams;
+          let field = params.field;
+          if (fieldsMapping[field] !== undefined) {
+            let step = fieldsMapping[field];
+            if (fields[step] === undefined) fields[step] = [];
+            fields[step].push(field);
+          }
+        }
+      });
+      this.editedItem.filter.fields = fields;
+    },
+    checkValidFields() {
+      let field: string = this.editedParams.field;
+      let type: string = this.editedFilters.type;
+      return this.validFields[type].includes(field);
     },
   },
   watch: {
