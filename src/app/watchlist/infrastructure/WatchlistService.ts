@@ -13,10 +13,12 @@ import {
   EditWatchlistRequestModel,
   CreateWatchlistApiResponse,
   OneWatchlistApiResponse,
+  EditTargetsOneWatchlist,
 } from "./WatchlistService.types";
 import {
   WatchlistApiParser,
   WatchlistCreateApiParser,
+  watchlistApiTargetParser,
 } from "./WatchlistParser";
 import { UsersApiService } from "@/shared/http/UsersApiService";
 
@@ -24,10 +26,12 @@ export class WatchlistService implements IWatchlistRepository {
   httpService: IHttpService;
   parser: WatchlistApiParser;
   parserCreate: WatchlistCreateApiParser;
+  parserTargetsUpdate: watchlistApiTargetParser;
 
   constructor(@inject() usersApiService: UsersApiService) {
     this.parser = new WatchlistApiParser();
     this.parserCreate = new WatchlistCreateApiParser();
+    this.parserTargetsUpdate = new watchlistApiTargetParser();
     this.httpService = usersApiService;
   }
 
@@ -149,5 +153,31 @@ export class WatchlistService implements IWatchlistRepository {
         },
         { parseTo }
       );
+  }
+
+  async editTargetsWatchlist(params: {
+    type: string;
+    params: EditTargetsOneWatchlist; //cambiar,
+    watchlist_id: number;
+    url?: string;
+  }): Promise<Result<IWatchlistData, ParseError | HttpError>> {
+    const parseTo = (response: EditTargetsOneWatchlist) => {
+      return this.parserTargetsUpdate.parseNewTargets(response);
+    };
+
+    if (params.url) {
+      return this.httpService.put(
+        { url: params.url, data: params.params },
+        { parseTo }
+      );
+    } else {
+      return this.httpService.put(
+        {
+          url: "/watchlists/" + params.watchlist_id + "/",
+          data: params.params,
+        },
+        { parseTo }
+      );
+    }
   }
 }

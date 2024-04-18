@@ -35,6 +35,19 @@ describe("TargetService", () => {
             radius: 1,
             ra: 10,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [
+                {
+                  params: {
+                    constant: "11",
+                    field: "mag",
+                    op: "greater",
+                  },
+                  type: "constant",
+                },
+              ],
+            },
             nMatches: 5,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),
@@ -45,6 +58,15 @@ describe("TargetService", () => {
             radius: 2,
             ra: 20,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [
+                {
+                  params: {},
+                  type: "no filter",
+                },
+              ],
+            },
             nMatches: 2,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),
@@ -216,6 +238,15 @@ describe("TargetService", () => {
           ra: 10,
           dec: 20,
           radius: 30,
+          filter: {
+            fields: {},
+            filters: [
+              {
+                params: {},
+                type: "no filter",
+              },
+            ],
+          },
         } as ITargetData,
         watchlist: 1,
       });
@@ -278,6 +309,19 @@ describe("TargetService", () => {
             radius: 1,
             ra: 10,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [
+                {
+                  params: {
+                    constant: "11",
+                    field: "mag",
+                    op: "greater",
+                  },
+                  type: "constant",
+                },
+              ],
+            },
             nMatches: 5,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),
@@ -288,6 +332,15 @@ describe("TargetService", () => {
             radius: 2,
             ra: 20,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [
+                {
+                  params: {},
+                  type: "no filter",
+                },
+              ],
+            },
             nMatches: 2,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),

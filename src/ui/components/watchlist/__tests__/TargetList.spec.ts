@@ -33,6 +33,22 @@ const modules = (): Modules => ({
           {
             id: 1,
             name: "test",
+            ra: 1,
+            dec: 2,
+            radius: 3,
+            filter: {
+              fields: {},
+              filters: [
+                {
+                  params: {
+                    constant: "11",
+                    field: "mag",
+                    op: "greater",
+                  },
+                  type: "constant",
+                },
+              ],
+            },
           },
         ],
       },

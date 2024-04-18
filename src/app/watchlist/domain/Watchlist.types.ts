@@ -40,4 +40,7 @@ export interface IWatchlistRepository {
   editWatchlist(
     params: any
   ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
+  editTargetsWatchlist(
+    params: any
+  ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
 }

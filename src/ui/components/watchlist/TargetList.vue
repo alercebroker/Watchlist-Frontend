@@ -2,7 +2,7 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="targets"
+    :items="displayTarget"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
@@ -41,13 +41,15 @@
               <v-container>
                 <generic-error v-if="genericError" :error="genericError" />
                 <v-row>
-                  <v-col cols="12" sm="6" md="4">
+                  <v-col class="d-block">
                     <v-text-field
                       v-model="editedItem.name"
                       label="Target Name"
                       :error-messages="detailError.name"
                     ></v-text-field>
                   </v-col>
+                </v-row>
+                <v-row>
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field
                       v-model="editedItem.ra"
@@ -76,7 +78,7 @@
                   <v-col cols="12" sm="6" md="4">
                     <v-select
                       v-model="editedFilters.type"
-                      label="Filter"
+                      label="Condition"
                       :items="[
                         { text: 'Constant', value: 'constant' },
                         { text: 'No filter', value: 'no filter' },
@@ -86,20 +88,17 @@
 
                   <template v-if="editedFilters.type === 'constant'">
                     <v-col cols="12" sm="6" md="4">
-                      <v-select
+                      <v-autocomplete
                         label="Field"
                         v-model="editedParams.field"
                         :items="validFields['constant']"
                         :rules="[checkValidFields]"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        label="Constant"
-                        v-model="editedParams.constant"
-                        :rules="[magnitudIsValid]"
-                      ></v-text-field>
-                    </v-col>
+                  </template>
+                </v-row>
+                <template v-if="editedFilters.type === 'constant'">
+                  <v-row>
                     <v-col cols="12" sm="6" md="4">
                       <v-select
                         label="Operation"
@@ -113,8 +112,21 @@
                         v-model="editedParams.op"
                       ></v-select>
                     </v-col>
-                  </template>
-                </v-row>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        label="Value"
+                        v-model="editedParams.constant"
+                        :rules="[magnitudIsValid]"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-autocomplete
+                        label="Band"
+                        :items="['Green', 'Red']"
+                      ></v-autocomplete>
+                    </v-col>
+                  </v-row>
+                </template>
               </v-container>
             </v-card-text>
 
@@ -185,6 +197,7 @@ import { createNamespacedHelpers } from "vuex";
 import GenericError from "../shared/GenericError.vue";
 import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
+import { filter } from "vue/types/umd";
 
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
@@ -206,7 +219,7 @@ export default Vue.extend({
       { text: "N matches", value: "nMatches", sortable: false },
       {
         text: "Filters",
-        value: "filter.filters[0].type",
+        value: "filter_str",
         sortable: false,
       },
       { text: "Actions", value: "actions", sortable: false },
@@ -248,7 +261,7 @@ export default Vue.extend({
     dialog: false,
     dialogDelete: false,
     validFields: {
-      constant: ["mag", "fid"],
+      constant: ["mag"],
     } as Record<string, string[]>,
   }),
   mounted() {
@@ -345,11 +358,7 @@ export default Vue.extend({
     },
     async save() {
       this.setFields();
-      this.editedItem.filter.filters = [Object.assign({}, this.editedFilters)];
-      this.editedItem.filter.filters[0].params = Object.assign(
-        {},
-        this.editedParams
-      );
+
       if (this.editedIndex > -1) {
         const payload: EditTargetPayload = {
           target: {
@@ -388,15 +397,18 @@ export default Vue.extend({
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
 
       this.editedItem = Object.assign({}, item);
-      this.editedFilters = Object.assign({}, item.filter.filters[0]);
-      this.editedParams = Object.assign({}, item.filter.filters[0].params);
+      this.editedFilters = Object.assign({}, item.filter?.filters[0] ?? {});
+      this.editedParams = Object.assign(
+        {},
+        item.filter?.filters[0]?.params ?? {}
+      );
       this.dialog = true;
     },
     deleteItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
       this.editedItem = Object.assign({}, item);
-      this.editedFilters = item.filter.filters[0];
-      this.editedParams = item.filter.filters[0].params;
+      this.editedFilters = Object.assign({}, this.defaultEditedFilters);
+      this.editedParams = Object.assign({}, this.editedParams);
       this.dialogDelete = true;
     },
     deleteItemConfirm() {
@@ -419,17 +431,38 @@ export default Vue.extend({
         mag: "sorting_hat",
       };
       let fields: Record<string, string[]> = {};
-      this.editedItem.filter.filters.forEach((filter) => {
-        if (filter.type === "constant" && filter.params) {
-          let params = filter.params as ConstantFilterParams;
-          let field = params.field;
-          if (fieldsMapping[field] !== undefined) {
-            let step = fieldsMapping[field];
-            if (fields[step] === undefined) fields[step] = [];
-            fields[step].push(field);
+
+      if (this.editedItem.filter.filters.length < 1) {
+        this.editedFilters.params = this.editedParams;
+        this.editedItem.filter.filters.push(this.editedFilters);
+
+        this.editedItem.filter.filters.forEach((filter) => {
+          let filter_aux = filter.params as ConstantFilterParams;
+          let step = fieldsMapping[filter_aux.field];
+          if (fields[step] === undefined) fields[step] = [];
+          fields[step].push(filter_aux.field);
+        });
+
+        this.editedItem.filter.fields = fields;
+      } else {
+        this.editedItem.filter.filters.forEach((filter) => {
+          if (this.editedFilters.type === "constant" && filter.params) {
+            /** Añadir index en los filters a futuro. */
+            filter.type = this.editedFilters.type;
+            filter.params = this.editedParams;
+            let filter_aux = filter.params as ConstantFilterParams;
+            let field = filter_aux.field;
+            if (fieldsMapping[field] !== undefined) {
+              let step = fieldsMapping[field];
+              if (fields[step] === undefined) fields[step] = [];
+              fields[step].push(field);
+            }
+          } else if (this.editedFilters.type === "no filter") {
+            filter.type = this.editedFilters.type;
+            filter.params = Object.assign({}, this.defaultEditedParams);
           }
-        }
-      });
+        });
+      }
       this.editedItem.filter.fields = fields;
     },
     checkValidFields() {
