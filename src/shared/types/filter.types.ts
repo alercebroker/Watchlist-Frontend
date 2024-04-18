@@ -6,6 +6,13 @@ export interface WatchlistFilter {
   }[];
 }
 
+export interface OneFilter {
+  filters: {
+    type: string;
+    params: any;
+  }[];
+}
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FilterParams {}
 

@@ -160,12 +160,13 @@ export class WatchlistService implements IWatchlistRepository {
     params: EditTargetsOneWatchlist; //cambiar,
     watchlist_id: number;
     url?: string;
-  }): Promise<Result<IWatchlistData, ParseError | HttpError>> {
+  }): Promise<Result< any, ParseError | HttpError>> {
     const parseTo = (response: EditTargetsOneWatchlist) => {
       return this.parserTargetsUpdate.parseNewTargets(response);
     };
 
     if (params.url) {
+      params.url+="set_filters/"
       return this.httpService.put(
         { url: params.url, data: params.params },
         { parseTo }
