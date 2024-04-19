@@ -1,4 +1,4 @@
-import { WatchlistFilter } from "@/shared/types/filter.types";
+import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 import { ITargetData } from "./Target.types";
 
 export class Target implements ITargetData {
@@ -10,7 +10,7 @@ export class Target implements ITargetData {
   dec: number;
   nMatches: number | null;
   lastMatch: string;
-  filter: WatchlistFilter;
+  filter: IWatchlistFilter;
 
   constructor(data: ITargetData) {
     this.id = data.id;

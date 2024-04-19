@@ -78,7 +78,7 @@ export default Vue.extend({
         await this.getAllWatchlists({ url: this.nextPage, append: true });
       }
     },
-    handleBooleanClose(show: boolean){
+    handleBooleanClose(show: boolean) {
       this.create_targets_dialog = show;
     },
     onItemClick(index: number) {

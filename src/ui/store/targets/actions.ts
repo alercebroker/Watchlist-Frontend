@@ -1,7 +1,7 @@
+import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 import { ITargetData, ITargetList } from "@/app/target/domain/Target.types";
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError } from "@/shared/http";
-import { WatchlistFilter } from "@/shared/types/filter.types";
 import {
   Callbacks,
   UseCaseInteractor,
@@ -33,7 +33,7 @@ export type EditTargetPayload = {
     ra: number;
     dec: number;
     radius: number;
-    filter: WatchlistFilter;
+    filter: IWatchlistFilter;
   };
   watchlist: number;
   url?: string;
@@ -45,7 +45,7 @@ export type CreateTargetPayload = {
     ra: number;
     dec: number;
     radius: number;
-    filter: WatchlistFilter;
+    filter: IWatchlistFilter;
   };
   watchlist: number;
 };
@@ -124,6 +124,7 @@ export const actions: ActionTree<TargetsState, IRootState> = {
     const interactor = container.get<UseCaseInteractor>(cid.EditTarget);
     const callbacks: Callbacks = {
       respondWithSuccess: (target: ITargetData) => {
+        console.log(target)
         commit(MutationTypes.UPDATE_TARGET, target);
         commit(MutationTypes.SET_ERROR, null);
         commit(MutationTypes.SET_LOADING, false);

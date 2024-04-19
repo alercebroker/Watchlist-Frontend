@@ -1,4 +1,4 @@
-import { FilterParams } from "@/shared/types/filter.types";
+import { FilterType, IFilterParams } from "@/app/filter/domain/Filter.types";
 
 export interface WatchlistRequestModel {
   title: string;
@@ -69,7 +69,7 @@ export interface EditWatchlistRequestModel {
 
 export interface EditTargetsOneWatchlist {
   filters: {
-    type: string;
-    params: FilterParams;
+    type: FilterType;
+    params: IFilterParams;
   }[];
 }
