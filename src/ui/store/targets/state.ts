@@ -7,7 +7,7 @@ export type TargetsState = {
   count: number;
   nextPage: string | null;
   prevPage: string | null;
-  mag_value: number;
+  constant: number;
 };
 
 export const state = (): TargetsState => ({
@@ -17,5 +17,5 @@ export const state = (): TargetsState => ({
   count: 0,
   nextPage: null,
   prevPage: null,
-  mag_value: 0,
+  constant: 0,
 });

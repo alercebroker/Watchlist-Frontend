@@ -66,10 +66,3 @@ export interface EditWatchlistRequestModel {
   title: string;
   notification_rate: string;
 }
-
-export interface EditTargetsOneWatchlist {
-  filters: {
-    type: string;
-    params: FilterParams;
-  }[];
-}

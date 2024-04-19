@@ -33,110 +33,111 @@
             </v-btn>
           </template>
           <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
+            <v-form @submit.prevent="save">
+              <v-card-title>
+                <span class="text-h5">{{ formTitle }}</span>
+              </v-card-title>
 
-            <v-card-text>
-              <v-container>
-                <generic-error v-if="genericError" :error="genericError" />
-                <v-row>
-                  <v-col class="d-block">
-                    <v-text-field
-                      v-model="editedItem.name"
-                      label="Target Name"
-                      :error-messages="detailError.name"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.ra"
-                      label="ra"
-                      type="number"
-                      :error-messages="detailError.ra"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.dec"
-                      label="dec"
-                      type="number"
-                      :error-messages="detailError.dec"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.radius"
-                      label="radius"
-                      :error-messages="detailError.radius"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-select
-                      v-model="editedFilters.type"
-                      label="Condition"
-                      :items="[
-                        { text: 'Constant', value: 'constant' },
-                        { text: 'No filter', value: 'no filter' },
-                      ]"
-                    ></v-select>
-                  </v-col>
-
-                  <template v-if="editedFilters.type === 'constant'">
-                    <v-col cols="12" sm="6" md="4">
-                      <v-autocomplete
-                        label="Field"
-                        v-model="editedParams.field"
-                        :items="validFields['constant']"
-                        :rules="[checkValidFields]"
-                      ></v-autocomplete>
+              <v-card-text>
+                <v-container>
+                  <generic-error v-if="genericError" :error="genericError" />
+                  <v-row>
+                    <v-col class="d-block">
+                      <v-text-field
+                        v-model="editedItem.name"
+                        label="Target Name"
+                        :error-messages="detailError.name"
+                      ></v-text-field>
                     </v-col>
-                  </template>
-                </v-row>
-                <template v-if="editedFilters.type === 'constant'">
+                  </v-row>
                   <v-row>
                     <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        label="Operation"
-                        :items="[
-                          'eq',
-                          'less',
-                          'less eq',
-                          'greater',
-                          'greater eq',
-                        ]"
-                        v-model="editedParams.op"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
                       <v-text-field
-                        label="Value"
-                        v-model="editedParams.constant"
-                        :rules="[magnitudIsValid]"
+                        v-model="editedItem.ra"
+                        label="ra"
+                        type="number"
+                        :error-messages="detailError.ra"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                      <v-autocomplete
-                        label="Band"
-                        :items="['Green', 'Red']"
-                      ></v-autocomplete>
+                      <v-text-field
+                        v-model="editedItem.dec"
+                        label="dec"
+                        type="number"
+                        :error-messages="detailError.dec"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.radius"
+                        label="radius"
+                        :error-messages="detailError.radius"
+                      ></v-text-field>
                     </v-col>
                   </v-row>
-                </template>
-              </v-container>
-            </v-card-text>
+                  <v-row>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-select
+                        v-model="editedFilters.type"
+                        label="Condition"
+                        :items="[
+                          { text: 'Constant', value: 'constant' },
+                          { text: 'No filter', value: 'no filter' },
+                        ]"
+                      ></v-select>
+                    </v-col>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-              <v-btn id="saveButton" color="blue darken-1" text @click="save">
-                Save
-              </v-btn>
-            </v-card-actions>
+                    <template v-if="editedFilters.type === 'constant'">
+                      <v-col cols="12" sm="6" md="4">
+                        <v-autocomplete
+                          label="Field"
+                          v-model="editedParams.field"
+                          :items="validFields['constant']"
+                          :rules="[checkValidFields]"
+                        ></v-autocomplete>
+                      </v-col>
+                    </template>
+                  </v-row>
+                  <template v-if="editedFilters.type === 'constant'">
+                    <v-row>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-select
+                          label="Operation"
+                          :items="validOperations.op"
+                          :rules="[checkValidOperation]"
+                          v-model="editedParams.op"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          label="Value"
+                          v-model="editedParams.constant"
+                          :rules="[checkValidMagnitude]"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-autocomplete
+                          label="Band"
+                          v-model="editedParams.band"
+                          :items="validBands.bands"
+                          :rules="[checkValidBand]"
+                        ></v-autocomplete>
+                      </v-col>
+                    </v-row>
+                  </template>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close">
+                  Cancel
+                </v-btn>
+                <v-btn id="saveButton" color="blue darken-1" text type="submit">
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-form>
           </v-card>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
@@ -198,10 +199,10 @@ import GenericError from "../shared/GenericError.vue";
 import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
 import { filter } from "vue/types/umd";
+import { HttpError } from "@/shared/http";
 
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
-
 export default Vue.extend({
   components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets },
   data: () => ({
@@ -263,6 +264,12 @@ export default Vue.extend({
     validFields: {
       constant: ["mag"],
     } as Record<string, string[]>,
+    validBands: {
+      bands: ["Green", "Red", "I"],
+    },
+    validOperations: {
+      op: ["eq", "less", "less eq", "greater", "greater eq"],
+    },
   }),
   mounted() {
     this.getTargets({
@@ -308,30 +315,6 @@ export default Vue.extend({
             ? target.filter.filters.map((filter) => filter.type).join("\n")
             : "no filter",
       }));
-    },
-    magnitudIsValid() {
-      if (typeof this.editedParams.constant !== undefined) {
-        if (Number(this.editedParams.constant)) {
-          return true;
-        } else {
-          return "Must be a number";
-        }
-      } else {
-        return "Must be defined";
-      }
-    },
-    operationIsValid() {
-      if (
-        this.editedParams == "less" ||
-        this.editedParams == "less eq" ||
-        this.editedParams == "greater" ||
-        this.editedParams == "greater eq" ||
-        this.editedParams == "eq"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
     },
   },
   methods: {
@@ -469,6 +452,37 @@ export default Vue.extend({
       let field: string = this.editedParams.field;
       let type: string = this.editedFilters.type;
       return this.validFields[type].includes(field);
+    },
+    checkValidOperation() {
+      if (this.validOperations.op.includes(this.editedParams.op)) {
+        return true;
+      } else {
+        return "The operation must be one of the options shown";
+      }
+    },
+    checkValidBand() {
+      if (this.validBands.bands.includes(this.editedParams.band)) {
+        return true;
+      } else {
+        //setear el error
+        return "The band must be one of the options shown";
+      }
+    },
+    checkValidMagnitude() {
+      if (!isNaN(this.editedParams.constant)) {
+        return true;
+      } else {
+        return "Must be a number";
+      }
+    },
+    checkFields() {
+      // Perform validation checks here
+      const isValid =
+        this.checkValidOperation() &&
+        this.checkValidBand() &&
+        this.checkValidMagnitude();
+
+      return isValid;
     },
   },
   watch: {
