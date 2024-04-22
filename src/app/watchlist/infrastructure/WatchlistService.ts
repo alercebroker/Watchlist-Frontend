@@ -21,6 +21,7 @@ import {
   watchlistApiTargetParser,
 } from "./WatchlistParser";
 import { UsersApiService } from "@/shared/http/UsersApiService";
+import { FilterType, IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 
 export class WatchlistService implements IWatchlistRepository {
   httpService: IHttpService;
@@ -156,29 +157,18 @@ export class WatchlistService implements IWatchlistRepository {
   }
 
   async editTargetsWatchlist(params: {
-    type: string;
-    params: OneFilter; //cambiar,
+    type: FilterType;
+    filter: IWatchlistFilter;
     watchlist_id: number;
-    url?: string;
-  }): Promise<Result<OneFilter, ParseError | HttpError>> {
-    const parseTo = (response: OneFilter) => {
-      return this.parserTargetsUpdate.parseNewTargets(response);
+    url: string;
+  }): Promise<Result<any, ParseError | HttpError>> {
+    const parseTo = (response: WatchlistApiResponse) => {
+      return ok(response);
     };
 
-    if (params.url) {
-      params.url+="set_filters/"
-      return this.httpService.put(
-        { url: params.url, data: params.params },
-        { parseTo }
-      );
-    } else {
-      return this.httpService.put(
-        {
-          url: "/watchlists/" + params.watchlist_id + "/set_filters/",
-          data: params.params,
-        },
-        { parseTo }
-      );
-    }
+    return this.httpService.put(
+      { url: params.url, data: { filter: params.filter } },
+      { parseTo }
+    );
   }
 }

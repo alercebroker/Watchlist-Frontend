@@ -62,11 +62,11 @@ export const actions: ActionTree<SingleWatchlistState, IRootState> = {
 
   async [ActionTypes.editTargetsWatchlist]({ commit }, payload) {
     commit(MutationTypes.SET_LOADING, true);
-    const interactor = container.get<UseCaseInteractor>(cid.EditTargetsWatchlist);
+    const interactor = container.get<UseCaseInteractor>(
+      cid.EditTargetsWatchlist
+    );
     const callbacks: Callbacks = {
       respondWithSuccess: (watchlist: IWatchlistData) => {
-        commit(MutationTypes.SET_TITLE, watchlist.title);
-        commit(MutationTypes.SET_NOTIFICATION_RATE, watchlist.notificationRate);
         commit(
           "watchlists/" + WatchlistMutationType.UPDATE_WATCHLIST,
           watchlist,
@@ -91,9 +91,7 @@ export const actions: ActionTree<SingleWatchlistState, IRootState> = {
         commit(MutationTypes.SET_LOADING, false);
       },
     };
-    console.log("EL payload es: ", payload);
-    
-    
+
     await interactor.execute(payload, callbacks);
-  }
+  },
 };

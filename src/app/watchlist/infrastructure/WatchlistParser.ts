@@ -1,6 +1,6 @@
 import { ParseError } from "@/shared/error/ParseError";
 import { err, ok, Result } from "neverthrow";
-import { IWatchlistData, OneFilter, Watchlist } from "../domain";
+import { IWatchlistData, Watchlist } from "../domain";
 import {
   CreateWatchlistApiResponse,
   WatchlistApiResult,
@@ -57,7 +57,7 @@ export class WatchlistCreateApiParser {
 }
 
 export class watchlistApiTargetParser {
-  parseNewTargets(response: OneFilter){
+  parseNewTargets(response: any) {
     try {
       return ok(response);
     } catch (error) {

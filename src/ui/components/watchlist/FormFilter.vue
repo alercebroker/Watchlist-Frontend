@@ -10,28 +10,28 @@
             <v-autocomplete
               v-model="item.type"
               label="Condition"
-              :items="validFilters.filters"
+              :items="validValuesToInputItems(validFilters)"
               :rules="[verifiedFilter]"
             ></v-autocomplete>
           </v-col>
-          <template v-if="item.type === 'Constant'">
+          <template v-if="item.type === 'constant'">
             <v-col cols="12" sm="6" md="4">
               <v-autocomplete
                 v-model="item.params.field"
                 label="Field"
-                :items="validFields.fields"
+                :items="validValuesToInputItems(validFields)"
                 :rules="[verifiedField]"
               ></v-autocomplete>
             </v-col>
           </template>
         </v-row>
-        <template v-if="item.type === 'Constant'">
+        <template v-if="item.type === 'constant'">
           <v-row>
             <v-col cols="12" sm="6" md="4">
               <v-select
                 v-model="item.params.op"
                 label="Operation"
-                :items="validOperations.op"
+                :items="validValuesToInputItems(validOperations)"
                 :rules="[verifiedOperation]"
               ></v-select>
             </v-col>
@@ -39,14 +39,15 @@
               <v-text-field
                 v-model="item.params.constant"
                 label="Value"
+                type="number"
                 :rules="[verifiedConstant]"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-autocomplete
-                v-model="item.params.band"
+                v-model="item.band"
                 label="Band"
-                :items="validBands.bands"
+                :items="validValuesToInputItems(validBands)"
                 :rules="[verifiedBand]"
               ></v-autocomplete>
             </v-col>
@@ -65,13 +66,32 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import { createNamespacedHelpers } from "vuex";
-import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import { ActionTypes } from "@/ui/store/singleWatchlist/actions";
-const singleWatchlistHelper = createNamespacedHelpers("singleWatchlist");
+import Vue from "vue";
+import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
+import {
+  ConstantFilterParams,
+  WatchlistFilter,
+} from "@/app/filter/domain/Filter";
+import {
+  FilterType,
+  IConstantFilterParams,
+  IWatchlistFilter,
+} from "@/app/filter/domain/Filter.types";
+import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 
-export default {
+const singleWatchlistHelper = createNamespacedHelpers("singleWatchlist");
+const targetsHelper = createNamespacedHelpers("targets");
+
+interface Item {
+  type: FilterType;
+  params: Record<string, unknown>;
+  band: number;
+}
+
+export default Vue.extend({
   name: "FormFilter",
   data() {
     return {
@@ -79,93 +99,158 @@ export default {
         type: "",
         params: {
           field: "",
-          op: "",
-          constant: "",
-          band: "",
+          op: "eq",
+          constant: NaN,
         },
-        watchlist_id: 0,
-        url: "",
-      },
+        band: 0,
+      } as Item,
       defaultItem: {
         type: "",
         params: {
           field: "",
-          op: "",
-          constant: "",
-          band: "",
+          op: "eq",
+          constant: NaN,
         },
-        watchlist_id: 0,
-        url: "",
-      },
+        band: 0,
+      } as Item,
       validBands: {
-        bands: ["Green", "Red", "I"],
+        Green: 1,
+        Red: 2,
+        I: 3,
       },
       validOperations: {
-        op: ["eq", "less", "less eq", "greater", "greater eq"],
+        Equal: "eq",
+        "Less than": "less",
+        "Less than or equal": "less eq",
+        "Greater than": "greater",
+        "Greater than or equal": "greater eq",
       },
       validFields: {
-        fields: ["mag"],
+        mag: "mag",
       },
       validFilters: {
-        filters: ["Constant", "No filter"],
+        Constant: "constant",
+        "No filter": "",
       },
     };
   },
   computed: {
     ...singleWatchlistHelper.mapState({
-      selectedWatchlist: function (state) {
+      selectedWatchlist(state: SingleWatchlistState): SingleWatchlistState {
         return state;
       },
     }),
   },
   methods: {
+    ...targetsHelper.mapActions([TargetActionTypes.getTargets]),
     ...singleWatchlistHelper.mapActions([ActionTypes.editTargetsWatchlist]),
     async onSave() {
-      this.item.watchlist_id = this.selectedWatchlist.id;
-      this.item.url = this.selectedWatchlist.url;
-      await this.editTargetsWatchlist(this.item);
+      await this.editTargetsWatchlist({
+        watchlist_id: this.selectedWatchlist.id,
+        url: this.selectedWatchlist.url + "set_filters/",
+        filter: this.parseFilter(),
+      });
+      this.getTargets({ params: { watchlistId: this.selectedWatchlist.id } });
+      this.sendClose();
     },
     sendClose() {
       this.item = Object.assign({}, this.defaultItem);
       this.$emit("booleanClose", false);
     },
+    rValid<T extends string | number>(validValues: Record<string, T>) {
+      return Object.fromEntries(
+        Object.entries(validValues).map(([text, value]) => [value, text])
+      ) as Record<T, string>;
+    },
     verifiedConstant() {
-      if (!isNaN(this.item.params.constant)) {
+      let params = this.item.params as unknown as IConstantFilterParams;
+      if (!isNaN(params.constant)) {
         return true;
       } else {
         return "The constant must be a number";
       }
     },
     verifiedBand() {
-      if (this.validBands.bands.includes(this.item.params.band)) {
+      let rValidBands = this.rValid(this.validBands);
+      let band = this.item.band;
+      if (rValidBands[band]) {
         return true;
       } else {
         return "The band must be one of the options shown";
       }
     },
     verifiedOperation() {
-      if (this.validOperations.op.includes(this.item.params.op)) {
+      let rValidOperations = this.rValid(this.validOperations);
+      let params = this.item.params as unknown as IConstantFilterParams;
+      if (rValidOperations[params.op]) {
         return true;
       } else {
         return "The operation must be one of the options shown";
       }
     },
     verifiedField() {
-      if (this.validFields.fields.includes(this.item.params.field)) {
+      let rValidFields = this.rValid(this.validFields);
+      let params = this.item.params as unknown as IConstantFilterParams;
+      if (rValidFields[params.field]) {
         return true;
       } else {
         return "The field must be one of the options shown";
       }
     },
     verifiedFilter() {
-      if (this.validFilters.filters.includes(this.item.type)) {
+      let rValidFilters = this.rValid(this.validFilters);
+      let filter = this.item.type;
+      if (rValidFilters[filter]) {
         return true;
       } else {
         return "The filter must be one of the options shown";
       }
     },
+    validValuesToInputItems<T extends string | number>(
+      validValues: Record<string, T>
+    ) {
+      return Object.entries(validValues).map(([text, value]) => ({
+        text,
+        value,
+      }));
+    },
+    parseFilter(): IWatchlistFilter {
+      let bandParams = new ConstantFilterParams({
+        field: "fid",
+        constant: this.item.band,
+        op: "eq",
+      });
+      let type = this.item.type;
+      if (type === "constant" && this.item.params) {
+        let constantParams = new ConstantFilterParams(
+          this.item.params as unknown as IConstantFilterParams
+        );
+        return new WatchlistFilter({
+          fields: WatchlistFilter.mergeFields([
+            constantParams.getFilterFields(),
+            bandParams.getFilterFields(),
+          ]),
+          filters: [
+            {
+              type: "and",
+              params: {
+                filters: [
+                  { type: "constant", params: constantParams },
+                  { type: "constant", params: bandParams },
+                ],
+              },
+            },
+          ],
+        });
+      }
+
+      return {
+        fields: {},
+        filters: [],
+      };
+    },
   },
-};
+});
 </script>
 
 <style></style>
