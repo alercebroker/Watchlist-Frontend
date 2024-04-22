@@ -107,6 +107,7 @@
                       <v-text-field
                         label="Value"
                         v-model="editedFilter.params.constant"
+                        type="number"
                         :rules="[magnitudIsValid]"
                       ></v-text-field>
                     </v-col>
@@ -222,7 +223,7 @@ export default Vue.extend({
       type: "constant",
       params: {
         field: "mag",
-        constant: NaN,
+        constant: "",
         op: "eq",
       },
       band: 1,
@@ -237,7 +238,7 @@ export default Vue.extend({
       type: "",
       params: {
         field: "mag",
-        constant: NaN,
+        constant: "",
         op: "eq",
       },
       band: 1,
@@ -312,8 +313,8 @@ export default Vue.extend({
     },
     magnitudIsValid(): string | boolean {
       let constant = this.editedFilter.params.constant;
-      if (typeof constant !== undefined) {
-        if (Number(constant)) {
+      if (typeof constant !== "undefined") {
+        if (!isNaN(parseFloat(constant))) {
           return true;
         } else {
           return "Must be a number";
@@ -366,14 +367,7 @@ export default Vue.extend({
           watchlist: this.watchlistId,
         });
       }
-      if (!this.errored) {
-        this.close();
-      } else {
-        await this.getTargets({
-          params: { url: this.targetsUrl },
-          paginationParams: { page_size: this.tableOptions.itemsPerPage },
-        });
-      }
+      this.close();
     },
 
     close() {
@@ -381,6 +375,7 @@ export default Vue.extend({
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedFilter = Object.assign({}, this.defaultFilter);
         this.editedIndex = -1;
       });
     },
@@ -421,9 +416,10 @@ export default Vue.extend({
       });
       let type = this.editedFilter.type;
       if (type == "constant") {
-        let constantParams = new ConstantFilterParams(
-          this.editedFilter.params as IConstantFilterParams
-        );
+        let constantParams = new ConstantFilterParams({
+          ...this.editedFilter.params,
+          constant: parseFloat(this.editedFilter.params.constant),
+        } as IConstantFilterParams);
         return new WatchlistFilter({
           fields: WatchlistFilter.mergeFields([
             constantParams.getFilterFields(),
@@ -461,7 +457,7 @@ export default Vue.extend({
           type: "constant",
           params: {
             field: constParams.field,
-            constant: constParams.constant,
+            constant: constParams.constant.toString(),
             op: constParams.op,
           },
           band: bandParams.constant,
@@ -472,7 +468,7 @@ export default Vue.extend({
           type: "constant",
           params: {
             field: constParams.field,
-            constant: constParams.constant,
+            constant: constParams.constant.toString(),
             op: constParams.op,
           },
           band: 1,

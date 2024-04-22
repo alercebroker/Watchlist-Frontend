@@ -124,7 +124,6 @@ export const actions: ActionTree<TargetsState, IRootState> = {
     const interactor = container.get<UseCaseInteractor>(cid.EditTarget);
     const callbacks: Callbacks = {
       respondWithSuccess: (target: ITargetData) => {
-        console.log(target)
         commit(MutationTypes.UPDATE_TARGET, target);
         commit(MutationTypes.SET_ERROR, null);
         commit(MutationTypes.SET_LOADING, false);
