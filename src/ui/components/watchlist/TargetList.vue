@@ -174,18 +174,13 @@ import {
   WatchlistFilter,
 } from "@/app/filter/domain/Filter";
 import {
-  FilterType,
   IConstantFilterParams,
   ILogicFilterParams,
   IWatchlistFilter,
 } from "@/app/filter/domain/Filter.types";
 import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
-import {
-  ActionTypes,
-  CreateTargetPayload,
-  EditTargetPayload,
-} from "@/ui/store/targets/actions";
+import { ActionTypes } from "@/ui/store/targets/actions";
 import { MutationTypes } from "@/ui/store/targets/mutations";
 import { TargetsState } from "@/ui/store/targets/state";
 import Vue from "vue";
@@ -464,18 +459,32 @@ export default Vue.extend({
           band: 0,
         };
       }
-      let logicParams = filter.filters[0].params as ILogicFilterParams;
-      let constParams = logicParams.filters[0].params as IConstantFilterParams;
-      let bandParams = logicParams.filters[1].params as IConstantFilterParams;
-      return {
-        type: "constant",
-        params: {
-          field: constParams.field,
-          constant: constParams.constant,
-          op: constParams.op,
-        },
-        band: bandParams.constant,
-      };
+      if (filter.filters[0].type == "and") {
+        let logicParams = filter.filters[0].params as ILogicFilterParams;
+        let constParams = logicParams.filters[0]
+          .params as IConstantFilterParams;
+        let bandParams = logicParams.filters[1].params as IConstantFilterParams;
+        return {
+          type: "constant",
+          params: {
+            field: constParams.field,
+            constant: constParams.constant,
+            op: constParams.op,
+          },
+          band: bandParams.constant,
+        };
+      } else if (filter.filters[0].type == "constant") {
+        let constParams = filter.filters[0].params as IConstantFilterParams;
+        return {
+          type: "constant",
+          params: {
+            field: constParams.field,
+            constant: constParams.constant,
+            op: constParams.op,
+          },
+          band: 1
+        };
+      }
     },
     checkValidFields() {
       let field: string = this.editedFilter.params.field;
