@@ -233,7 +233,7 @@ export default Vue.extend({
       radius: 0,
     },
     defaultFilter: {
-      type: "constant",
+      type: "",
       params: {
         field: "mag",
         constant: NaN,
@@ -449,15 +449,7 @@ export default Vue.extend({
     },
     parseFromFilter(filter: IWatchlistFilter) {
       if (filter.filters.length === 0) {
-        return {
-          type: "",
-          params: {
-            field: "",
-            constant: NaN,
-            op: "",
-          },
-          band: 0,
-        };
+        return Object.assign({}, this.defaultFilter);
       }
       if (filter.filters[0].type == "and") {
         let logicParams = filter.filters[0].params as ILogicFilterParams;
@@ -482,9 +474,10 @@ export default Vue.extend({
             constant: constParams.constant,
             op: constParams.op,
           },
-          band: 1
+          band: 1,
         };
       }
+      return Object.assign({}, this.defaultFilter);
     },
     checkValidFields() {
       let field: string = this.editedFilter.params.field;
