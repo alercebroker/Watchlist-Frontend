@@ -2,14 +2,14 @@ import { Field, FilterFields } from "./Filter";
 
 export type FilterType = "constant" | "and" | "or" | "";
 
-export interface IWatchilstSingleFilter {
+export interface IWatchlistSingleFilter {
   type: FilterType;
   params: IFilterParams;
 }
 
 export interface IWatchlistFilter {
   fields: FilterFields;
-  filters: IWatchilstSingleFilter[];
+  filters: IWatchlistSingleFilter[];
 }
 
 export type ConstantOperation =
@@ -26,7 +26,7 @@ export interface IConstantFilterParams extends IFilterParams {
 }
 
 export interface ILogicFilterParams extends IFilterParams {
-  filters: IWatchilstSingleFilter[];
+  filters: IWatchlistSingleFilter[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
