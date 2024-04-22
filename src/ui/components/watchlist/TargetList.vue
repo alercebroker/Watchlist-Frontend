@@ -220,7 +220,7 @@ export default Vue.extend({
       radius: 0,
     },
     editedFilter: {
-      type: "constant",
+      type: "",
       params: {
         field: "mag",
         constant: "",
