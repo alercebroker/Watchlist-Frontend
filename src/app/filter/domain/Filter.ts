@@ -1,7 +1,7 @@
 import {
   ConstantOperation,
   IConstantFilterParams,
-  IWatchilstSingleFilter,
+  IWatchlistSingleFilter,
   IWatchlistFilter,
 } from "@/app/filter/domain/Filter.types";
 
@@ -18,7 +18,7 @@ export type FilterFields = Partial<Record<Step, Field[]>>;
 
 export class WatchlistFilter implements IWatchlistFilter {
   fields: FilterFields;
-  filters: IWatchilstSingleFilter[];
+  filters: IWatchlistSingleFilter[];
 
   constructor(filter: IWatchlistFilter) {
     this.fields = filter.fields;

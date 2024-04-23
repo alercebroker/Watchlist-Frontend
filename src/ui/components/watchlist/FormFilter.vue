@@ -1,68 +1,91 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="text-h5"> New Targets</span>
+      <span class="text-h5"> Set Filter</span>
     </v-card-title>
     <v-card-text>
       <v-container>
-        <v-row>
-          <v-col cols="12" sm="6" md="4">
-            <v-autocomplete
-              v-model="item.type"
-              label="Condition"
-              :items="validValuesToInputItems(validFilters)"
-              :rules="[verifiedFilter]"
-            ></v-autocomplete>
-          </v-col>
-          <template v-if="item.type === 'constant'">
-            <v-col cols="12" sm="6" md="4">
-              <v-autocomplete
-                v-model="item.params.field"
-                label="Field"
-                :items="validValuesToInputItems(validFields)"
-                :rules="[verifiedField]"
-              ></v-autocomplete>
-            </v-col>
-          </template>
-        </v-row>
-        <template v-if="item.type === 'constant'">
+        <v-form ref="form">
           <v-row>
             <v-col cols="12" sm="6" md="4">
-              <v-select
-                v-model="item.params.op"
-                label="Operation"
-                :items="validValuesToInputItems(validOperations)"
-                :rules="[verifiedOperation]"
-              ></v-select>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <v-text-field
-                v-model="item.params.constant"
-                label="Value"
-                type="number"
-                :rules="[verifiedConstant]"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
               <v-autocomplete
-                v-model="item.band"
-                label="Band"
-                :items="validValuesToInputItems(validBands)"
-                :rules="[verifiedBand]"
+                v-model="item.type"
+                label="Condition"
+                :items="validValuesToInputItems(validFilters)"
+                :rules="[verifiedFilter]"
               ></v-autocomplete>
             </v-col>
+            <template v-if="item.type === 'constant'">
+              <v-col cols="12" sm="6" md="4">
+                <v-autocomplete
+                  v-model="item.params.field"
+                  label="Field"
+                  :items="validValuesToInputItems(validFields)"
+                  :rules="[verifiedField]"
+                ></v-autocomplete>
+              </v-col>
+            </template>
           </v-row>
-        </template>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="sendClose"> Cancel </v-btn>
-          <v-btn id="saveButton" color="blue darken-1" text @click="onSave">
-            Save
-          </v-btn>
-        </v-card-actions>
+          <template v-if="item.type === 'constant'">
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                  v-model="item.params.op"
+                  label="Operation"
+                  :items="validValuesToInputItems(validOperations)"
+                  :rules="[verifiedOperation]"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6" md="4">
+                <v-text-field
+                  v-model="item.params.constant"
+                  label="Value"
+                  :rules="[verifiedConstant]"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="4">
+                <v-autocomplete
+                  v-model="item.band"
+                  label="Band"
+                  :items="validValuesToInputItems(validBands)"
+                  :rules="[verifiedBand]"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </template>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="sendClose">
+              Cancel
+            </v-btn>
+            <v-btn
+              id="saveButton"
+              color="blue darken-1"
+              text
+              @click="checkHandler"
+            >
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-form>
       </v-container>
     </v-card-text>
-    <v-card-actions></v-card-actions>
+
+    <v-dialog v-model="confirmDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="text-h5">
+          <span>¿Are you sure you want to submit it?</span>
+        </v-card-title>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="confirmDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="onSave">Yes</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -95,12 +118,13 @@ export default Vue.extend({
   name: "FormFilter",
   data() {
     return {
+      confirmDialog: false,
       item: {
         type: "",
         params: {
           field: "",
           op: "eq",
-          constant: NaN,
+          constant: 0,
         },
         band: 0,
       } as Item,
@@ -109,14 +133,14 @@ export default Vue.extend({
         params: {
           field: "",
           op: "eq",
-          constant: NaN,
+          constant: 0,
         },
         band: 0,
       } as Item,
       validBands: {
-        Green: 1,
-        Red: 2,
-        I: 3,
+        g: 1,
+        r: 2,
+        i: 3,
       },
       validOperations: {
         Equal: "eq",
@@ -132,6 +156,7 @@ export default Vue.extend({
         Constant: "constant",
         "No filter": "",
       },
+      validForm: true,
     };
   },
   computed: {
@@ -153,6 +178,14 @@ export default Vue.extend({
       this.getTargets({ params: { watchlistId: this.selectedWatchlist.id } });
       this.sendClose();
     },
+    async checkHandler() {
+      if (this.$refs.form) {
+        const valid = await (this.$refs.form as any).validate();
+        if (valid) {
+          this.confirmDialog = true;
+        }
+      }
+    },
     sendClose() {
       this.item = Object.assign({}, this.defaultItem);
       this.$emit("booleanClose", false);
@@ -165,7 +198,11 @@ export default Vue.extend({
     verifiedConstant() {
       let params = this.item.params as unknown as IConstantFilterParams;
       if (!isNaN(params.constant)) {
-        return true;
+        if (params.constant != 0) {
+          return true;
+        } else {
+          return "It must be diffent of 0";
+        }
       } else {
         return "The constant must be a number";
       }

@@ -9,8 +9,6 @@ import { IWatchlistRepository } from "../domain";
 export class EditTargetsWatchlist implements UseCaseInteractor {
   @inject() watchlistService!: IWatchlistRepository;
   async execute(params: any, callbacks: Callbacks): Promise<void> {
-    console.log("Params desde inject: ", params);
-    
     const result = await this.watchlistService.editTargetsWatchlist(params);
     result
       .map((watchlists) => {
