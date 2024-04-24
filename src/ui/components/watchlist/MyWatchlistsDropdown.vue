@@ -26,11 +26,6 @@
             <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="6" sm="1">
-          <v-btn icon fab outlined color="blue" @click="clickCreateNewTargets">
-            <v-icon>mdi-loupe</v-icon>
-          </v-btn>
-        </v-col>
       </v-row>
     </v-card-text>
 
@@ -39,9 +34,6 @@
         @created="watchlist_dialog = false"
         @canceled="watchlist_dialog = false"
       />
-    </v-dialog>
-    <v-dialog v-model="create_targets_dialog" max-width="500px">
-      <FormFilter @booleanClose="handleBooleanClose" />
     </v-dialog>
     <v-dialog v-model="delete_watchlist_dialog" max-width="290">
       <v-card>
@@ -80,14 +72,13 @@
 <script lang="ts">
 import Vue, { VueConstructor } from "vue";
 import CreateWatchlist from "@/ui/components/watchlist/CreateWatchlist.vue";
-import FormFilter from "./FormFilter.vue";
 import MyWatchlistsMixin from "@/ui/mixins/watchlist/MyWatchlistsMixin";
 import { IWatchlistData } from "@/app/watchlist/domain";
 
 export default (
   Vue as VueConstructor<Vue & InstanceType<typeof MyWatchlistsMixin>>
 ).extend({
-  components: { CreateWatchlist, FormFilter },
+  components: { CreateWatchlist },
   mixins: [MyWatchlistsMixin],
   methods: {
     updateSelectedItem(itemTitle: string) {

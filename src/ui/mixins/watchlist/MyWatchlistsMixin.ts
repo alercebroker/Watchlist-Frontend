@@ -13,7 +13,6 @@ export default Vue.extend({
     selectedItem: 0,
     watchlist_dialog: false,
     delete_watchlist_dialog: false,
-    create_targets_dialog: false,
   }),
   async mounted() {
     await this.getAllWatchlists({});
@@ -66,9 +65,6 @@ export default Vue.extend({
     clickDeleteWatchlist() {
       this.delete_watchlist_dialog = true;
     },
-    clickCreateNewTargets() {
-      this.create_targets_dialog = true;
-    },
     async onDeleteClick() {
       await this.deleteWatchlist(this.selectedWatchlist);
       this.delete_watchlist_dialog = false;
@@ -77,9 +73,6 @@ export default Vue.extend({
       if (entries[0].isIntersecting && this.nextPage) {
         await this.getAllWatchlists({ url: this.nextPage, append: true });
       }
-    },
-    handleBooleanClose(show: boolean) {
-      this.create_targets_dialog = show;
     },
     onItemClick(index: number) {
       this.selectedItem = index;
