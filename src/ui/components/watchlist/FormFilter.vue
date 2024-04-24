@@ -123,7 +123,7 @@ export default Vue.extend({
         type: "",
         params: {
           field: "",
-          op: "eq",
+          op: "",
           constant: 0,
         },
         band: 0,
@@ -132,7 +132,7 @@ export default Vue.extend({
         type: "",
         params: {
           field: "",
-          op: "eq",
+          op: "",
           constant: 0,
         },
         band: 0,
@@ -175,6 +175,7 @@ export default Vue.extend({
         url: this.selectedWatchlist.url + "set_filters/",
         filter: this.parseFilter(),
       });
+
       this.getTargets({ params: { watchlistId: this.selectedWatchlist.id } });
       this.sendClose();
     },
@@ -188,6 +189,7 @@ export default Vue.extend({
     },
     sendClose() {
       this.item = Object.assign({}, this.defaultItem);
+      this.confirmDialog = false;
       this.$emit("booleanClose", false);
     },
     rValid<T extends string | number>(validValues: Record<string, T>) {

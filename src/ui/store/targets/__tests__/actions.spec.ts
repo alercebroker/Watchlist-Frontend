@@ -68,16 +68,7 @@ describe("TargetActions", () => {
           radius: 3,
           filter: {
             fields: {},
-            filters: [
-              {
-                params: {
-                  constant: "11",
-                  field: "mag",
-                  op: "greater",
-                },
-                type: "constant",
-              },
-            ],
+            filters: [],
           },
         },
         watchlist: 1,

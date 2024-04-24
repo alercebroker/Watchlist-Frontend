@@ -37,16 +37,7 @@ describe("TargetService", () => {
             dec: 20,
             filter: {
               fields: {},
-              filters: [
-                {
-                  params: {
-                    constant: "11",
-                    field: "mag",
-                    op: "greater",
-                  },
-                  type: "constant",
-                },
-              ],
+              filters: [],
             },
             nMatches: 5,
             lastMatch: new Date(10, 10, 10).toISOString(),
@@ -60,12 +51,7 @@ describe("TargetService", () => {
             dec: 20,
             filter: {
               fields: {},
-              filters: [
-                {
-                  params: {},
-                  type: "no filter",
-                },
-              ],
+              filters: [],
             },
             nMatches: 2,
             lastMatch: new Date(10, 10, 10).toISOString(),
@@ -193,6 +179,7 @@ describe("TargetService", () => {
           ra: 10,
           dec: 20,
           radius: 30,
+          filter: {fields:{"sorting_hat":["mag"]}, filters:[{}]},
         } as ITargetData,
         watchlist: 1,
       });
@@ -240,12 +227,7 @@ describe("TargetService", () => {
           radius: 30,
           filter: {
             fields: {},
-            filters: [
-              {
-                params: {},
-                type: "no filter",
-              },
-            ],
+            filters: [{type: "", params:{}}],
           },
         } as ITargetData,
         watchlist: 1,
@@ -311,16 +293,7 @@ describe("TargetService", () => {
             dec: 20,
             filter: {
               fields: {},
-              filters: [
-                {
-                  params: {
-                    constant: "11",
-                    field: "mag",
-                    op: "greater",
-                  },
-                  type: "constant",
-                },
-              ],
+              filters: [],
             },
             nMatches: 5,
             lastMatch: new Date(10, 10, 10).toISOString(),
@@ -334,12 +307,7 @@ describe("TargetService", () => {
             dec: 20,
             filter: {
               fields: {},
-              filters: [
-                {
-                  params: {},
-                  type: "no filter",
-                },
-              ],
+              filters: [],
             },
             nMatches: 2,
             lastMatch: new Date(10, 10, 10).toISOString(),

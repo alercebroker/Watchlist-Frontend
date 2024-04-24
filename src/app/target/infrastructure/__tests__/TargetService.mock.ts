@@ -21,16 +21,7 @@ const targetArray: ITargetData[] = [
     dec: 1.0,
     filter: {
       fields: {},
-      filters: [
-        {
-          params: {
-            constant: "5.9123",
-            field: "mag",
-            op: "greater",
-          },
-          type: "constant",
-        },
-      ],
+      filters: [],
     },
     nMatches: 0,
     lastMatch: new Date().toISOString(),
@@ -44,12 +35,7 @@ const targetArray: ITargetData[] = [
     dec: 1.0,
     filter: {
       fields: {},
-      filters: [
-        {
-          params: {},
-          type: "no filter",
-        },
-      ],
+      filters: [],
     },
     nMatches: 0,
     lastMatch: new Date().toISOString(),

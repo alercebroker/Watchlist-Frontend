@@ -144,6 +144,8 @@ export const actions: ActionTree<TargetsState, IRootState> = {
     await interactor.execute(payload, callbacks);
   },
   [ActionTypes.createTarget]({ commit }, payload: CreateTargetPayload) {
+    console.log("el target es", payload);
+    
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(cid.CreateTarget);
     const callbacks: Callbacks = {
