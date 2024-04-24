@@ -61,8 +61,6 @@ export const actions: ActionTree<SingleWatchlistState, IRootState> = {
   },
 
   async [ActionTypes.editTargetsWatchlist]({ commit }, payload) {
-    console.log(payload);
-    
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(
       cid.EditTargetsWatchlist
