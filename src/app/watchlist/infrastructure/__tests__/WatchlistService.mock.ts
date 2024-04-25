@@ -6,6 +6,7 @@ import {
   IWatchlistData,
   IWatchlistList,
   IWatchlistRepository,
+  OneFilter,
 } from "../../domain";
 import { CreateWatchlistRequestModel } from "../WatchlistService.types";
 
@@ -232,6 +233,46 @@ export class MockWatchlistService implements IWatchlistRepository {
             nTargets: "test",
             lastMatch: "test",
           } as IWatchlistData)
+        );
+      });
+    } else if (
+      this.actionType === "error" ||
+      this.actionType === "serverError"
+    ) {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(500, {}, "Server Error")));
+      });
+    } else if (this.actionType === "clientError") {
+      return new Promise((resolve) => {
+        resolve(
+          err(new HttpError(400, { detail: "not found" }, "Client Error"))
+        );
+      });
+    } else if (this.actionType === "timeout") {
+      return new Promise((resolve) => {
+        resolve(err(new HttpError(502, {}, "Gateway Timeout")));
+      });
+    }
+    return new Promise((resolve) => {
+      resolve(err(new ParseError("Parse Error")));
+    });
+  }
+  editTargetsWatchlist(
+    params: any
+  ): Promise<Result<OneFilter, ParseError | HttpError>> {
+    if (this.actionType === "ok") {
+      return new Promise((resolve) => {
+        resolve(
+          ok({
+            filters: [
+              {
+                type: "constant",
+                url: "test",
+                watchlist_id: 1, // Assuming watchlist_id should be a number
+                params: {},
+              },
+            ],
+          } as OneFilter)
         );
       });
     } else if (

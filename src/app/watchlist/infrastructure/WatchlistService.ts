@@ -5,6 +5,7 @@ import {
   IWatchlistData,
   IWatchlistList,
   IWatchlistRepository,
+  OneFilter,
 } from "../domain";
 import { inject } from "inversify-props";
 import {
@@ -17,17 +18,21 @@ import {
 import {
   WatchlistApiParser,
   WatchlistCreateApiParser,
+  watchlistApiTargetParser,
 } from "./WatchlistParser";
 import { UsersApiService } from "@/shared/http/UsersApiService";
+import { FilterType, IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 
 export class WatchlistService implements IWatchlistRepository {
   httpService: IHttpService;
   parser: WatchlistApiParser;
   parserCreate: WatchlistCreateApiParser;
+  parserTargetsUpdate: watchlistApiTargetParser;
 
   constructor(@inject() usersApiService: UsersApiService) {
     this.parser = new WatchlistApiParser();
     this.parserCreate = new WatchlistCreateApiParser();
+    this.parserTargetsUpdate = new watchlistApiTargetParser();
     this.httpService = usersApiService;
   }
 
@@ -149,5 +154,21 @@ export class WatchlistService implements IWatchlistRepository {
         },
         { parseTo }
       );
+  }
+
+  async editTargetsWatchlist(params: {
+    type: FilterType;
+    filter: IWatchlistFilter;
+    watchlist_id: number;
+    url: string;
+  }): Promise<Result<any, ParseError | HttpError>> {
+    const parseTo = (response: WatchlistApiResponse) => {
+      return ok(response);
+    };
+
+    return this.httpService.put(
+      { url: params.url, data: { filter: params.filter } },
+      { parseTo }
+    );
   }
 }

@@ -60,7 +60,17 @@ describe("TargetActions", () => {
       const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
       const store = storeCreator.create();
       await store.dispatch("targets/createTarget", {
-        target: { id: 1, name: "name", ra: 1, dec: 2, radius: 3 },
+        target: {
+          id: 1,
+          name: "name",
+          ra: 1,
+          dec: 2,
+          radius: 3,
+          filter: {
+            fields: {},
+            filters: [],
+          },
+        },
         watchlist: 1,
       } as CreateTargetPayload);
       expect(

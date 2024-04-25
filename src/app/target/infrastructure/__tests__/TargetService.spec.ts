@@ -9,6 +9,14 @@ import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { ITargetData, ITargetRepository } from "../../domain/Target.types";
 import { Target } from "../../domain/Target";
 import { ParseError } from "@/shared/error/ParseError";
+import {
+  ConstantOperation,
+  FilterType,
+  IFilterParams,
+  IWatchlistFilter,
+  IWatchlistSingleFilter,
+} from "@/app/filter/domain/Filter.types";
+import { Field, FilterFields } from "@/app/filter/domain/Filter";
 
 beforeEach(() => {
   resetContainer();
@@ -35,6 +43,10 @@ describe("TargetService", () => {
             radius: 1,
             ra: 10,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [],
+            },
             nMatches: 5,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),
@@ -45,6 +57,10 @@ describe("TargetService", () => {
             radius: 2,
             ra: 20,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [],
+            },
             nMatches: 2,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),
@@ -171,6 +187,10 @@ describe("TargetService", () => {
           ra: 10,
           dec: 20,
           radius: 30,
+          filter: {
+            fields: {} as FilterFields,
+            filters: [] as IWatchlistSingleFilter[],
+          },
         } as ITargetData,
         watchlist: 1,
       });
@@ -216,6 +236,19 @@ describe("TargetService", () => {
           ra: 10,
           dec: 20,
           radius: 30,
+          filter: {
+            fields: { sorting_hat: ["mag"] } as FilterFields,
+            filters: [
+              {
+                type: "" as FilterType,
+                params: {
+                  field: "mag" as Field,
+                  constant: 1 as number,
+                  op: "eq" as ConstantOperation,
+                } as IFilterParams,
+              },
+            ] as IWatchlistSingleFilter[],
+          } as IWatchlistFilter,
         } as ITargetData,
         watchlist: 1,
       });
@@ -278,6 +311,10 @@ describe("TargetService", () => {
             radius: 1,
             ra: 10,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [],
+            },
             nMatches: 5,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),
@@ -288,6 +325,10 @@ describe("TargetService", () => {
             radius: 2,
             ra: 20,
             dec: 20,
+            filter: {
+              fields: {},
+              filters: [],
+            },
             nMatches: 2,
             lastMatch: new Date(10, 10, 10).toISOString(),
           }),
