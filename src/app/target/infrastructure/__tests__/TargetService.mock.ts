@@ -11,9 +11,6 @@ import {
   ITargetRepository,
 } from "../../domain/Target.types";
 
-import { IWatchlistFilter, IWatchlistSingleFilter } from "@/app/filter/domain/Filter.types";
-import { FilterFields } from "@/app/filter/domain/Filter";
-
 const targetArray: ITargetData[] = [
   {
     id: 1,
@@ -22,10 +19,6 @@ const targetArray: ITargetData[] = [
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
-    filter: {
-      fields: {},
-      filters: [],
-    },
     nMatches: 0,
     lastMatch: new Date().toISOString(),
   },
@@ -36,10 +29,6 @@ const targetArray: ITargetData[] = [
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
-    filter: {
-      fields: {},
-      filters: [],
-    },
     nMatches: 0,
     lastMatch: new Date().toISOString(),
   },
@@ -94,11 +83,6 @@ export class MockTargetService implements ITargetRepository {
             ra: 10,
             dec: 20,
             radius: 30,
-            filter: {
-              fields:{} as FilterFields, 
-              filters:[] as IWatchlistSingleFilter[]
-            },
-  
           } as ITargetData)
         );
       });

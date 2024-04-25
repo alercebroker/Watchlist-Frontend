@@ -1,16 +1,15 @@
-import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
-import { ITargetData, ITargetList } from "@/app/target/domain/Target.types";
-import { ParseError } from "@/shared/error/ParseError";
-import { HttpError } from "@/shared/http";
+import { ActionTree } from "vuex";
+import { IRootState } from "../Store.types";
+import { TargetsState } from "./state";
+import { cid, container } from "inversify-props";
 import {
   Callbacks,
   UseCaseInteractor,
 } from "@/shared/usecase/UseCaseInteractor.types";
+import { HttpError } from "@/shared/http";
+import { ParseError } from "@/shared/error/ParseError";
+import { ITargetData, ITargetList } from "@/app/target/domain/Target.types";
 import { MutationTypes } from "@/ui/store/targets/mutations";
-import { cid, container } from "inversify-props";
-import { ActionTree } from "vuex";
-import { IRootState } from "../Store.types";
-import { TargetsState } from "./state";
 
 export enum ActionTypes {
   getTargets = "getTargets",
@@ -27,26 +26,13 @@ export type GetTargetsPayload = {
 };
 
 export type EditTargetPayload = {
-  target: {
-    id: number;
-    name: string;
-    ra: number;
-    dec: number;
-    radius: number;
-    filter: IWatchlistFilter;
-  };
+  target: { id: number; name: string; ra: number; dec: number; radius: number };
   watchlist: number;
   url?: string;
 };
 
 export type CreateTargetPayload = {
-  target: {
-    name: string;
-    ra: number;
-    dec: number;
-    radius: number;
-    filter: IWatchlistFilter;
-  };
+  target: { name: string; ra: number; dec: number; radius: number };
   watchlist: number;
 };
 

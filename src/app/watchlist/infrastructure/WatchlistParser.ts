@@ -55,13 +55,3 @@ export class WatchlistCreateApiParser {
     }
   }
 }
-
-export class watchlistApiTargetParser {
-  parseNewTargets(response: any) {
-    try {
-      return ok(response);
-    } catch (error) {
-      return err(new ParseError(error.message));
-    }
-  }
-}

@@ -1,4 +1,3 @@
-import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 import { ParseError } from "@/shared/error/ParseError";
 import { HttpError } from "@/shared/http";
 import { Result } from "neverthrow";
@@ -12,20 +11,6 @@ export interface ITargetData {
   dec: number;
   nMatches: number | null;
   lastMatch: string;
-  filter: IWatchlistFilter;
-}
-
-export interface ITargetDisplay {
-  id: number;
-  url: string;
-  name: string;
-  radius: number;
-  ra: number;
-  dec: number;
-  nMatches: number | null;
-  lastMatch: string;
-  filter: IWatchlistFilter;
-  filter_str: string;
 }
 
 export interface ITargetList {

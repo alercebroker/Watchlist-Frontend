@@ -45,7 +45,6 @@ export const mutations: MutationTree<TargetsState> = {
       target.ra = newTarget.ra;
       target.dec = newTarget.dec;
       target.radius = newTarget.radius;
-      target.filter = newTarget.filter;
     }
   },
   [MutationTypes.DELETE_TARGET](state, target: number) {

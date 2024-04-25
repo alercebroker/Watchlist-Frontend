@@ -19,15 +19,13 @@ export class TargetParser {
         radius: response.radius,
         dec: response.dec,
         ra: response.ra,
-        filter: response.filter,
         nMatches: "n_matches" in response ? response.n_matches : 0,
         lastMatch: "last_match" in response ? response.last_match : "",
       });
-
       if (target.validate()) return ok(target);
-      else return err(new Error("Target not valid"));
-    } catch (e) {
-      return err(new ParseError((e as Error).message));
+      else throw new Error("Target not valid");
+    } catch (error) {
+      return err(new ParseError(error.message));
     }
   }
 
@@ -35,8 +33,8 @@ export class TargetParser {
     try {
       const csvFile = new Blob([response], { type: "text/csv" });
       return ok(csvFile);
-    } catch (e) {
-      return err(new ParseError((e as Error).message));
+    } catch (error) {
+      return err(new ParseError(error.message));
     }
   }
 }

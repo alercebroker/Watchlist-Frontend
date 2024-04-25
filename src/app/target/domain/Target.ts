@@ -1,4 +1,3 @@
-import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 import { ITargetData } from "./Target.types";
 
 export class Target implements ITargetData {
@@ -10,8 +9,6 @@ export class Target implements ITargetData {
   dec: number;
   nMatches: number | null;
   lastMatch: string;
-  filter: IWatchlistFilter;
-
   constructor(data: ITargetData) {
     this.id = data.id;
     this.url = data.url;
@@ -21,7 +18,6 @@ export class Target implements ITargetData {
     this.dec = data.dec;
     this.nMatches = data.nMatches;
     this.lastMatch = data.lastMatch;
-    this.filter = data.filter;
   }
   validate(): boolean {
     return (
@@ -29,8 +25,7 @@ export class Target implements ITargetData {
       this.name != undefined &&
       this.radius != undefined &&
       this.ra != undefined &&
-      this.dec != undefined &&
-      this.filter != undefined
+      this.dec != undefined
     );
   }
 }
