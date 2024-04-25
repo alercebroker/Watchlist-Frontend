@@ -1,13 +1,13 @@
 import axios, {
-  AxiosError,
   AxiosInstance,
-  AxiosRequestConfig,
   AxiosResponse,
+  AxiosRequestConfig,
+  AxiosError,
 } from "axios";
-import { unmanaged } from "inversify";
 import { err, ok, Result } from "neverthrow";
 import { ParseError } from "../error/ParseError";
 import { HttpError } from "./HttpError";
+import { unmanaged } from "inversify";
 
 type IHttpRequest = {
   url: string;
@@ -53,10 +53,8 @@ export class HttpService implements IHttpService {
     } else {
       this.axiosService = axios.create({
         baseURL: baseUrl,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: process.env.NODE_ENV !== "development",
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
     }
     this._initializeRequestInterceptor();
