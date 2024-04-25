@@ -13,6 +13,8 @@ import {
   mockCreateWatchlistResponse,
   mockSingleWatchlist,
 } from "./mocks/watchlist.mocks";
+import { IWatchlistSingleFilter } from "@/app/filter/domain/Filter.types";
+import { FilterFields } from "@/app/filter/domain/Filter";
 
 export type TestActions =
   | "ok"
@@ -107,6 +109,10 @@ export class MockUserApi extends HttpService {
         radius: 0.008055555555555555,
         ra: 0.960746,
         dec: -11.47467,
+        filter: {
+          fields: {} as FilterFields,
+          filters: [] as IWatchlistSingleFilter[],
+        },
       };
       return [200, JSON.stringify(response)];
     });
@@ -117,6 +123,10 @@ export class MockUserApi extends HttpService {
         radius: 0.008055555555555555,
         ra: 0.960746,
         dec: -11.47467,
+        filter: {
+          fields: {} as FilterFields,
+          filters: [] as IWatchlistSingleFilter[],
+        },
       };
       return [201, JSON.stringify(response)];
     });
@@ -215,11 +225,10 @@ export class MockUserApi extends HttpService {
       return [200, JSON.stringify(response)];
     });
     this.mock.onPut(/\/watchlists\/\w+\/targets\/\w+/).reply((_config: any) => {
-      const response = {};
-      return [200, JSON.stringify(response)];
+      return [200, JSON.stringify("{")];
     });
     this.mock.onPost(/\/watchlists\/\w+\/targets\//).reply(() => {
-      return [200, JSON.stringify({})];
+      return [200, JSON.stringify("{")];
     });
     this.mock.onGet("users/social/o/google-oauth2").reply(() => {
       return [200, JSON.stringify({ unknown_field: "unknown_value" })];

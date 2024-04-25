@@ -31,6 +31,7 @@ import { EditWatchlist } from "@/app/watchlist/use_case/EditWatchlist";
 import { GetGoogleUrl } from "@/app/user/use_case/GetGoogleUrl";
 import { GoogleLogin } from "@/app/user/use_case/GoogleLogin";
 import { DownloadTargetsCsv } from "@/app/target/use_case/DownloadTargetsCsv";
+import { EditTargetsWatchlist } from "@/app/watchlist/use_case/EditTargetsWatchlist";
 
 export function containerBuilder(): void {
   container.addSingleton<IHttpService>(UsersApiService);
@@ -45,6 +46,7 @@ export function containerBuilder(): void {
   container.addSingleton<UseCaseInteractor>(CreateWatchlist);
   container.addSingleton<UseCaseInteractor>(SelectWatchlist);
   container.addSingleton<UseCaseInteractor>(DeleteWatchlist);
+  container.addSingleton<UseCaseInteractor>(EditTargetsWatchlist);
   container.addSingleton<UseCaseInteractor>(EditWatchlist);
   container.addSingleton<ITargetRepository>(TargetService);
   container.addSingleton<UseCaseInteractor>(GetTargets);

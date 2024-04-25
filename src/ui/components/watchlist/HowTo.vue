@@ -53,7 +53,7 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title
-            >5. There is a limit of 5.000 targets per user.</v-list-item-title
+            >5. There is a limit of 100.000 targets per user.</v-list-item-title
           >
         </v-list-item-content>
       </v-list-item>
