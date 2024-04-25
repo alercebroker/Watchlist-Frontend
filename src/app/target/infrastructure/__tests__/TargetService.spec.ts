@@ -9,6 +9,14 @@ import { cid, container, mockSingleton, resetContainer } from "inversify-props";
 import { ITargetData, ITargetRepository } from "../../domain/Target.types";
 import { Target } from "../../domain/Target";
 import { ParseError } from "@/shared/error/ParseError";
+import {
+  ConstantOperation,
+  FilterType,
+  IFilterParams,
+  IWatchlistFilter,
+  IWatchlistSingleFilter,
+} from "@/app/filter/domain/Filter.types";
+import { Field, FilterFields } from "@/app/filter/domain/Filter";
 
 beforeEach(() => {
   resetContainer();
@@ -179,7 +187,10 @@ describe("TargetService", () => {
           ra: 10,
           dec: 20,
           radius: 30,
-          filter: {fields:{"sorting_hat":["mag"]}, filters:[{}]},
+          filter: {
+            fields: {} as FilterFields,
+            filters: [] as IWatchlistSingleFilter[],
+          },
         } as ITargetData,
         watchlist: 1,
       });
@@ -226,9 +237,18 @@ describe("TargetService", () => {
           dec: 20,
           radius: 30,
           filter: {
-            fields: {},
-            filters: [{type: "", params:{}}],
-          },
+            fields: { sorting_hat: ["mag"] } as FilterFields,
+            filters: [
+              {
+                type: "" as FilterType,
+                params: {
+                  field: "mag" as Field,
+                  constant: 1 as number,
+                  op: "eq" as ConstantOperation,
+                } as IFilterParams,
+              },
+            ] as IWatchlistSingleFilter[],
+          } as IWatchlistFilter,
         } as ITargetData,
         watchlist: 1,
       });
