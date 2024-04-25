@@ -16,7 +16,6 @@ import {
 import { IWatchlistSingleFilter } from "@/app/filter/domain/Filter.types";
 import { FilterFields } from "@/app/filter/domain/Filter";
 
-
 export type TestActions =
   | "ok"
   | "error"
@@ -111,8 +110,8 @@ export class MockUserApi extends HttpService {
         ra: 0.960746,
         dec: -11.47467,
         filter: {
-          fields:{} as FilterFields, 
-          filters:[] as IWatchlistSingleFilter[]
+          fields: {} as FilterFields,
+          filters: [] as IWatchlistSingleFilter[],
         },
       };
       return [200, JSON.stringify(response)];
@@ -125,8 +124,8 @@ export class MockUserApi extends HttpService {
         ra: 0.960746,
         dec: -11.47467,
         filter: {
-          fields:{} as FilterFields, 
-          filters:[] as IWatchlistSingleFilter[]
+          fields: {} as FilterFields,
+          filters: [] as IWatchlistSingleFilter[],
         },
       };
       return [201, JSON.stringify(response)];

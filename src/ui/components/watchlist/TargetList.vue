@@ -17,11 +17,17 @@
 
         <button-download-targets />
         <button-bulk-update />
-        <v-btn color="primary" small dark class="mb-2 mr-1" @click="confirmDialog=true">
+        <v-btn
+          color="primary"
+          small
+          dark
+          class="mb-2 mr-1"
+          @click="confirmDialog = true"
+        >
           Set Filters
         </v-btn>
         <v-dialog v-model="confirmDialog" max-width="500px">
-          <FormFilter @booleanClose="handleBooleanClose"/>
+          <FormFilter @booleanClose="handleBooleanClose" />
         </v-dialog>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
@@ -209,7 +215,12 @@ import FormFilter from "./FormFilter.vue";
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
 export default Vue.extend({
-  components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets, FormFilter },
+  components: {
+    ButtonBulkUpdate,
+    GenericError,
+    ButtonDownloadTargets,
+    FormFilter,
+  },
   data: () => ({
     search: "",
     headers: [
