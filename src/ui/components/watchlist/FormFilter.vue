@@ -75,7 +75,7 @@
       <v-card :loading="loading_singleWatchlist">
         <v-card-title class="text-h5">
           <span
-            >¿Are you sure you want to submit it to all the filters of the
+            >¿Are you sure you want to change all the filters in the
             watchlist?</span
           >
         </v-card-title>
