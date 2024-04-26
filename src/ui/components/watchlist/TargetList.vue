@@ -22,11 +22,12 @@
           small
           dark
           class="mb-2 mr-1"
+          :loading="loading_singleWatchlist"
           @click="confirmDialog = true"
         >
           Set Filters
         </v-btn>
-        <v-dialog v-model="confirmDialog" max-width="500px">
+        <v-dialog v-model="confirmDialog" max-width="500px" persistent>
           <FormFilter @booleanClose="handleBooleanClose" />
         </v-dialog>
         <v-dialog v-model="dialog" max-width="500px">
