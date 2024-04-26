@@ -74,7 +74,10 @@
     <v-dialog v-model="confirmDialog" max-width="500px" persistent>
       <v-card :loading="loading_singleWatchlist">
         <v-card-title class="text-h5">
-          <span>¿Are you sure you want to submit it?</span>
+          <span
+            >¿Are you sure you want to submit it to all the filters of the
+            watchlist?</span
+          >
         </v-card-title>
 
         <v-card-actions>
