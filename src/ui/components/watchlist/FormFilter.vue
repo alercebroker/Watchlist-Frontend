@@ -90,11 +90,7 @@
           >
             Cancel
           </v-btn>
-          <v-btn
-            color="blue darken-1"
-            :disabled="loading"
-            text
-            @click="onSave"
+          <v-btn color="blue darken-1" :disabled="loading" text @click="onSave"
             >Yes</v-btn
           >
         </v-card-actions>
