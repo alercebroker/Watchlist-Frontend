@@ -22,7 +22,7 @@
           small
           dark
           class="mb-2 mr-1"
-          :loading="loading_singleWatchlist"
+          :loading="loading"
           @click="confirmDialog = true"
         >
           Set Filters

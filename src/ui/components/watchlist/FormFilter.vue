@@ -72,7 +72,7 @@
     </v-card-text>
 
     <v-dialog v-model="confirmDialog" max-width="500px" persistent>
-      <v-card :loading="loading_singleWatchlist">
+      <v-card :loading="loading">
         <v-card-title class="text-h5">
           <span
             >¿Are you sure you want to change all the filters in the
@@ -84,17 +84,13 @@
           <v-spacer></v-spacer>
           <v-btn
             color="blue darken-1"
-            :disabled="loading_singleWatchlist"
+            :disabled="loading"
             text
             @click="confirmDialog = false"
           >
             Cancel
           </v-btn>
-          <v-btn
-            color="blue darken-1"
-            :disabled="loading_singleWatchlist"
-            text
-            @click="onSave"
+          <v-btn color="blue darken-1" :disabled="loading" text @click="onSave"
             >Yes</v-btn
           >
         </v-card-actions>
@@ -178,7 +174,7 @@ export default Vue.extend({
       selectedWatchlist(state: SingleWatchlistState): SingleWatchlistState {
         return state;
       },
-      loading_singleWatchlist(state: SingleWatchlistState): boolean {
+      loading(state: SingleWatchlistState): boolean {
         return state.loading;
       },
     }),
