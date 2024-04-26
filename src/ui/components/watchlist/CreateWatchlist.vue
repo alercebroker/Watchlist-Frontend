@@ -55,6 +55,7 @@ import { MutationTypes } from "@/ui/store/watchlist/mutations";
 import { ITargetData } from "@/app/target/domain/Target.types";
 import CsvError from "./CsvError.vue";
 import GenericError from "../shared/GenericError.vue";
+import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 const watchlistHelper = createNamespacedHelpers("watchlists");
 
 type CsvTarget = {
@@ -62,6 +63,7 @@ type CsvTarget = {
   ra: number;
   dec: number;
   radius: number;
+  filter: string;
 };
 
 export default Vue.extend({
@@ -102,6 +104,9 @@ export default Vue.extend({
               ra: value.ra,
               dec: value.dec,
               radius: value.radius,
+              filter: JSON.parse(
+                value.filter.replace(/'/g, '"')
+              ) as IWatchlistFilter,
             } as ITargetData)
         ),
       };
