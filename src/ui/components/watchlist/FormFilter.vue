@@ -79,10 +79,21 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" :disabled="loading_singleWatchlist" text @click="confirmDialog = false">
+          <v-btn
+            color="blue darken-1"
+            :disabled="loading_singleWatchlist"
+            text
+            @click="confirmDialog = false"
+          >
             Cancel
           </v-btn>
-          <v-btn color="blue darken-1" :disabled="loading_singleWatchlist" text @click="onSave">Yes</v-btn>
+          <v-btn
+            color="blue darken-1"
+            :disabled="loading_singleWatchlist"
+            text
+            @click="onSave"
+            >Yes</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
