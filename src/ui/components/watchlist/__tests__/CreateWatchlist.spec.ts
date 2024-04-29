@@ -43,7 +43,7 @@ describe("CreateWatchlist Component", () => {
       await wrapper.setData({
         title: "title",
         selectedFile: new File(
-          ["name,radius,ra,dec\nTarget 0,1.0,1.0,1.0"],
+          ["name,radius,ra,dec,filter\nTarget 0,1.0,1.0,1.0,{}"],
           "test.csv",
           { type: "text/csv" }
         ),
@@ -93,9 +93,13 @@ describe("CreateWatchlist Component", () => {
       });
       await wrapper.setData({
         title: "title",
-        selectedFile: new File(["name,radius,ra,dec\na,b,c,d"], "test.csv", {
-          type: "text/csv",
-        }),
+        selectedFile: new File(
+          ["name,radius,ra,dec,filter\na,b,c,d,{}"],
+          "test.csv",
+          {
+            type: "text/csv",
+          }
+        ),
       });
       const send = wrapper.find("#send");
       await send.trigger("click");
@@ -113,7 +117,7 @@ describe("CreateWatchlist Component", () => {
       });
       await wrapper.setData({
         title: "title",
-        selectedFile: new File(["name,radius,ra,dec\n"], "test.csv", {
+        selectedFile: new File(["name,radius,ra,dec,filter\n"], "test.csv", {
           type: "text/csv",
         }),
       });
