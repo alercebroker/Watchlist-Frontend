@@ -22,7 +22,6 @@
           small
           dark
           class="mb-2 mr-1"
-          :loading="loading"
           @click="confirmDialog = true"
         >
           Set Filters
@@ -94,6 +93,7 @@
                         v-model="editedFilter.type"
                         label="Condition"
                         :items="validValuesToInputItems(validFilters)"
+                        :rules="[checkValidFilters]"
                       ></v-select>
                     </v-col>
 
@@ -122,7 +122,7 @@
                         <v-text-field
                           label="Value"
                           v-model="editedFilter.params.constant"
-                          :rules="[magnitudIsValid]"
+                          :rules="[checkValidConstant]"
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="6" md="4">
@@ -205,23 +205,27 @@ import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import { ActionTypes } from "@/ui/store/targets/actions";
 import { MutationTypes } from "@/ui/store/targets/mutations";
 import { TargetsState } from "@/ui/store/targets/state";
-import Vue from "vue";
+import Vue, { VueConstructor } from "vue";
 import { DataOptions } from "vuetify";
 import { createNamespacedHelpers } from "vuex";
 import GenericError from "../shared/GenericError.vue";
 import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
 import FormFilter from "./FormFilter.vue";
+import FormMixin from "@/ui/mixins/watchlist/FormMixin";
 
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
-export default Vue.extend({
+export default (
+  Vue as VueConstructor<Vue & InstanceType<typeof FormMixin>>
+).extend({
   components: {
     ButtonBulkUpdate,
     GenericError,
     ButtonDownloadTargets,
     FormFilter,
   },
+  mixins: [FormMixin],
   data: () => ({
     search: "",
     headers: [
@@ -245,52 +249,15 @@ export default Vue.extend({
       dec: 0,
       radius: 0,
     },
-    editedFilter: {
-      type: "",
-      params: {
-        field: "",
-        constant: "",
-        op: "",
-      },
-      band: 0,
-    },
     defaultItem: {
       name: "",
       ra: 0,
       dec: 0,
       radius: 0,
     },
-    defaultFilter: {
-      type: "",
-      params: {
-        field: "",
-        constant: "",
-        op: "",
-      },
-      band: 0,
-    },
     editedIndex: -1,
     dialog: false,
     dialogDelete: false,
-    validBands: {
-      g: 1,
-      r: 2,
-      i: 3,
-    },
-    validOperations: {
-      Equal: "eq",
-      "Less than": "less",
-      "Less than or equal": "less eq",
-      "Greater than": "greater",
-      "Greater than or equal": "greater eq",
-    },
-    validFields: {
-      mag: "mag",
-    },
-    validFilters: {
-      Constant: "constant",
-      "No filter": "",
-    },
     confirmDialog: false,
   }),
   mounted() {
@@ -338,22 +305,6 @@ export default Vue.extend({
             : "no filter",
       }));
     },
-    magnitudIsValid(): string | boolean {
-      let constant = this.editedFilter.params.constant;
-      if (typeof constant !== "undefined") {
-        if (!isNaN(parseFloat(constant))) {
-          return true;
-        } else {
-          return "Must be a number";
-        }
-      } else {
-        return "Must be defined";
-      }
-    },
-    operationIsValid(): boolean {
-      let op = this.editedFilter.params.op;
-      return Object.values(this.validOperations).includes(op);
-    },
   },
   methods: {
     ...targetsHelper.mapActions([
@@ -377,14 +328,6 @@ export default Vue.extend({
         paginationParams: { page_size: perPage },
       });
     },
-    async checkHandler() {
-      if (this.$refs.form) {
-        const valid = await (this.$refs.form as any).validate();
-        if (valid) {
-          this.save();
-        }
-      }
-    },
     async save() {
       const filter = this.parseToFilter();
       if (this.editedIndex > -1) {
@@ -404,7 +347,14 @@ export default Vue.extend({
       }
       this.close();
     },
-
+    async checkHandler() {
+      if (this.$refs.form) {
+        const valid = await (this.$refs.form as any).validate();
+        if (valid) {
+          this.save();
+        }
+      }
+    },
     close() {
       this.SET_ERROR(null);
       this.dialog = false;
@@ -510,45 +460,6 @@ export default Vue.extend({
         };
       }
       return Object.assign({}, this.defaultFilter);
-    },
-    rValid<T extends string | number>(validValues: Record<string, T>) {
-      return Object.fromEntries(
-        Object.entries(validValues).map(([text, value]) => [value, text])
-      ) as Record<T, string>;
-    },
-    checkValidFields() {
-      let field: string = this.editedFilter.params.field;
-      if (Object.keys(this.validFields).includes(field)) {
-        return true;
-      } else {
-        return "The field must be one of the options shown";
-      }
-    },
-    checkValidBands() {
-      let rValidBands = this.rValid(this.validBands);
-      let band = this.editedFilter.band;
-      if (rValidBands[band]) {
-        return true;
-      } else {
-        return "The band must be one of the options shown";
-      }
-    },
-    checkValidOperations() {
-      let rValidOperations = this.rValid(this.validOperations);
-      let op = this.editedFilter.params.op;
-      if (rValidOperations[op]) {
-        return true;
-      } else {
-        return "The operation must be one of the options shown";
-      }
-    },
-    validValuesToInputItems<T extends string | number>(
-      validValues: Record<string, T>
-    ) {
-      return Object.entries(validValues).map(([text, value]) => ({
-        text,
-        value,
-      }));
     },
     handleBooleanClose(show: boolean) {
       this.confirmDialog = show;
