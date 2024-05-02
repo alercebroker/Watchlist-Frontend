@@ -27,7 +27,7 @@
           Set Filters
         </v-btn>
         <v-dialog v-model="confirmDialog" max-width="500px" persistent>
-          <FormFilter @booleanClose="handleBooleanClose" />
+          <CardFilter @Close="handleClose" />
         </v-dialog>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
@@ -51,106 +51,48 @@
 
             <v-card-text>
               <v-container>
-                <v-form ref="form">
-                  <generic-error v-if="genericError" :error="genericError" />
-                  <v-row>
-                    <v-col class="d-block">
-                      <v-text-field
-                        v-model="editedItem.name"
-                        label="Target Name"
-                        :error-messages="detailError.name"
-                      ></v-text-field>
-                    </v-col> </v-row
-                  >««
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.ra"
-                        label="ra"
-                        type="number"
-                        :error-messages="detailError.ra"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.dec"
-                        label="dec"
-                        type="number"
-                        :error-messages="detailError.dec"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.radius"
-                        label="radius"
-                        :error-messages="detailError.radius"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        v-model="editedFilter.type"
-                        label="Condition"
-                        :items="validValuesToInputItems(validFilters)"
-                        :rules="[checkValidFilters]"
-                      ></v-select>
-                    </v-col>
-
-                    <template v-if="editedFilter.type === 'constant'">
-                      <v-col cols="12" sm="6" md="4">
-                        <v-autocomplete
-                          label="Field"
-                          v-model="editedFilter.params.field"
-                          :items="validValuesToInputItems(validFields)"
-                          :rules="[checkValidFields]"
-                        ></v-autocomplete>
-                      </v-col>
-                    </template>
-                  </v-row>
-                  <template v-if="editedFilter.type === 'constant'">
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-select
-                          label="Operation"
-                          :items="validValuesToInputItems(validOperations)"
-                          v-model="editedFilter.params.op"
-                          :rules="[checkValidOperations]"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Value"
-                          v-model="editedFilter.params.constant"
-                          :rules="[checkValidConstant]"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-autocomplete
-                          label="Band"
-                          v-model="editedFilter.band"
-                          :items="validValuesToInputItems(validBands)"
-                          :rules="[checkValidBands]"
-                        ></v-autocomplete>
-                      </v-col>
-                    </v-row>
-                  </template>
-                </v-form>
+                <generic-error v-if="genericError" :error="genericError" />
+                <v-row>
+                  <v-col class="d-block">
+                    <v-text-field
+                      v-model="editedItem.name"
+                      label="Target Name"
+                      :error-messages="detailError.name"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.ra"
+                      label="ra"
+                      type="number"
+                      :error-messages="detailError.ra"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.dec"
+                      label="dec"
+                      type="number"
+                      :error-messages="detailError.dec"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.radius"
+                      label="radius"
+                      :error-messages="detailError.radius"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <FormFilter
+                  @Close="close"
+                  @on-submit="handleFormObject"
+                  :filterObject="editedFilter"
+                />
               </v-container>
             </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-              <v-btn
-                id="saveButton"
-                color="blue darken-1"
-                text
-                @click="checkHandler"
-              >
-                Save
-              </v-btn>
-            </v-card-actions>
           </v-card>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
@@ -211,8 +153,9 @@ import { createNamespacedHelpers } from "vuex";
 import GenericError from "../shared/GenericError.vue";
 import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
-import FormFilter from "./FormFilter.vue";
+import CardFilter from "@/ui/components/watchlist/CardFilter.vue";
 import FormMixin from "@/ui/mixins/watchlist/FormMixin";
+import FormFilter from "./FormFilter.vue";
 
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
@@ -223,6 +166,7 @@ export default (
     ButtonBulkUpdate,
     GenericError,
     ButtonDownloadTargets,
+    CardFilter,
     FormFilter,
   },
   mixins: [FormMixin],
@@ -347,14 +291,6 @@ export default (
       }
       this.close();
     },
-    async checkHandler() {
-      if (this.$refs.form) {
-        const valid = await (this.$refs.form as any).validate();
-        if (valid) {
-          this.save();
-        }
-      }
-    },
     close() {
       this.SET_ERROR(null);
       this.dialog = false;
@@ -461,8 +397,12 @@ export default (
       }
       return Object.assign({}, this.defaultFilter);
     },
-    handleBooleanClose(show: boolean) {
+    handleClose(show: boolean) {
       this.confirmDialog = show;
+    },
+    handleFormObject(formObject: any) {
+      this.editedFilter = Object.assign({}, formObject);
+      this.save();
     },
   },
   watch: {

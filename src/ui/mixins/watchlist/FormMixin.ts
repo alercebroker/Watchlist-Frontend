@@ -104,6 +104,6 @@ export default Vue.extend({
       } else {
         return "The filter must be one of the options shown";
       }
-    },
+    }
   },
 });
