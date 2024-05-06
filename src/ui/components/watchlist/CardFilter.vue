@@ -41,7 +41,7 @@
   </v-card>
 </template>
 <script lang="ts">
-import Vue, { VueConstructor } from "vue";
+import Vue from "vue";
 import { ActionTypes } from "@/ui/store/singleWatchlist/actions";
 import { createNamespacedHelpers } from "vuex";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
@@ -55,21 +55,28 @@ import {
   WatchlistFilter,
 } from "@/app/filter/domain/Filter";
 import FormFilter from "./FormFilter.vue";
-import FormMixin from "@/ui/mixins/watchlist/FormMixin";
 
 const singleWatchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
 
-export default (
-  Vue as VueConstructor<Vue & InstanceType<typeof FormMixin>>
-).extend({
+interface filterData {
+  type: string;
+  params: any;
+  band: number;
+}
+
+export default Vue.extend({
   name: "CardFilter",
-  mixins: [FormMixin],
   components: {
     FormFilter,
   },
   data() {
     return {
+      recivedFilter: {
+        type: "",
+        params: {},
+        band: 0,
+      } as filterData,
       confirmUpdate: false,
     };
   },
@@ -96,8 +103,8 @@ export default (
       this.getTargets({ params: { watchlistId: this.selectedWatchlist.id } });
       this.sendClose();
     },
-    updateTargets(filterForm: any) {
-      this.editedFilter = Object.assign({}, filterForm);
+    updateTargets(filterForm: filterData) {
+      this.recivedFilter = Object.assign({}, filterForm);
       this.confirmUpdate = true;
     },
     sendClose() {
@@ -109,13 +116,13 @@ export default (
     parseFilter(): IWatchlistFilter {
       let bandParams = new ConstantFilterParams({
         field: "fid",
-        constant: this.editedFilter.band,
+        constant: this.recivedFilter.band,
         op: "eq",
       });
-      let type = this.editedFilter.type;
-      if (type === "constant" && this.editedFilter.params) {
+      let type = this.recivedFilter.type;
+      if (type === "constant" && this.recivedFilter.params) {
         let constantParams = new ConstantFilterParams(
-          this.editedFilter.params as unknown as IConstantFilterParams
+          this.recivedFilter.params as unknown as IConstantFilterParams
         );
         return new WatchlistFilter({
           fields: WatchlistFilter.mergeFields([

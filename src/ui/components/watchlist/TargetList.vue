@@ -147,21 +147,18 @@ import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import { ActionTypes } from "@/ui/store/targets/actions";
 import { MutationTypes } from "@/ui/store/targets/mutations";
 import { TargetsState } from "@/ui/store/targets/state";
-import Vue, { VueConstructor } from "vue";
+import Vue from "vue";
 import { DataOptions } from "vuetify";
 import { createNamespacedHelpers } from "vuex";
 import GenericError from "../shared/GenericError.vue";
 import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
 import CardFilter from "@/ui/components/watchlist/CardFilter.vue";
-import FormMixin from "@/ui/mixins/watchlist/FormMixin";
 import FormFilter from "./FormFilter.vue";
 
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
-export default (
-  Vue as VueConstructor<Vue & InstanceType<typeof FormMixin>>
-).extend({
+export default Vue.extend({
   components: {
     ButtonBulkUpdate,
     GenericError,
@@ -169,7 +166,6 @@ export default (
     CardFilter,
     FormFilter,
   },
-  mixins: [FormMixin],
   data: () => ({
     search: "",
     headers: [
@@ -198,6 +194,24 @@ export default (
       ra: 0,
       dec: 0,
       radius: 0,
+    },
+    editedFilter: {
+      type: "",
+      params: {
+        field: "",
+        constant: "",
+        op: "",
+      },
+      band: 0,
+    },
+    defaultFilter: {
+      type: "",
+      params: {
+        field: "",
+        constant: "",
+        op: "",
+      },
+      band: 0,
     },
     editedIndex: -1,
     dialog: false,
@@ -401,7 +415,7 @@ export default (
       this.confirmDialog = show;
     },
     handleFormObject(formObject: any) {
-      this.editedFilter = Object.assign({}, formObject);
+      this.editedFilter = Object.assign({},formObject);
       this.save();
     },
   },
