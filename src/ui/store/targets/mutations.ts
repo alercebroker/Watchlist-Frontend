@@ -11,6 +11,7 @@ export enum MutationTypes {
   SET_DEFAULT_STATE = "SET_DEFAULT_STATE",
   UPDATE_TARGET = "UPDATE_TARGET",
   DELETE_TARGET = "DELETE_TARGET",
+  SELECT_TARGET = "SELECT_TARGET",
 }
 
 export const mutations: MutationTree<TargetsState> = {
@@ -50,5 +51,8 @@ export const mutations: MutationTree<TargetsState> = {
   },
   [MutationTypes.DELETE_TARGET](state, target: number) {
     state.targets = state.targets.filter((t) => t.id != target);
+  },
+  [MutationTypes.SELECT_TARGET](state, target: number) {
+    state.targets = state.targets.filter((t) => (t.id === target));
   },
 };

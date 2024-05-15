@@ -19,6 +19,7 @@ export enum ActionTypes {
   deleteTarget = "deleteTarget",
   downloadTargets = "downloadTargets",
   bulkUpdateTargets = "bulkUpdateTargets",
+  setDefaultTargets = "setDefaultTargets",
 }
 
 export type GetTargetsPayload = {
@@ -261,5 +262,8 @@ export const actions: ActionTree<TargetsState, IRootState> = {
       commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
     }
+  },
+  [ActionTypes.setDefaultTargets]({ commit }){
+    commit(MutationTypes.SET_DEFAULT_STATE);
   },
 };

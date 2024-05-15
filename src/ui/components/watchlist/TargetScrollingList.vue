@@ -1,13 +1,8 @@
 <template>
   <v-card id="targetsCard">
-    <v-card-title>Targets</v-card-title>
+    <v-card-title>Target</v-card-title>
     <v-card-text>
-      <v-simple-table
-        ref="targetsTable"
-        :height="$vuetify.breakpoint.height - 250"
-        dense
-        fixed-header
-      >
+      <v-simple-table ref="targetsTable" dense fixed-header>
         <template v-slot:default>
           <thead>
             <tr>
@@ -18,16 +13,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              :id="'t' + item.id"
-              v-for="item in targets"
-              :key="item.id"
-              @click="onTargetClick(item)"
-              :class="{
-                rowSelected:
-                  item.id === (selectedTarget ? selectedTarget.id : -1),
-              }"
-            >
+            <tr :id="'t' + item.id" v-for="item in targets" :key="item.id">
               <td>{{ item.name }}</td>
               <td>{{ item.ra }}</td>
               <td>{{ item.dec }}</td>
@@ -71,16 +57,12 @@ export default Vue.extend({
     scrolled: false,
   }),
   methods: {
-    onTargetClick(item: ITargetData) {
-      this.selectedTarget = item;
-      this.$emit("targetSelected", item);
-    },
     debouncedFunction() {
       return debounce(() => this.$emit("nextPage"), 400);
     },
     onIntersect(entries: IntersectionObserverEntry[]) {
       if (entries[0].isIntersecting) {
-        this.debouncedFunction()();
+        this.debouncedFunction();
       }
       this.scrolled = entries[0].isIntersecting;
     },
@@ -88,7 +70,7 @@ export default Vue.extend({
   watch: {
     targets() {
       if (this.scrolled) {
-        this.debouncedFunction()();
+        this.debouncedFunction();
       }
     },
   },
@@ -96,9 +78,6 @@ export default Vue.extend({
 </script>
 
 <style>
-.rowSelected {
-  background-color: grey;
-}
 .targetTable {
   height: 50%;
 }

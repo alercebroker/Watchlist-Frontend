@@ -1,32 +1,27 @@
 <template>
   <overview-layout>
-    <template v-slot:targets>
+    <template v-slot:target>
       <target-scrolling-list
-        :targets="targets"
+        :targets="displayItem"
         :loading="loadingTargets"
-        @targetSelected="onTargetClick"
         @nextPage="onTargetsNextPage"
       />
     </template>
     <template v-slot:matches>
       <matches-scroling-list
-        :matches="matches"
-        :loading="loadingMatches"
-        :selectedTarget="selectedTarget"
         @matchSelected="onMatchClick"
-        @nextPage="onMatchesNextPage"
+        @objectSelected="onSelectedObject"
       />
     </template>
     <template v-slot:alertInfo>
-      <v-card>
-        <v-card-title>Alert Info</v-card-title>
-        <v-card-text>
-          Link to Explorer:
-          <a :href="'https://alerce.online/object/' + currentOid">{{
-            currentOid
-          }}</a>
-        </v-card-text>
-      </v-card>
+      <v-btn
+        :disabled="currentOid ? false : true"
+        @click="goToLink"
+        color="primary"
+        small
+        dark
+        >Alert Info</v-btn
+      >
     </template>
   </overview-layout>
 </template>
@@ -35,34 +30,26 @@
 import Vue from "vue";
 import { createNamespacedHelpers } from "vuex";
 import { TargetsState } from "@/ui/store/targets/state";
-import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import { ITargetData } from "@/app/target/domain/Target.types";
-import { MatchesState } from "@/ui/store/matches/state";
 import { IMatchData } from "@/app/match/domain/Match.types";
-import { MutationTypes } from "@/ui/store/matches/mutations";
 import TargetScrollingList from "./TargetScrollingList.vue";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 import MatchesScrolingList from "./MatchesScrolingList.vue";
 import OverviewLayout from "@/ui/layouts/OverviewLayout.vue";
+import { SingleTargetState } from "@/ui/store/singleTarget/state";
 
 const targetsHelper = createNamespacedHelpers("targets");
-const watchlistHelper = createNamespacedHelpers("singleWatchlist");
-const matchesHelper = createNamespacedHelpers("matches");
+const singleTargetHelper = createNamespacedHelpers("singleTarget");
 export default Vue.extend({
   components: { TargetScrollingList, MatchesScrolingList, OverviewLayout },
   data: (): {
     selectedMatch: IMatchData | null;
-    selectedTarget: ITargetData | null;
+    selectedObject: string | null;
   } => ({
     selectedMatch: null,
-    selectedTarget: null,
+    selectedObject: "",
   }),
   computed: {
-    ...watchlistHelper.mapState({
-      watchlistId: function (state: SingleWatchlistState): number {
-        return state.id;
-      },
-    }),
     ...targetsHelper.mapState({
       targets: function (state: TargetsState): ITargetData[] {
         return state.targets;
@@ -74,36 +61,25 @@ export default Vue.extend({
         return state.loading;
       },
     }),
-    ...matchesHelper.mapState({
-      matches: function (state: MatchesState): IMatchData[] {
-        return state.matches;
-      },
-      loadingMatches: function (state: MatchesState): boolean {
-        return state.loading;
-      },
-      matchesNextPage: function (): boolean {
-        // TODO return state next page
-        return false;
+    ...singleTargetHelper.mapState({
+      singleItem: function (state: SingleTargetState): ITargetData {
+        return state.target;
       },
     }),
     currentOid: function (): string {
-      return this.selectedMatch ? this.selectedMatch.object_id : "";
+      return this.selectedObject ? this.selectedObject : "";
+    },
+    displayItem(): ITargetData[] {
+      return this.targets.filter((e) => e.id === this.singleItem.id);
     },
   },
   methods: {
-    ...matchesHelper.mapActions(["getAllMatches"]),
-    ...matchesHelper.mapMutations([MutationTypes.SET_MATCHES]),
     ...targetsHelper.mapActions([TargetActionTypes.getTargets]),
-    onTargetClick(item: ITargetData) {
-      this.selectedTarget = item;
-      this.getAllMatches({
-        url: item.url,
-        watchlistId: this.watchlistId,
-        targetId: item.id,
-      });
-    },
     onMatchClick(item: IMatchData) {
       this.selectedMatch = item;
+    },
+    onSelectedObject(item: string) {
+      this.selectedObject = item;
     },
     onTargetsNextPage() {
       if (this.targetsNextPage) {
@@ -112,20 +88,14 @@ export default Vue.extend({
         });
       }
     },
-    onMatchesNextPage() {
-      if (this.matchesNextPage) {
-        this.getAllMatches({
-          params: { url: this.matchesNextPage, append: true },
-        });
-      }
+    goToLink() {
+      window.open("https://alerce.online/object/" + this.currentOid, "_blank");
     },
   },
   watch: {
     targets: {
       handler: function () {
         this.selectedMatch = null;
-        this.selectedTarget = null;
-        this.SET_MATCHES([]);
       },
       deep: true,
     },
