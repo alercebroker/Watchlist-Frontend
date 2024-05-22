@@ -1,11 +1,7 @@
 <template>
   <overview-layout>
     <template v-slot:target>
-      <target-scrolling-list
-        :targets="displayItem"
-        :loading="loadingTargets"
-        @nextPage="onTargetsNextPage"
-      />
+      <TargetCard :target="singleItem" :loading="singleItemLoading" />
     </template>
     <template v-slot:matches>
       <matches-scroling-list
@@ -32,7 +28,7 @@ import { createNamespacedHelpers } from "vuex";
 import { TargetsState } from "@/ui/store/targets/state";
 import { ITargetData } from "@/app/target/domain/Target.types";
 import { IMatchData } from "@/app/match/domain/Match.types";
-import TargetScrollingList from "./TargetScrollingList.vue";
+import TargetCard from "./TargetCard.vue";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 import MatchesScrolingList from "./MatchesScrolingList.vue";
 import OverviewLayout from "@/ui/layouts/OverviewLayout.vue";
@@ -41,7 +37,7 @@ import { SingleTargetState } from "@/ui/store/singleTarget/state";
 const targetsHelper = createNamespacedHelpers("targets");
 const singleTargetHelper = createNamespacedHelpers("singleTarget");
 export default Vue.extend({
-  components: { TargetScrollingList, MatchesScrolingList, OverviewLayout },
+  components: { TargetCard, MatchesScrolingList, OverviewLayout },
   data: (): {
     selectedMatch: IMatchData | null;
     selectedObject: string | null;
@@ -65,12 +61,12 @@ export default Vue.extend({
       singleItem: function (state: SingleTargetState): ITargetData {
         return state.target;
       },
+      singleItemLoading: function (state: SingleTargetState): boolean {
+        return state.loading;
+      },
     }),
     currentOid: function (): string {
       return this.selectedObject ? this.selectedObject : "";
-    },
-    displayItem(): ITargetData[] {
-      return this.targets.filter((e) => e.id === this.singleItem.id);
     },
   },
   methods: {

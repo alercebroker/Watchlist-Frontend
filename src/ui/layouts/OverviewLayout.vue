@@ -1,12 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col lg="12" class="d-none d-lg-block v-col-auto">
+      <v-col lg="4" class="d-none d-lg-block v-col-auto">
         <slot name="target"></slot>
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col lg="12" class="d-none d-lg-block v-col-auto">
+      <v-col lg="8" class="d-none d-lg-block v-col-auto">
         <slot name="matches"></slot>
       </v-col>
     </v-row>
@@ -27,18 +25,7 @@
             <slot name="target"></slot>
           </v-tab-item>
           <v-tab-item>
-            <v-container>
-              <v-row>
-                <v-col>
-                  <slot name="matches"></slot>
-                </v-col>
-              </v-row>
-              <v-row justify="end">
-                <v-col cols="2">
-                  <slot name="alertInfo"></slot>
-                </v-col>
-              </v-row>
-            </v-container>
+            <slot name="matches"></slot>
           </v-tab-item>
         </v-tabs-items>
       </v-col>

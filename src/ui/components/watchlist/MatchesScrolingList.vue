@@ -1,9 +1,9 @@
 <template>
-  <v-card class="overflow-y-auto w-0" max-height="500">
+  <v-card class="overflow-y-auto" max-height="700">
     <v-card-title>Matches</v-card-title>
     <v-card-text>
       <v-container>
-        <v-row justify="start">
+        <v-row>
           <v-col cols="3">
             <v-select
               v-model="selectedObject"
@@ -13,6 +13,11 @@
             ></v-select>
           </v-col>
           <v-spacer></v-spacer>
+        </v-row>
+        <v-row justify="center">
+          <v-col cols="8">
+            <div id="lightcurve-app" class="tw-dark" ></div> 
+          </v-col>
         </v-row>
         <v-row>
           <v-col>
@@ -72,17 +77,7 @@
               :total-visible="7"
             ></v-pagination>
           </v-col>
-          <v-col cols="6">
-            <div id="lightcurve-app" class="tw-dark"></div>
-          </v-col>
         </v-row>
-        <!--
-        <v-row class="mt-8">
-          <v-col>
-            <div id="lightCurve"></div>
-          </v-col>
-        </v-row>
-        -->
       </v-container>
     </v-card-text>
   </v-card>
@@ -109,12 +104,14 @@ export default Vue.extend({
     dateFormat: string;
     page: number;
     itemsPerPage: number;
+    loadingLightCurve: boolean;
   } => ({
     selectedMatch: null,
     selectedObject: "",
     dateFormat: "mjd",
     page: 1,
     itemsPerPage: 5,
+    loadingLightCurve: false,
   }),
   mounted() {
     this.matchesLoad();
@@ -182,7 +179,7 @@ export default Vue.extend({
         : (this.dateFormat = "mjd");
     },
     callLightCurve() {
-      /**https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${this.selectedObject}`, */
+      this.loadingLightCurve = true;
 
       htmx.ajax(
         "GET",
@@ -198,6 +195,9 @@ export default Vue.extend({
     selectedObject(newVal) {
       this.$emit("objectSelected", newVal);
       this.callLightCurve();
+    },
+    Objects(newVal) {
+      this.selectedObject = newVal.length > 0 ? newVal[0] : null;
     },
   },
 });
