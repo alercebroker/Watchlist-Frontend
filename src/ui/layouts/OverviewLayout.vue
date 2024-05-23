@@ -1,17 +1,24 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col lg="4" class="d-none d-lg-block v-col-auto">
-        <slot name="target"></slot>
-      </v-col>
-      <v-col lg="8" class="d-none d-lg-block v-col-auto">
-        <slot name="matches"></slot>
+    <v-row justify="start" class="mx-3">
+      <v-col lg="2" class="d-none d-lg-block">
+        <slot name="selecter"></slot>
       </v-col>
     </v-row>
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-col lg="2" class="d-none d-lg-block mb-2 mr-1">
-        <slot name="alertInfo"></slot>
+    <v-row justify="start">
+      <v-col lg="7" class="d-none d-lg-block">
+        <slot name="lightcurve"></slot>
+      </v-col>
+      <v-col lg="4" class="d-none d-lg-block pa-0">
+        <v-col class="pa-0">
+          <slot name="target"></slot>
+        </v-col>
+        <v-col class="pa-2">
+          <slot name="matches"></slot>
+        </v-col>
+        <v-col class="pa-2" align="end">
+          <slot name="alertInfo"></slot>
+        </v-col>
       </v-col>
     </v-row>
     <v-row>
@@ -25,7 +32,26 @@
             <slot name="target"></slot>
           </v-tab-item>
           <v-tab-item>
-            <slot name="matches"></slot>
+            <v-row>
+              <v-col>
+                <slot name="selecter"></slot>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <slot name="lightcurve"></slot>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <slot name="matches"></slot>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col align="end">
+                <slot name="alertInfo"></slot>
+              </v-col>
+            </v-row>
           </v-tab-item>
         </v-tabs-items>
       </v-col>

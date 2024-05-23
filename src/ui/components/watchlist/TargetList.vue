@@ -301,7 +301,6 @@ export default Vue.extend({
       ActionTypes.editTarget,
       ActionTypes.createTarget,
       ActionTypes.deleteTarget,
-      ActionTypes.setDefaultTargets,
     ]),
     ...singleTargetHelper.mapActions([SingleTargetActions.selectTarget]),
     ...targetsHelper.mapMutations([MutationTypes.SET_ERROR]),
