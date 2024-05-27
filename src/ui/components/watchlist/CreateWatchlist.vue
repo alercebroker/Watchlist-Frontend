@@ -53,7 +53,6 @@ import TargetsError from "./TargetsError.vue";
 import { parse, ParseError, ParseResult } from "papaparse";
 import { MutationTypes } from "@/ui/store/watchlist/mutations";
 import { ITargetData } from "@/app/target/domain/Target.types";
-import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 import CsvError from "./CsvError.vue";
 import GenericError from "../shared/GenericError.vue";
 import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
