@@ -415,7 +415,7 @@ export default Vue.extend({
       this.confirmDialog = show;
     },
     handleFormObject(formObject: any) {
-      this.editedFilter = Object.assign({},formObject);
+      this.editedFilter = Object.assign({}, formObject);
       this.save();
     },
   },
