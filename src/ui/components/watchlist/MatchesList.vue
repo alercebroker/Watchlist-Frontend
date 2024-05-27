@@ -97,7 +97,7 @@ export default Vue.extend({
     selectedMatch: null,
     dateFormat: "mjd",
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 4,
   }),
   mounted() {
     this.matchesLoad();

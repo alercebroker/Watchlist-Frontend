@@ -1,5 +1,10 @@
 <template>
-  <v-card class="overflow-y-auto" max-height="800">
+  <v-card v-if="Object.keys(singleItem).length === 0">
+    <v-card-text class="d-flex justify-center">
+      <h3>No target selected</h3>
+    </v-card-text>
+  </v-card>
+  <v-card v-else max-height="780">
     <overview-layout>
       <template v-slot:selecter>
         <v-select
@@ -20,7 +25,7 @@
         <TargetCard :target="singleItem" :loading="singleItemLoading" />
       </template>
       <template v-slot:matches>
-        <matches-scroling-list
+        <matches-list
           :target="singleItem"
           :ObjectId="selectedObject"
           @matchSelected="onMatchClick"
@@ -28,13 +33,15 @@
       </template>
       <template v-slot:alertInfo>
         <v-btn
+          class="no-uppercase"
           :disabled="currentOid ? false : true"
           @click="goToLink"
           color="primary"
           small
           dark
-          >Alert Info</v-btn
         >
+          ALeRCE Explorer
+        </v-btn>
       </template>
     </overview-layout>
   </v-card>
@@ -50,7 +57,7 @@ import { IMatchData } from "@/app/match/domain/Match.types";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
 import TargetCard from "./TargetCard.vue";
 import LigthCurveCard from "./LightCurveCard.vue";
-import MatchesScrolingList from "./MatchesScrolingList.vue";
+import MatchesList from "./MatchesList.vue";
 import OverviewLayout from "@/ui/layouts/OverviewLayout.vue";
 
 const targetsHelper = createNamespacedHelpers("targets");
@@ -60,7 +67,7 @@ const singleTargetHelper = createNamespacedHelpers("singleTarget");
 export default Vue.extend({
   components: {
     TargetCard,
-    MatchesScrolingList,
+    MatchesList,
     OverviewLayout,
     LigthCurveCard,
   },
@@ -128,4 +135,8 @@ export default Vue.extend({
 });
 </script>
 
-<style></style>
+<style scoped>
+.no-uppercase {
+  text-transform: none;
+}
+</style>

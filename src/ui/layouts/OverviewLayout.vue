@@ -10,15 +10,17 @@
         <slot name="lightcurve"></slot>
       </v-col>
       <v-col lg="4" class="d-none d-lg-block pa-0">
-        <v-col class="pa-0">
-          <slot name="target"></slot>
-        </v-col>
-        <v-col class="pa-2">
-          <slot name="matches"></slot>
-        </v-col>
-        <v-col class="pa-2" align="end">
-          <slot name="alertInfo"></slot>
-        </v-col>
+        <v-row>
+          <v-col class="pa-0">
+            <slot name="target"></slot>
+          </v-col>
+          <v-col class="pa-1">
+            <slot name="matches"></slot>
+          </v-col>
+          <v-col class="pb-8 d-flex flex-row-reverse">
+            <slot name="alertInfo"></slot>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-row>
@@ -48,7 +50,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col align="end">
+              <v-col>
                 <slot name="alertInfo"></slot>
               </v-col>
             </v-row>
