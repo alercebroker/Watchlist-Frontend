@@ -1,8 +1,14 @@
 <template>
-  <v-card :loading="loading">
-    <v-card-text>
-      <div id="lightcurve-app" class="theme--dark"></div>
-    </v-card-text>
+  <v-card>
+    <v-card v-if="loading">
+      <v-card-text class="d-flex justify-center align-center">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        ></v-progress-circular>
+      </v-card-text>
+    </v-card>
+    <v-card id="lightcurve-app" width="100%" :height="height"></v-card>
   </v-card>
 </template>
 
@@ -19,41 +25,50 @@ export default Vue.extend({
     loading: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   data() {
     return {
       objectName: "",
+      themeDark: false,
+      height: "0vh",
     };
   },
-  methods: {
-    callLightCurve() {
-      /**
-      const url = `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${this.ObjectId}`;
-      const myDiv = document.getElementById('lightcurve-app')
-      if (myDiv) {
-        myDiv.innerHTML = `<div hx-get=${url} hx-trigger="updateLightcurve from:body" hx-swap="outerHTML"></div>`
-        htmx.process(myDiv)
-        document.body.dispatchEvent(new Event('updateLightcurve'))
+  mounted() {
+    this.$el.addEventListener("htmx:afterRequest", (event) => {
+      const CustomEvent = event as CustomEvent;
+      if (CustomEvent.detail.successful) {
+        this.height = "100%";
+        this.onIsDarkChange(this.isDark());
       }
-      */
-      htmx
-        .ajax(
-          "GET",
-          `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${this.ObjectId}`,
-          {
-            target: "#lightcurve-app",
-            swap: "innerHTML",
-          }
-        )
-        .then(() => {
-          this.$emit("loadComplete", false);
-        });
+    });
+  },
+  methods: {
+    callLightCurve(oid: string) {
+      const url = `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${oid}`;
+      const myDiv = document.getElementById("lightcurve-app");
+      if (myDiv) {
+        myDiv.innerHTML = `<div hx-get=${url} hx-trigger="updateLightcurve from:body" hx-swap="outerHTML"></div>`;
+        htmx.process(myDiv);
+        document.body.dispatchEvent(new Event("updateLightcurve"));
+        this.$emit("loadComplete", false);
+      }
+    },
+    isDark() {
+      return this.$vuetify.theme.dark;
+    },
+    onIsDarkChange(newIsDark: boolean) {
+      const container = document.getElementById("lightcurve-app");
+      if (container) {
+        if (newIsDark) {
+          container.classList.add("tw-dark");
+        }
+      }
     },
   },
   watch: {
     ObjectId() {
-      this.callLightCurve();
+      this.callLightCurve(this.ObjectId);
     },
   },
 });

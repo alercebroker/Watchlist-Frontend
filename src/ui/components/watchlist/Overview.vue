@@ -4,7 +4,7 @@
       <h3>No target selected</h3>
     </v-card-text>
   </v-card>
-  <v-card v-else max-height="780">
+  <v-card v-else max-height="780" class="overflow-condition">
     <overview-layout>
       <template v-slot:selecter>
         <v-select
@@ -136,7 +136,14 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+@media (max-width: 1280px) { /* Adjust max-width to match your desired breakpoint */
+  .overflow-condition {
+    overflow: auto; /* or overflow-x: auto; or overflow-y: auto; depending on your needs */
+  }
+}
+
 .no-uppercase {
   text-transform: none;
 }
+
 </style>

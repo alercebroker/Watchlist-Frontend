@@ -2,7 +2,7 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="displayTarget"
+    :items="targets"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
@@ -285,6 +285,7 @@ export default Vue.extend({
     formTitle(): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
     },
+    /**
     displayTarget(): ITargetDisplay[] {
       return this.targets.map((target) => ({
         ...target,
@@ -293,7 +294,7 @@ export default Vue.extend({
             ? target.filter.filters.map((filter) => filter.type).join("\n")
             : "no filter",
       }));
-    },
+    },*/
   },
   methods: {
     ...targetsHelper.mapActions([
