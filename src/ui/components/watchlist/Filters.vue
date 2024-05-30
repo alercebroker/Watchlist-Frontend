@@ -6,13 +6,13 @@
   </v-row>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import TargetList from "./TargetList.vue";
 export default Vue.extend({
   components: { TargetList },
   methods: {
-    handleUpdatedTab(val) {
+    handleUpdatedTab(val: number) {
       this.$emit("updated-tab", val);
     }
   }

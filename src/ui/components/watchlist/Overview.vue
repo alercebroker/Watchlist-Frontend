@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="Object.keys(singleItem).length === 0">
+  <v-card v-if="Object.keys(singleItem).length == 0">
     <v-card-text class="d-flex justify-center">
       <h3>No target selected</h3>
     </v-card-text>
