@@ -150,6 +150,7 @@ export const actions: ActionTree<TargetsState, IRootState> = {
     const callbacks: Callbacks = {
       respondWithSuccess: (target: ITargetData) => {
         commit(MutationTypes.APPEND_TARGETS, [target]);
+        commit(MutationTypes.UPDATE_COUNT);
         commit(MutationTypes.SET_ERROR, null);
         commit(MutationTypes.SET_LOADING, false);
       },

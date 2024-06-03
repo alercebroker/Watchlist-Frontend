@@ -160,7 +160,7 @@ import {
   ILogicFilterParams,
   IWatchlistFilter,
 } from "@/app/filter/domain/Filter.types";
-import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
+import { ITargetData } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import { SingleTargetState } from "@/ui/store/singleTarget/state";
 import { ActionTypes as SingleTargetActions } from "@/ui/store/singleTarget/actions";

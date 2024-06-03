@@ -12,6 +12,7 @@ export enum MutationTypes {
   UPDATE_TARGET = "UPDATE_TARGET",
   DELETE_TARGET = "DELETE_TARGET",
   SELECT_TARGET = "SELECT_TARGET",
+  UPDATE_COUNT = "UPDATE_COUNT",
 }
 
 export const mutations: MutationTree<TargetsState> = {
@@ -54,5 +55,8 @@ export const mutations: MutationTree<TargetsState> = {
   },
   [MutationTypes.SELECT_TARGET](state, target: number) {
     state.targets = state.targets.filter((t) => (t.id === target));
+  },
+  [MutationTypes.UPDATE_COUNT](state) {
+    state.count = state.count + 1;
   },
 };

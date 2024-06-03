@@ -41,17 +41,32 @@ export default Vue.extend({
         this.height = "100%";
         this.onIsDarkChange(this.isDark());
       }
+      if (CustomEvent.detail.successful) {
+        this.height = "100%";
+        this.onIsDarkChange(this.isDark());
+      }
     });
   },
   methods: {
-    callLightCurve(oid: string) {
+    async callLightCurve(oid: string) {
       const url = `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${oid}`;
+      /**
       const myDiv = document.getElementById("lightcurve-app");
       if (myDiv) {
         myDiv.innerHTML = `<div hx-get=${url} hx-trigger="updateLightcurve from:body" hx-swap="outerHTML"></div>`;
         htmx.process(myDiv);
         document.body.dispatchEvent(new Event("updateLightcurve"));
         this.$emit("loadComplete", false);
+      }*/
+
+      try {
+        await htmx.ajax("GET", url, {
+          target: "lightcurve-app",
+          swap: "outerHTML",
+        });
+        this.$emit("loadComplete", false);
+      } catch (error) {
+        console.error("Error loading data:", error);
       }
     },
     isDark() {
