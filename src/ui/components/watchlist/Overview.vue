@@ -4,7 +4,7 @@
       <h3>No target selected</h3>
     </v-card-text>
   </v-card>
-  <v-card v-else max-height="780" class="overflow-condition">
+  <v-card v-else id="cardOverview" max-height="780" class="overflow-condition">
     <overview-layout>
       <template v-slot:selecter>
         <v-select
@@ -33,7 +33,7 @@
       </template>
       <template v-slot:alertInfo>
         <v-btn
-          id="explore-button"
+          id="explorer-button"
           class="no-uppercase"
           :disabled="currentOid ? false : true"
           @click="goToLink"
@@ -140,6 +140,7 @@ export default Vue.extend({
 @media (max-width: 1280px) { /* Adjust max-width to match your desired breakpoint */
   .overflow-condition {
     overflow: auto;
+  }
 }
 
 .no-uppercase {
