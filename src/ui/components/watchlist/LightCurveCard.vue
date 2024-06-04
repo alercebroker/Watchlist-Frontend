@@ -46,7 +46,6 @@ export default Vue.extend({
   methods: {
     async callLightCurve(oid: string) {
       const url = `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${oid}`;
-      
       const myDiv = document.getElementById("lightcurve-app");
       if (myDiv) {
         myDiv.innerHTML = `<div hx-get=${url} hx-trigger="updateLightcurve from:body" hx-swap="outerHTML"></div>`;
