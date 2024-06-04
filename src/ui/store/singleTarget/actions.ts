@@ -12,7 +12,6 @@ export type SelectTargetPayload = {
   target: number;
 };
 
-
 export const actions: ActionTree<SingleTargetState, IRootState> = {
   [ActionTypes.selectTarget]({ commit }, payload: SelectTargetPayload) {
     commit(MutationTypes.SET_LOADING, true);

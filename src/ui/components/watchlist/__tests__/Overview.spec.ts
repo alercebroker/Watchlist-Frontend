@@ -140,7 +140,6 @@ describe("Overview", () => {
     expect(wrapper.find("h3").text()).toBe("No target selected");
   });*/
 
-
   it("should show the overview card when singleTarget is not empty", async () => {
     const wrapper = shallowMount(Overview, {
       localVue,

@@ -22,14 +22,14 @@
             </div>
           </v-col>
         </v-row>
-        <v-divider  class="mb-2"></v-divider>
+        <v-divider class="mb-2"></v-divider>
         <v-row>
           <v-col> <div class="text-body-1">Dec:</div></v-col>
           <v-col>
             <div class="text-body-1">{{ target.dec }}</div>
           </v-col>
         </v-row>
-        <v-divider  class="mb-2"></v-divider>
+        <v-divider class="mb-2"></v-divider>
         <v-row>
           <v-col><div class="text-body-1">nMatches:</div></v-col>
           <v-col

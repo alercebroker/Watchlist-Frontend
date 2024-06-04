@@ -14,8 +14,8 @@ export default Vue.extend({
   methods: {
     handleUpdatedTab(val: number) {
       this.$emit("updated-tab", val);
-    }
-  }
+    },
+  },
 });
 </script>
 

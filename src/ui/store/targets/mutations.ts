@@ -54,7 +54,7 @@ export const mutations: MutationTree<TargetsState> = {
     state.targets = state.targets.filter((t) => t.id != target);
   },
   [MutationTypes.SELECT_TARGET](state, target: number) {
-    state.targets = state.targets.filter((t) => (t.id === target));
+    state.targets = state.targets.filter((t) => t.id === target);
   },
   [MutationTypes.UPDATE_COUNT](state) {
     state.count = state.count + 1;

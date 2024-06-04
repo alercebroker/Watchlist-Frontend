@@ -264,7 +264,7 @@ export const actions: ActionTree<TargetsState, IRootState> = {
       commit(MutationTypes.SET_LOADING, false);
     }
   },
-  [ActionTypes.setDefaultTargets]({ commit }){
+  [ActionTypes.setDefaultTargets]({ commit }) {
     commit(MutationTypes.SET_DEFAULT_STATE);
   },
 };

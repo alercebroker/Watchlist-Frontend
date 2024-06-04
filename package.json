@@ -10,8 +10,7 @@
     "prettier": "prettier --check .",
     "prettier_write": "prettier --write .",
     "deploy": "vue-cli-service s3-deploy",
-    "test": "jest",
-    "test-no-cache": "jest --no-watchman"
+    "test": "jest"
   },
   "dependencies": {
     "@mdi/font": "^5.9.55",

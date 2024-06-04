@@ -75,11 +75,11 @@ export default Vue.extend({
         this.setDefault();
       }
     },
-    watchlistId(newValue, oldValue){
+    watchlistId(newValue, oldValue) {
       if (newValue != oldValue) {
         this.tab = 0;
       }
-    }
+    },
   },
 });
 </script>

@@ -137,7 +137,7 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-@media (max-width: 1280px) { /* Adjust max-width to match your desired breakpoint */
+@media (max-width: 1280px) {
   .overflow-condition {
     overflow: auto;
   }
@@ -146,5 +146,4 @@ export default Vue.extend({
 .no-uppercase {
   text-transform: none;
 }
-
 </style>
