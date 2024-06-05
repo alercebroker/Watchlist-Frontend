@@ -1,21 +1,16 @@
-import { createLocalVue, mount, shallowMount } from "@vue/test-utils";
-import Vuex, { Store } from "vuex";
-import Vuetify from "vuetify";
-import Vue from "vue";
-import { IRootState } from "@/ui/store/Store.types";
-import { cid, container, resetContainer } from "inversify-props";
-import { IStoreCreator, StoreCreator } from "@/ui/store/StoreCreator";
-import Overview from "../Overview.vue";
-import "./intersectionObserverMock";
-import { Modules } from "@/ui/store/RegisterModules";
-import { mockActions } from "@/ui/store/targets/__tests__/actions.mock";
-import { getters } from "@/ui/store/targets/getters";
-import { Getters as MatchesGetters } from "@/ui/store/matches/getters";
-import { ActionTypes } from "@/ui/store/matches/actions";
-import { ActionTypes as ActionsTargets } from "@/ui/store/targets/actions";
-import { MutationTypes } from "@/ui/store/matches/mutations";
 import { containerBuilder } from "@/ui/app.container";
+import { IStoreCreator, StoreCreator } from "@/ui/store/StoreCreator";
+import { createLocalVue, mount, shallowMount } from "@vue/test-utils";
+import { cid, container, resetContainer } from "inversify-props";
+import Vue from "vue";
+import Vuetify from "vuetify";
+import Vuex, { Store } from "vuex";
 import flushPromises from "flush-promises";
+import Overview from "../Overview.vue";
+import MatchesList from "../MatchesList.vue";
+import { IRootState } from "@/ui/store/Store.types";
+import { Modules } from "@/ui/store/RegisterModules";
+import { Getters as MatchesGetters } from "@/ui/store/matches/getters";
 
 jest.mock("htmx.org", () => ({
   ajax: jest.fn(),
@@ -88,12 +83,8 @@ const modules = (): Modules => ({
     },
     matches: {
       namespaced: true,
-      actions: {
-        [ActionTypes.getAllMatches]: jest.fn(),
-      },
-      mutations: {
-        [MutationTypes.SET_MATCHES]: jest.fn(),
-      },
+      actions: {},
+      mutations: {},
       state: {
         matches: [
           {
@@ -135,10 +126,59 @@ describe("Overview", () => {
     store = storeCreator.create();
   });
 
-  /**
-  it("when singleItem is empty show the respective card", () => {
-    expect(wrapper.find("h3").text()).toBe("No target selected");
-  });*/
+  it("should mount a warning card when singleTarget is empty", async () => {
+    const emptyModules = {
+      modules: {
+        singleTarget: {
+          namespaced: true,
+          actions: {},
+          mutations: {},
+          state: {
+            target: {},
+          },
+          getters: {},
+        },
+        targets: {
+          namespaced: true,
+          actions: {},
+          mutations: {},
+          state: {
+            targets: [],
+          },
+          getters: {},
+        },
+        matches: {
+          namespaced: true,
+          actions: {},
+          mutations: {},
+          state: {
+            matches: [],
+            loading: false,
+          },
+          getters: {
+            formattedMJDMatches: () => [],
+            formattedUTCMatches: () => [],
+          } as MatchesGetters,
+        },
+      },
+    };
+    container.unbind("Modules");
+    container.bind<Modules>("Modules").toConstantValue(emptyModules);
+    container.unbind(cid.StoreCreator);
+    container.addSingleton<IStoreCreator>(StoreCreator);
+    const storeCreator = container.get<IStoreCreator>(cid.StoreCreator);
+    store = storeCreator.create();
+
+    const wrapper = mount(Overview, {
+      localVue,
+      store,
+      vuetify,
+    });
+
+    await flushPromises();
+
+    expect(wrapper.find("#cardOverview").exists()).toBe(false);
+  });
 
   it("should show the overview card when singleTarget is not empty", async () => {
     const wrapper = shallowMount(Overview, {
@@ -150,5 +190,16 @@ describe("Overview", () => {
     const card = wrapper.find("#cardOverview");
 
     expect(card.isVisible()).toBe(true);
+  });
+
+  it("should show the matches component", async () => {
+    const wrapper = mount(Overview, {
+      localVue,
+      store,
+      vuetify,
+    });
+    await flushPromises();
+    const card = wrapper.find("#cardOverview");
+    expect(card.findComponent(MatchesList).exists()).toBe(true);
   });
 });

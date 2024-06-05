@@ -285,16 +285,6 @@ export default Vue.extend({
     formTitle(): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
     },
-    /**
-    displayTarget(): ITargetDisplay[] {
-      return this.targets.map((target) => ({
-        ...target,
-        filter_str:
-          target.filter?.filters?.length > 0
-            ? target.filter.filters.map((filter) => filter.type).join("\n")
-            : "no filter",
-      }));
-    },*/
   },
   methods: {
     ...targetsHelper.mapActions([
