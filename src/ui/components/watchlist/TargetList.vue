@@ -2,12 +2,13 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="displayTarget"
+    :items="targets"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
     @update:items-per-page="onItemsPerPageUpdate"
     :options.sync="tableOptions"
+    v-model="selected"
     item-key="id"
   >
     <template v-slot:top>
@@ -123,11 +124,28 @@
       </v-toolbar>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon :id="'edit' + item.id" small class="mr-2" @click="editItem(item)"
+      <v-icon
+        :id="'edit' + item.id"
+        small
+        :disabled="loading"
+        class="mr-2"
+        @click="editItem(item)"
         >mdi-pencil</v-icon
       >
-      <v-icon id="deleteButton" small @click="deleteItem(item)"
+      <v-icon
+        id="deleteButton"
+        small
+        :disabled="loading"
+        class="mr-2"
+        @click="deleteItem(item)"
         >mdi-delete</v-icon
+      >
+      <v-icon
+        id="detailsButton"
+        small
+        :disabled="loading"
+        @click="onTargetClick(item)"
+        >mdi-eye</v-icon
       >
     </template>
   </v-data-table>
@@ -142,8 +160,10 @@ import {
   ILogicFilterParams,
   IWatchlistFilter,
 } from "@/app/filter/domain/Filter.types";
-import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
+import { ITargetData } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
+import { SingleTargetState } from "@/ui/store/singleTarget/state";
+import { ActionTypes as SingleTargetActions } from "@/ui/store/singleTarget/actions";
 import { ActionTypes } from "@/ui/store/targets/actions";
 import { MutationTypes } from "@/ui/store/targets/mutations";
 import { TargetsState } from "@/ui/store/targets/state";
@@ -158,6 +178,8 @@ import FormFilter from "./FormFilter.vue";
 
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
+const singleTargetHelper = createNamespacedHelpers("singleTarget");
+
 export default Vue.extend({
   components: {
     ButtonBulkUpdate,
@@ -168,6 +190,8 @@ export default Vue.extend({
   },
   data: () => ({
     search: "",
+    singleSelect: true,
+    selected: [],
     headers: [
       {
         text: "Name",
@@ -181,7 +205,9 @@ export default Vue.extend({
       { text: "N matches", value: "nMatches", sortable: false },
       { text: "Actions", value: "actions", sortable: false },
     ],
-    tableOptions: {} as DataOptions,
+    tableOptions: {
+      itemsPerPage: 10,
+    } as DataOptions,
     currentPage: 1,
     editedItem: {
       name: "",
@@ -233,6 +259,11 @@ export default Vue.extend({
         return state.targets;
       },
     }),
+    ...singleTargetHelper.mapState({
+      singleTarget(state: SingleTargetState): ITargetData {
+        return state.target;
+      },
+    }),
     ...targetsHelper.mapState({
       targets(state: TargetsState): ITargetData[] {
         return state.targets;
@@ -254,15 +285,6 @@ export default Vue.extend({
     formTitle(): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
     },
-    displayTarget(): ITargetDisplay[] {
-      return this.targets.map((target) => ({
-        ...target,
-        filter_str:
-          target.filter?.filters?.length > 0
-            ? target.filter.filters.map((filter) => filter.type).join("\n")
-            : "no filter",
-      }));
-    },
   },
   methods: {
     ...targetsHelper.mapActions([
@@ -271,6 +293,7 @@ export default Vue.extend({
       ActionTypes.createTarget,
       ActionTypes.deleteTarget,
     ]),
+    ...singleTargetHelper.mapActions([SingleTargetActions.selectTarget]),
     ...targetsHelper.mapMutations([MutationTypes.SET_ERROR]),
     onPageUpdate(page: number) {
       if (page > this.currentPage && this.nextPage) {
@@ -417,6 +440,10 @@ export default Vue.extend({
     handleFormObject(formObject: any) {
       this.editedFilter = Object.assign({}, formObject);
       this.save();
+    },
+    onTargetClick(newSelection: any) {
+      this.selectTarget(newSelection);
+      this.$emit("updated", 1);
     },
   },
   watch: {

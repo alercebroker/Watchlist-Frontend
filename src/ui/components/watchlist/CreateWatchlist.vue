@@ -122,6 +122,14 @@ export default Vue.extend({
             error: this.handleError,
             complete: this.handleComplete,
           });
+        } else {
+          const emptyCsv = "name,ra,dec,radius,filter\n";
+          parse(emptyCsv, {
+            header: true,
+            skipEmptyLines: true,
+            error: this.handleError,
+            complete: this.handleComplete,
+          });
         }
       }
     },

@@ -19,6 +19,7 @@ export enum ActionTypes {
   deleteTarget = "deleteTarget",
   downloadTargets = "downloadTargets",
   bulkUpdateTargets = "bulkUpdateTargets",
+  setDefaultTargets = "setDefaultTargets",
 }
 
 export type GetTargetsPayload = {
@@ -149,6 +150,7 @@ export const actions: ActionTree<TargetsState, IRootState> = {
     const callbacks: Callbacks = {
       respondWithSuccess: (target: ITargetData) => {
         commit(MutationTypes.APPEND_TARGETS, [target]);
+        commit(MutationTypes.UPDATE_COUNT);
         commit(MutationTypes.SET_ERROR, null);
         commit(MutationTypes.SET_LOADING, false);
       },
@@ -261,5 +263,8 @@ export const actions: ActionTree<TargetsState, IRootState> = {
       commit(MutationTypes.SET_ERROR, error);
       commit(MutationTypes.SET_LOADING, false);
     }
+  },
+  [ActionTypes.setDefaultTargets]({ commit }) {
+    commit(MutationTypes.SET_DEFAULT_STATE);
   },
 };
