@@ -13,7 +13,7 @@
         <v-col cols="12" sm="6" md="4">
           <v-autocomplete
             v-model="itemFilter.params.field"
-            label="Field"
+            label="Property"
             :items="validValuesToInputItems(validFields)"
             :rules="[checkValidFields]"
           ></v-autocomplete>
