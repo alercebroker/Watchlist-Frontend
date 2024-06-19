@@ -1,6 +1,9 @@
 import "reflect-metadata";
 import { container } from "inversify-props";
 import { IHttpService } from "@/shared/http";
+import { ILightCurveRepository } from "@/app/lightcurve/domain/LightCurve.types";
+import { LightCurveService } from "@/app/lightcurve/infrastructure/LightCurveService";
+import { GetLightCurve } from "@/app/lightcurve/use_case/GetLightCurve";
 import { IWatchlistRepository } from "@/app/watchlist/domain";
 import { WatchlistService } from "@/app/watchlist/infrastructure/WatchlistService";
 import { GetAllWatchlists } from "@/app/watchlist/use_case/GetAllWatchlists";
@@ -58,6 +61,8 @@ export function containerBuilder(): void {
   container.addSingleton<IMatchRepository>(MatchService);
   container.addSingleton<UseCaseInteractor>(GetMatches);
   container.addSingleton<UseCaseInteractor>(Activate);
+  container.addSingleton<ILightCurveRepository>(LightCurveService);
+  container.addSingleton<UseCaseInteractor>(GetLightCurve);
   container.bind<Modules>("Modules").toConstantValue(modules);
   container.addSingleton<IStoreCreator>(StoreCreator);
 }

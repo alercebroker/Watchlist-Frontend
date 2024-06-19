@@ -4,6 +4,7 @@ import { TargetsState } from "@/ui/store/targets/state";
 import { SingleTargetState } from "@/ui/store/singleTarget/state";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
 import { MatchesState } from "./matches/state";
+import { LightCurveState } from "./lightcurve/state";
 
 export interface IRootState {
   watchlists: WatchlistState;
@@ -12,6 +13,7 @@ export interface IRootState {
   singleTarget: SingleTargetState;
   singleWatchlist: SingleWatchlistState;
   matches: MatchesState;
+  lightcurve: LightCurveState;
 }
 
 export interface IStoreModule {

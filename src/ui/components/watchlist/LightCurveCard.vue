@@ -14,7 +14,10 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { createNamespacedHelpers } from "vuex";
 import htmx from "htmx.org";
+
+const lightcurveHelper = createNamespacedHelpers("lightcurve");
 
 export default Vue.extend({
   props: {
@@ -42,8 +45,12 @@ export default Vue.extend({
         this.onIsDarkChange(this.isDark());
       }
     });
+    document.body.addEventListener('onDetectionClick', (val: any) => {
+      if (val) console.log(val);
+    });
   },
   methods: {
+    ...lightcurveHelper.mapActions([ 'getLightCurve' ]),
     async callLightCurve(oid: string) {
       const url = `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${oid}`;
       const myDiv = document.getElementById("lightcurve-app");
@@ -51,6 +58,7 @@ export default Vue.extend({
         myDiv.innerHTML = `<div hx-get=${url} hx-trigger="updateLightcurve from:body" hx-swap="outerHTML"></div>`;
         htmx.process(myDiv);
         document.body.dispatchEvent(new Event("updateLightcurve"));
+        this.getLightCurve(this.ObjectId);
         this.$emit("loadComplete", false);
       }
     },
