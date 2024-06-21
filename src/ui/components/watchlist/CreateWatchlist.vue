@@ -94,7 +94,15 @@ export default Vue.extend({
       this.SET_ERROR(error);
     },
     async handleComplete(results: ParseResult<CsvTarget>) {
-      this.parsedCsv = results.data;
+      if (!results.meta.fields?.includes("filter")) {
+        this.parsedCsv = results.data.map((object) => {
+          object["filter"] = "{'fields': {}, 'filters': []}";
+          return object;
+        });
+      } else {
+        this.parsedCsv = results.data;
+      }
+
       const watchlistInput: WatchlistInput = {
         title: this.title,
         targets: this.parsedCsv.map(
@@ -110,8 +118,12 @@ export default Vue.extend({
             } as ITargetData)
         ),
       };
+
       await this.createWatchlist(watchlistInput);
       if (!this.errored) this.$emit("created");
+    },
+    async handleMissingField() {
+      return false;
     },
     async onCreateClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
