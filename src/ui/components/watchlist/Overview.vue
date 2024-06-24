@@ -4,7 +4,7 @@
       <h3>No target selected</h3>
     </v-card-text>
   </v-card>
-  <v-card v-else id="cardOverview" max-height="780" class="overflow-condition">
+  <v-card v-else id="cardOverview" max-height="800" class="overflow-condition">
     <overview-layout>
       <template v-slot:selecter>
         <v-select
