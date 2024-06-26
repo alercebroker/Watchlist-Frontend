@@ -8,9 +8,10 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title
-            >1. The header must be: name, ra, dec, radius and filter (optional),
-            all in lower case.</v-list-item-title
-          >
+            >1. The header should include the following columns in lowercase:
+            name, ra, dec, radius, and (optionally) filter. For more details,
+            please refer to the section "set filters".
+          </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
@@ -110,8 +111,9 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title
-            >10. In the Filters tab you can see all your
-            targets.</v-list-item-title
+            >10. In the Filters tab, you can see all your targets. Here you can
+            modify the properties and conditions of the targets one by
+            one.</v-list-item-title
           >
         </v-list-item-content>
       </v-list-item>
