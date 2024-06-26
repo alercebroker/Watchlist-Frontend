@@ -3,26 +3,33 @@
     <v-card class="mx-auto">
       <v-card-title>Types of filters</v-card-title>
       <v-card-text>
-        To set a filter on all targets in a watchlist, it's important to first
-        understand the different types of filters available.
+        To set a filter on every target in a watchlist, the available filters
+        are the following:
       </v-card-text>
+
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title
-            >1. Constant: filter by constant magnitude, notifies all alerts
+            >1. No filter: no filter applied to the targets of a watchlist.
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            >2. Constant: filter by constant magnitude, notifies all alerts
             whose magnitude meets the user's condition, e.g., alert whose
             magnitude is less than a value X given by the
             user.</v-list-item-title
           >
         </v-list-item-content>
       </v-list-item>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title
-            >2. No filter: no filter applied to the targets of a watchlist.
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+
+      <v-card-title> Modify a filter of a target </v-card-title>
+      <v-card-text>
+        A filter of a target can be modified through the functionalities of the
+        actions column.
+      </v-card-text>
 
       <v-card-title> Parameters </v-card-title>
       <v-card-text>
