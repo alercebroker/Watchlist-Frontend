@@ -8,12 +8,8 @@ import { ILightCurveRepository } from "../domain/LightCurve.types";
 
 export class GetLightCurve implements UseCaseInteractor {
   @inject() LightCurveService!: ILightCurveRepository;
-  async execute(
-    params: { objectId: string },
-    callbacks: Callbacks
-  ): Promise<void> {
-    const result = await this.LightCurveService.getLightCurve(params.objectId);
-
+  async execute(url: string, callbacks: Callbacks): Promise<void> {
+    const result = await this.LightCurveService.getLightCurve(url);
     result
       .map((lightcurve) => {
         callbacks.respondWithSuccess(lightcurve);

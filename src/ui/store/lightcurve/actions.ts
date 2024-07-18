@@ -12,7 +12,7 @@ import { HttpError } from "@/shared/http";
 import { ParseError } from "@/shared/error/ParseError";
 
 export enum ActionTypes {
-  getLightCurve = "getLightCurve",
+  getLightCurveData = "getLightCurveData",
 }
 
 export type SelectTargetPayload = {
@@ -20,12 +20,12 @@ export type SelectTargetPayload = {
 };
 
 export const actions: ActionTree<LightCurveState, IRootState> = {
-  [ActionTypes.getLightCurve]({ commit }, payload) {
+  [ActionTypes.getLightCurveData]({ commit }, payload) {
     commit(MutationTypes.SET_LOADING, true);
     const interactor = container.get<UseCaseInteractor>(cid.GetLightCurve);
     const callbacks: Callbacks = {
       respondWithSuccess: (lightcurve: ILightCurveData) => {
-        console.log(lightcurve);
+        commit(MutationTypes.SET_DATA, lightcurve);
         commit(MutationTypes.SET_ERROR, null);
         commit(MutationTypes.SET_LOADING, false);
       },

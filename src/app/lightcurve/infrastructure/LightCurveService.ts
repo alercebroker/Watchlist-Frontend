@@ -1,6 +1,7 @@
 import { inject } from "inversify-props";
 import { ParseError } from "@/shared/error/ParseError";
-import { HttpError, IHttpService } from "@/shared/http";
+import { HttpError } from "@/shared/http";
+import { IHttpServiceLightCurve } from "@/shared/http/HttpServiceLightCurve";
 import { Result } from "neverthrow";
 import {
   ILightCurveData,
@@ -8,32 +9,28 @@ import {
 } from "../domain/LightCurve.types";
 import { LightCurveApiResult } from "./LightCurveService.types";
 import { LightCurveApiParser } from "./LightCurveParser";
-import { UsersApiService } from "@/shared/http/UsersApiService";
+import { LightCurveApiService } from "@/shared/http/LightCurveApiService";
 import axios from "axios";
 
 export class LightCurveService implements ILightCurveRepository {
-  httpService: IHttpService;
+  httpService: IHttpServiceLightCurve;
   parser: LightCurveApiParser;
 
-  constructor(@inject() usersApiService: UsersApiService) {
+  constructor(@inject() LightCurveApiService: LightCurveApiService) {
     this.parser = new LightCurveApiParser();
-    this.httpService = usersApiService;
+    this.httpService = LightCurveApiService;
   }
 
-  async getLightCurve(params?: {
-    oid?: string;
-  }): Promise<Result<ILightCurveData, ParseError | HttpError>> {
-    const parseTo = (
-      response: LightCurveApiResult
-    ): Result<ILightCurveData, ParseError> => {
-      const lightcurve = this.parser.toDomain(response);
-      return lightcurve;
+  async getLightCurve(url: string): Promise<Result<ILightCurveData, ParseError | HttpError>> {
+    const parseTo = (response: LightCurveApiResult) => {
+      return this.parser.toDomain(response);
     };
-    console.log(params);
 
-    const response = await axios.get(
-      `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${params?.oid}`
+    const response = await this.httpService.get(
+      { url: `/lightcurve/lightcurve/${url}`},
+      { parseTo }
     );
-    return response.data;
+
+    return response;
   }
 }

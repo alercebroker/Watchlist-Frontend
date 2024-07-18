@@ -50,7 +50,7 @@ export default Vue.extend({
     });
   },
   methods: {
-    ...lightcurveHelper.mapActions([ 'getLightCurve' ]),
+    ...lightcurveHelper.mapActions([ 'getLightCurveData' ]),
     async callLightCurve(oid: string) {
       const url = `https://api.alerce.online/v2/lightcurve/htmx/lightcurve?oid=${oid}`;
       const myDiv = document.getElementById("lightcurve-app");
@@ -58,7 +58,7 @@ export default Vue.extend({
         myDiv.innerHTML = `<div hx-get=${url} hx-trigger="updateLightcurve from:body" hx-swap="outerHTML"></div>`;
         htmx.process(myDiv);
         document.body.dispatchEvent(new Event("updateLightcurve"));
-        this.getLightCurve(this.ObjectId);
+        this.getLightCurveData(this.ObjectId);
         this.$emit("loadComplete", false);
       }
     },

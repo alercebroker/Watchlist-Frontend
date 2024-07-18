@@ -24,6 +24,7 @@ import { IMatchRepository } from "@/app/match/domain/Match.types";
 import { MatchService } from "@/app/match/infrastructure/MatchService";
 import { GetMatches } from "@/app/match/use_case/GetMatches";
 import { UsersApiService } from "@/shared/http/UsersApiService";
+import { LightCurveApiService } from "@/shared/http/LightCurveApiService";
 import { modules, Modules } from "./store/RegisterModules";
 import { IStoreCreator, StoreCreator } from "./store/StoreCreator";
 import { Activate } from "@/app/user/use_case/Activate";
@@ -38,6 +39,7 @@ import { EditTargetsWatchlist } from "@/app/watchlist/use_case/EditTargetsWatchl
 
 export function containerBuilder(): void {
   container.addSingleton<IHttpService>(UsersApiService);
+  container.addSingleton<IHttpService>(LightCurveApiService);
   container.addSingleton<IUserRepository>(AuthService);
   container.addSingleton<UseCaseInteractor>(RegisterUser);
   container.addSingleton<UseCaseInteractor>(Login);

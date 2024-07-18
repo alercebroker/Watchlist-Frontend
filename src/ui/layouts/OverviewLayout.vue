@@ -5,20 +5,25 @@
         <slot name="selecter"></slot>
       </v-col>
     </v-row>
-    <v-row justify="start">
+    <v-row justify="center">
       <v-col lg="7" md="11" sm="11">
         <slot name="lightcurve"></slot>
       </v-col>
-      <v-col lg="4" md="11" sm="11" class="pa-0">
-        <v-row>
+      <v-col lg="4" md="11" sm="11">
+        <v-row justify="center">
           <v-col lg="12" md="12" sm="12">
             <slot name="target"></slot>
           </v-col>
-          <v-row>
-            <v-col lg="12" md="12" sm="12">
+          <v-row justify="center">
+            <v-col lg="11" md="12" sm="12">
               <slot name="matches"></slot>
             </v-col>
-            <v-col md="12" sm="12" class="pb-8 d-flex flex-row-reverse">
+            <v-col
+              lg="11"
+              md="12"
+              sm="12"
+              class="pb-8 pt-0 d-flex flex-row-reverse"
+            >
               <slot name="alertInfo"></slot>
             </v-col>
           </v-row>

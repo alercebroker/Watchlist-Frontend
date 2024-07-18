@@ -4,7 +4,7 @@
       <h3>No target selected</h3>
     </v-card-text>
   </v-card>
-  <v-card v-else id="cardOverview" max-height="780" class="overflow-condition">
+  <v-card v-else id="cardOverview" max-height="800" class="overflow-condition">
     <overview-layout>
       <template v-slot:selecter>
         <v-select
@@ -21,17 +21,35 @@
           @loadComplete="handleLoading()"
         />
       </template>
+
       <template v-slot:target>
-        <TargetCard :target="singleItem" :loading="singleItemLoading" />
+        <TargetCard
+          v-if="disableForm"
+          :target="singleItem"
+          :loading="singleItemLoading"
+        />
       </template>
       <template v-slot:matches>
         <matches-list
+          v-if="disableForm"
           :target="singleItem"
           :ObjectId="selectedObject"
           @matchSelected="onMatchClick"
         />
       </template>
+
       <template v-slot:alertInfo>
+        <v-btn
+          id="add-filter"
+          class="no-uppercase mx-2"
+          :disabled="currentOid ? false : true"
+          @click="handleFormRequest"
+          color="primary"
+          small
+          dark
+        >
+          Add Filter
+        </v-btn>
         <v-btn
           id="explorer-button"
           class="no-uppercase"
@@ -76,12 +94,14 @@ export default Vue.extend({
     selectedMatch: IMatchData | null;
     selectedObject: string | null;
     dateFormat: string;
+    disableForm: boolean;
     loadingLightcurve: boolean;
   } => ({
     selectedMatch: null,
     selectedObject: "",
     dateFormat: "mjd",
     loadingLightcurve: true,
+    disableForm: true,
   }),
   computed: {
     ...matchesHelper.mapGetters(["formattedUTCMatches"]),
@@ -120,6 +140,9 @@ export default Vue.extend({
     },
     handleLoading() {
       this.loadingLightcurve = false;
+    },
+    handleFormRequest() {
+      this.disableForm = !this.disableForm;
     },
   },
   watch: {

@@ -1,6 +1,6 @@
-import { IDetections, INonDetections } from "../domain";
+import { IDetections, INonDetections } from "../domain/LightCurve.types";
 
 export interface LightCurveApiResult {
   detections: IDetections[];
-  nonDetections: INonDetections[];
+  non_detections: INonDetections[];
 }

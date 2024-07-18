@@ -61,6 +61,6 @@ export interface ILightCurveData {
 
 export interface ILightCurveRepository {
   getLightCurve(
-    params?: string
+    url: string
   ): Promise<Result<ILightCurveData, ParseError | HttpError>>;
 }

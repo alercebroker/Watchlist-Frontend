@@ -118,9 +118,7 @@ export default Vue.extend({
             } as ITargetData)
         ),
       };
-
-      console.log(watchlistInput.targets);
-
+      
       await this.createWatchlist(watchlistInput);
       if (!this.errored) this.$emit("created");
     },

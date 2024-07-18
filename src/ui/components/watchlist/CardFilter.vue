@@ -12,7 +12,7 @@
     <v-dialog v-model="confirmUpdate" max-width="500px" persistent>
       <v-card :loading="loading">
         <v-card-title class="text-h5" style="word-break: break-word">
-          ¿Are you sure you want to change all the filters in the watchlist?
+          Are you sure you want to change all the filters in the watchlist?
         </v-card-title>
 
         <v-card-actions>

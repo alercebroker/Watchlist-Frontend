@@ -47,6 +47,30 @@
         </v-col>
       </v-row>
     </template>
+    <template v-if="itemFilter.type === 'difference'">
+      <v-row>
+        <v-col cols="12" sm="6" md="4">
+          <v-text-field
+            v-model="itemFilter.params.constant"
+            label="mag history"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" sm="6" md="4">
+          <v-select
+            v-model="itemFilter.params.op"
+            label="Operation"
+            :items="validValuesToInputItems(validOperations)"
+            :rules="[checkValidOperations]"
+          ></v-select>
+        </v-col>
+        <v-col cols="12" sm="6" md="4">
+          <v-text-field
+            v-model="itemFilter.params.constant"
+            label="Value"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+    </template>
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn color="blue darken-1" text @click="sendClose"> Cancel </v-btn>
@@ -124,6 +148,7 @@ export default defineComponent({
       },
       validFilters: {
         Constant: "constant",
+        Difference: "difference",
         "No filter": "",
       },
     };
@@ -190,7 +215,7 @@ export default defineComponent({
         if (params.constant != 0) {
           return true;
         } else {
-          return "It must be diffent of 0";
+          return "It must be different of 0";
         }
       } else {
         return "The constant must be a number";

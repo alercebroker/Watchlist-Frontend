@@ -11,7 +11,7 @@ export class LightCurveApiParser {
     try {
       const lightcurveData: ILightCurveData = {
         detections: apiResponse.detections,
-        nonDetections: apiResponse.nonDetections,
+        nonDetections: apiResponse.non_detections,
       };
       const lightcurve = new LightCurve(lightcurveData);
       return ok(lightcurve);
