@@ -190,7 +190,7 @@ export default defineComponent({
         if (params.constant != 0) {
           return true;
         } else {
-          return "It must be diffent of 0";
+          return "It must be different of 0";
         }
       } else {
         return "The constant must be a number";
