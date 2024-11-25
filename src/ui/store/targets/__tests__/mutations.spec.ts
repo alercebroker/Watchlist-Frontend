@@ -49,6 +49,10 @@ describe("UPDATE_TARGET", () => {
       ra: 1,
       dec: 2,
       radius: 3,
+      filter: {
+        fields: {},
+        filters: [{}],
+      },
     } as ITargetData;
     store.commit("targets/UPDATE_TARGET", target);
     expect(store.state.targets.targets[0]).toStrictEqual(target);

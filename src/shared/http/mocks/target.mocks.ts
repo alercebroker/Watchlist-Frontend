@@ -11,6 +11,10 @@ export const mockTargetsByWatchlist = {
       ra: 10,
       dec: 20,
       n_matches: 5,
+      filter: {
+        fields: {},
+        filters: [],
+      },
       last_match: new Date(10, 10, 10).toISOString(),
     },
     {
@@ -21,6 +25,10 @@ export const mockTargetsByWatchlist = {
       ra: 20,
       dec: 20,
       n_matches: 2,
+      filter: {
+        fields: {},
+        filters: [],
+      },
       last_match: new Date(10, 10, 10).toISOString(),
     },
   ],
