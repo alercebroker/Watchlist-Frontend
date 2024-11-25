@@ -1,136 +1,149 @@
 <template>
-  <overview-layout>
-    <template v-slot:targets>
-      <target-scrolling-list
-        :targets="targets"
-        :loading="loadingTargets"
-        @targetSelected="onTargetClick"
-        @nextPage="onTargetsNextPage"
-      />
-    </template>
-    <template v-slot:matches>
-      <matches-scroling-list
-        :matches="matches"
-        :loading="loadingMatches"
-        :selectedTarget="selectedTarget"
-        @matchSelected="onMatchClick"
-        @nextPage="onMatchesNextPage"
-      />
-    </template>
-    <template v-slot:alertInfo>
-      <v-card>
-        <v-card-title>Alert Info</v-card-title>
-        <v-card-text>
-          Link to Explorer:
-          <a :href="'https://alerce.online/object/' + currentOid">{{
-            currentOid
-          }}</a>
-        </v-card-text>
-      </v-card>
-    </template>
-  </overview-layout>
+  <v-card v-if="Object.keys(singleItem).length == 0">
+    <v-card-text class="d-flex justify-center">
+      <h3>No target selected</h3>
+    </v-card-text>
+  </v-card>
+  <v-card v-else id="cardOverview" max-height="800" class="overflow-condition">
+    <overview-layout>
+      <template v-slot:selecter>
+        <v-select
+          v-model="selectedObject"
+          :items="Objects"
+          density="compact"
+          label="Objects"
+        ></v-select>
+      </template>
+      <template v-slot:lightcurve>
+        <LigthCurveCard
+          :ObjectId="selectedObject"
+          :loading="loadingLightcurve"
+          @loadComplete="handleLoading()"
+        />
+      </template>
+      <template v-slot:target>
+        <TargetCard :target="singleItem" :loading="singleItemLoading" />
+      </template>
+      <template v-slot:matches>
+        <matches-list
+          :target="singleItem"
+          :ObjectId="selectedObject"
+          @matchSelected="onMatchClick"
+        />
+      </template>
+      <template v-slot:alertInfo>
+        <v-btn
+          id="explorer-button"
+          class="no-uppercase"
+          :disabled="currentOid ? false : true"
+          @click="goToLink"
+          color="primary"
+          small
+          dark
+        >
+          ALeRCE Explorer
+        </v-btn>
+      </template>
+    </overview-layout>
+  </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { createNamespacedHelpers } from "vuex";
 import { TargetsState } from "@/ui/store/targets/state";
-import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
+import { SingleTargetState } from "@/ui/store/singleTarget/state";
 import { ITargetData } from "@/app/target/domain/Target.types";
-import { MatchesState } from "@/ui/store/matches/state";
 import { IMatchData } from "@/app/match/domain/Match.types";
-import { MutationTypes } from "@/ui/store/matches/mutations";
-import TargetScrollingList from "./TargetScrollingList.vue";
 import { ActionTypes as TargetActionTypes } from "@/ui/store/targets/actions";
-import MatchesScrolingList from "./MatchesScrolingList.vue";
+import TargetCard from "./TargetCard.vue";
+import LigthCurveCard from "./LightCurveCard.vue";
+import MatchesList from "./MatchesList.vue";
 import OverviewLayout from "@/ui/layouts/OverviewLayout.vue";
 
 const targetsHelper = createNamespacedHelpers("targets");
-const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const matchesHelper = createNamespacedHelpers("matches");
+const singleTargetHelper = createNamespacedHelpers("singleTarget");
+
 export default Vue.extend({
-  components: { TargetScrollingList, MatchesScrolingList, OverviewLayout },
+  components: {
+    TargetCard,
+    MatchesList,
+    OverviewLayout,
+    LigthCurveCard,
+  },
   data: (): {
     selectedMatch: IMatchData | null;
-    selectedTarget: ITargetData | null;
+    selectedObject: string | null;
+    dateFormat: string;
+    loadingLightcurve: boolean;
   } => ({
     selectedMatch: null,
-    selectedTarget: null,
+    selectedObject: "",
+    dateFormat: "mjd",
+    loadingLightcurve: true,
   }),
   computed: {
-    ...watchlistHelper.mapState({
-      watchlistId: function (state: SingleWatchlistState): number {
-        return state.id;
-      },
-    }),
+    ...matchesHelper.mapGetters(["formattedUTCMatches"]),
+    Objects: function (): IMatchData[] {
+      return Array.from(
+        new Set(this.formattedUTCMatches.map((e: IMatchData) => e.object_id))
+      );
+    },
     ...targetsHelper.mapState({
       targets: function (state: TargetsState): ITargetData[] {
         return state.targets;
       },
-      targetsNextPage: function (state: TargetsState): string | null {
-        return state.nextPage;
-      },
-      loadingTargets: function (state: TargetsState): boolean {
-        return state.loading;
-      },
     }),
-    ...matchesHelper.mapState({
-      matches: function (state: MatchesState): IMatchData[] {
-        return state.matches;
+    ...singleTargetHelper.mapState({
+      singleItem: function (state: SingleTargetState): ITargetData {
+        return state.target;
       },
-      loadingMatches: function (state: MatchesState): boolean {
+      singleItemLoading: function (state: SingleTargetState): boolean {
         return state.loading;
-      },
-      matchesNextPage: function (): boolean {
-        // TODO return state next page
-        return false;
       },
     }),
     currentOid: function (): string {
-      return this.selectedMatch ? this.selectedMatch.object_id : "";
+      return this.selectedObject ? this.selectedObject : "";
     },
   },
   methods: {
-    ...matchesHelper.mapActions(["getAllMatches"]),
-    ...matchesHelper.mapMutations([MutationTypes.SET_MATCHES]),
     ...targetsHelper.mapActions([TargetActionTypes.getTargets]),
-    onTargetClick(item: ITargetData) {
-      this.selectedTarget = item;
-      this.getAllMatches({
-        url: item.url,
-        watchlistId: this.watchlistId,
-        targetId: item.id,
-      });
-    },
     onMatchClick(item: IMatchData) {
       this.selectedMatch = item;
     },
-    onTargetsNextPage() {
-      if (this.targetsNextPage) {
-        this.getTargets({
-          params: { url: this.targetsNextPage, append: true },
-        });
-      }
+    onSelectedObject(item: string) {
+      this.selectedObject = item;
     },
-    onMatchesNextPage() {
-      if (this.matchesNextPage) {
-        this.getAllMatches({
-          params: { url: this.matchesNextPage, append: true },
-        });
-      }
+    goToLink() {
+      window.open("https://alerce.online/object/" + this.currentOid, "_blank");
+    },
+    handleLoading() {
+      this.loadingLightcurve = false;
     },
   },
   watch: {
     targets: {
       handler: function () {
         this.selectedMatch = null;
-        this.selectedTarget = null;
-        this.SET_MATCHES([]);
       },
       deep: true,
+    },
+    Objects(newVal) {
+      this.selectedObject = newVal.length > 0 ? newVal[0] : null;
     },
   },
 });
 </script>
 
-<style></style>
+<style scoped>
+@media (max-width: 1280px) {
+  .overflow-condition {
+    overflow: auto;
+  }
+}
+
+.no-uppercase {
+  text-transform: none;
+}
+</style>

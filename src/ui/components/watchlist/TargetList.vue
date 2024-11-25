@@ -2,12 +2,13 @@
   <v-data-table
     :server-items-length="targetCount"
     :headers="headers"
-    :items="displayTarget"
+    :items="targets"
     :search="search"
     :loading="loading"
     @update:page="onPageUpdate"
     @update:items-per-page="onItemsPerPageUpdate"
     :options.sync="tableOptions"
+    v-model="selected"
     item-key="id"
   >
     <template v-slot:top>
@@ -17,11 +18,17 @@
 
         <button-download-targets />
         <button-bulk-update />
-        <v-btn color="primary" small dark class="mb-2 mr-1" @click="confirmDialog=true">
+        <v-btn
+          color="primary"
+          small
+          dark
+          class="mb-2 mr-1"
+          @click="confirmDialog = true"
+        >
           Set Filters
         </v-btn>
-        <v-dialog v-model="confirmDialog" max-width="500px">
-          <FormFilter @booleanClose="handleBooleanClose"/>
+        <v-dialog v-model="confirmDialog" max-width="500px" persistent>
+          <CardFilter @Close="handleClose" />
         </v-dialog>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
@@ -45,110 +52,53 @@
 
             <v-card-text>
               <v-container>
-                <v-form ref="form">
-                  <generic-error v-if="genericError" :error="genericError" />
-                  <v-row>
-                    <v-col class="d-block">
-                      <v-text-field
-                        v-model="editedItem.name"
-                        label="Target Name"
-                        :error-messages="detailError.name"
-                      ></v-text-field>
-                    </v-col> </v-row
-                  >««
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.ra"
-                        label="ra"
-                        type="number"
-                        :error-messages="detailError.ra"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.dec"
-                        label="dec"
-                        type="number"
-                        :error-messages="detailError.dec"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.radius"
-                        label="radius"
-                        :error-messages="detailError.radius"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        v-model="editedFilter.type"
-                        label="Condition"
-                        :items="validValuesToInputItems(validFilters)"
-                      ></v-select>
-                    </v-col>
-
-                    <template v-if="editedFilter.type === 'constant'">
-                      <v-col cols="12" sm="6" md="4">
-                        <v-autocomplete
-                          label="Field"
-                          v-model="editedFilter.params.field"
-                          :items="validValuesToInputItems(validFields)"
-                          :rules="[checkValidFields]"
-                        ></v-autocomplete>
-                      </v-col>
-                    </template>
-                  </v-row>
-                  <template v-if="editedFilter.type === 'constant'">
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-select
-                          label="Operation"
-                          :items="validValuesToInputItems(validOperations)"
-                          v-model="editedFilter.params.op"
-                          :rules="[checkValidOperations]"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Value"
-                          v-model="editedFilter.params.constant"
-                          :rules="[magnitudIsValid]"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-autocomplete
-                          label="Band"
-                          v-model="editedFilter.band"
-                          :items="validValuesToInputItems(validBands)"
-                          :rules="[checkValidBands]"
-                        ></v-autocomplete>
-                      </v-col>
-                    </v-row>
-                  </template>
-                </v-form>
+                <generic-error v-if="genericError" :error="genericError" />
+                <v-row>
+                  <v-col class="d-block">
+                    <v-text-field
+                      v-model="editedItem.name"
+                      label="Target Name"
+                      :error-messages="detailError.name"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.ra"
+                      label="ra"
+                      type="number"
+                      :error-messages="detailError.ra"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.dec"
+                      label="dec"
+                      type="number"
+                      :error-messages="detailError.dec"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.radius"
+                      label="radius"
+                      :error-messages="detailError.radius"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <FormFilter
+                  @Close="close"
+                  @on-submit="handleFormObject"
+                  :filterObject="editedFilter"
+                />
               </v-container>
             </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-              <v-btn
-                id="saveButton"
-                color="blue darken-1"
-                text
-                @click="checkHandler"
-              >
-                Save
-              </v-btn>
-            </v-card-actions>
           </v-card>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
-            <v-card-title class="text-h5"
+            <v-card-title class="text-h5" style="word-break: break-word"
               >Are you sure you want to delete this target?</v-card-title
             >
             <v-card-actions>
@@ -174,11 +124,28 @@
       </v-toolbar>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon :id="'edit' + item.id" small class="mr-2" @click="editItem(item)"
+      <v-icon
+        :id="'edit' + item.id"
+        small
+        :disabled="loading"
+        class="mr-2"
+        @click="editItem(item)"
         >mdi-pencil</v-icon
       >
-      <v-icon id="deleteButton" small @click="deleteItem(item)"
+      <v-icon
+        id="deleteButton"
+        small
+        :disabled="loading"
+        class="mr-2"
+        @click="deleteItem(item)"
         >mdi-delete</v-icon
+      >
+      <v-icon
+        id="detailsButton"
+        small
+        :disabled="loading"
+        @click="onTargetClick(item)"
+        >mdi-eye</v-icon
       >
     </template>
   </v-data-table>
@@ -193,8 +160,10 @@ import {
   ILogicFilterParams,
   IWatchlistFilter,
 } from "@/app/filter/domain/Filter.types";
-import { ITargetData, ITargetDisplay } from "@/app/target/domain/Target.types";
+import { ITargetData } from "@/app/target/domain/Target.types";
 import { SingleWatchlistState } from "@/ui/store/singleWatchlist/state";
+import { SingleTargetState } from "@/ui/store/singleTarget/state";
+import { ActionTypes as SingleTargetActions } from "@/ui/store/singleTarget/actions";
 import { ActionTypes } from "@/ui/store/targets/actions";
 import { MutationTypes } from "@/ui/store/targets/mutations";
 import { TargetsState } from "@/ui/store/targets/state";
@@ -204,14 +173,25 @@ import { createNamespacedHelpers } from "vuex";
 import GenericError from "../shared/GenericError.vue";
 import ButtonBulkUpdate from "./ButtonBulkUpdate.vue";
 import ButtonDownloadTargets from "./ButtonDownloadTargets.vue";
+import CardFilter from "@/ui/components/watchlist/CardFilter.vue";
 import FormFilter from "./FormFilter.vue";
 
 const watchlistHelper = createNamespacedHelpers("singleWatchlist");
 const targetsHelper = createNamespacedHelpers("targets");
+const singleTargetHelper = createNamespacedHelpers("singleTarget");
+
 export default Vue.extend({
-  components: { ButtonBulkUpdate, GenericError, ButtonDownloadTargets, FormFilter },
+  components: {
+    ButtonBulkUpdate,
+    GenericError,
+    ButtonDownloadTargets,
+    CardFilter,
+    FormFilter,
+  },
   data: () => ({
     search: "",
+    singleSelect: true,
+    selected: [],
     headers: [
       {
         text: "Name",
@@ -225,9 +205,17 @@ export default Vue.extend({
       { text: "N matches", value: "nMatches", sortable: false },
       { text: "Actions", value: "actions", sortable: false },
     ],
-    tableOptions: {} as DataOptions,
+    tableOptions: {
+      itemsPerPage: 10,
+    } as DataOptions,
     currentPage: 1,
     editedItem: {
+      name: "",
+      ra: 0,
+      dec: 0,
+      radius: 0,
+    },
+    defaultItem: {
       name: "",
       ra: 0,
       dec: 0,
@@ -242,12 +230,6 @@ export default Vue.extend({
       },
       band: 0,
     },
-    defaultItem: {
-      name: "",
-      ra: 0,
-      dec: 0,
-      radius: 0,
-    },
     defaultFilter: {
       type: "",
       params: {
@@ -260,25 +242,6 @@ export default Vue.extend({
     editedIndex: -1,
     dialog: false,
     dialogDelete: false,
-    validBands: {
-      g: 1,
-      r: 2,
-      i: 3,
-    },
-    validOperations: {
-      Equal: "eq",
-      "Less than": "less",
-      "Less than or equal": "less eq",
-      "Greater than": "greater",
-      "Greater than or equal": "greater eq",
-    },
-    validFields: {
-      mag: "mag",
-    },
-    validFilters: {
-      Constant: "constant",
-      "No filter": "",
-    },
     confirmDialog: false,
   }),
   mounted() {
@@ -294,6 +257,11 @@ export default Vue.extend({
       },
       targetsUrl(state: SingleWatchlistState): string {
         return state.targets;
+      },
+    }),
+    ...singleTargetHelper.mapState({
+      singleTarget(state: SingleTargetState): ITargetData {
+        return state.target;
       },
     }),
     ...targetsHelper.mapState({
@@ -317,31 +285,6 @@ export default Vue.extend({
     formTitle(): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
     },
-    displayTarget(): ITargetDisplay[] {
-      return this.targets.map((target) => ({
-        ...target,
-        filter_str:
-          target.filter?.filters?.length > 0
-            ? target.filter.filters.map((filter) => filter.type).join("\n")
-            : "no filter",
-      }));
-    },
-    magnitudIsValid(): string | boolean {
-      let constant = this.editedFilter.params.constant;
-      if (typeof constant !== "undefined") {
-        if (!isNaN(parseFloat(constant))) {
-          return true;
-        } else {
-          return "Must be a number";
-        }
-      } else {
-        return "Must be defined";
-      }
-    },
-    operationIsValid(): boolean {
-      let op = this.editedFilter.params.op;
-      return Object.values(this.validOperations).includes(op);
-    },
   },
   methods: {
     ...targetsHelper.mapActions([
@@ -350,6 +293,7 @@ export default Vue.extend({
       ActionTypes.createTarget,
       ActionTypes.deleteTarget,
     ]),
+    ...singleTargetHelper.mapActions([SingleTargetActions.selectTarget]),
     ...targetsHelper.mapMutations([MutationTypes.SET_ERROR]),
     onPageUpdate(page: number) {
       if (page > this.currentPage && this.nextPage) {
@@ -364,14 +308,6 @@ export default Vue.extend({
         params: { url: this.targetsUrl },
         paginationParams: { page_size: perPage },
       });
-    },
-    async checkHandler() {
-      if (this.$refs.form) {
-        const valid = await (this.$refs.form as any).validate();
-        if (valid) {
-          this.save();
-        }
-      }
     },
     async save() {
       const filter = this.parseToFilter();
@@ -392,7 +328,6 @@ export default Vue.extend({
       }
       this.close();
     },
-
     close() {
       this.SET_ERROR(null);
       this.dialog = false;
@@ -499,47 +434,16 @@ export default Vue.extend({
       }
       return Object.assign({}, this.defaultFilter);
     },
-    rValid<T extends string | number>(validValues: Record<string, T>) {
-      return Object.fromEntries(
-        Object.entries(validValues).map(([text, value]) => [value, text])
-      ) as Record<T, string>;
-    },
-    checkValidFields() {
-      let field: string = this.editedFilter.params.field;
-      if (Object.keys(this.validFields).includes(field)) {
-        return true;
-      } else {
-        return "The field must be one of the options shown";
-      }
-    },
-    checkValidBands() {
-      let rValidBands = this.rValid(this.validBands);
-      let band = this.editedFilter.band;
-      if (rValidBands[band]) {
-        return true;
-      } else {
-        return "The band must be one of the options shown";
-      }
-    },
-    checkValidOperations() {
-      let rValidOperations = this.rValid(this.validOperations);
-      let op = this.editedFilter.params.op;
-      if (rValidOperations[op]) {
-        return true;
-      } else {
-        return "The operation must be one of the options shown";
-      }
-    },
-    validValuesToInputItems<T extends string | number>(
-      validValues: Record<string, T>
-    ) {
-      return Object.entries(validValues).map(([text, value]) => ({
-        text,
-        value,
-      }));
-    },
-    handleBooleanClose(show: boolean) {
+    handleClose(show: boolean) {
       this.confirmDialog = show;
+    },
+    handleFormObject(formObject: any) {
+      this.editedFilter = Object.assign({}, formObject);
+      this.save();
+    },
+    onTargetClick(newSelection: any) {
+      this.selectTarget(newSelection);
+      this.$emit("updated", 1);
     },
   },
   watch: {

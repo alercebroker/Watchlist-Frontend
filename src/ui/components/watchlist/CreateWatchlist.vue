@@ -55,6 +55,7 @@ import { MutationTypes } from "@/ui/store/watchlist/mutations";
 import { ITargetData } from "@/app/target/domain/Target.types";
 import CsvError from "./CsvError.vue";
 import GenericError from "../shared/GenericError.vue";
+import { IWatchlistFilter } from "@/app/filter/domain/Filter.types";
 const watchlistHelper = createNamespacedHelpers("watchlists");
 
 type CsvTarget = {
@@ -62,6 +63,7 @@ type CsvTarget = {
   ra: number;
   dec: number;
   radius: number;
+  filter: string;
 };
 
 export default Vue.extend({
@@ -92,7 +94,15 @@ export default Vue.extend({
       this.SET_ERROR(error);
     },
     async handleComplete(results: ParseResult<CsvTarget>) {
-      this.parsedCsv = results.data;
+      if (!results.meta.fields?.includes("filter")) {
+        this.parsedCsv = results.data.map((object) => {
+          object["filter"] = "{'fields': {}, 'filters': []}";
+          return object;
+        });
+      } else {
+        this.parsedCsv = results.data;
+      }
+
       const watchlistInput: WatchlistInput = {
         title: this.title,
         targets: this.parsedCsv.map(
@@ -102,16 +112,31 @@ export default Vue.extend({
               ra: value.ra,
               dec: value.dec,
               radius: value.radius,
+              filter: JSON.parse(
+                value.filter.replace(/'/g, '"')
+              ) as IWatchlistFilter,
             } as ITargetData)
         ),
       };
+
       await this.createWatchlist(watchlistInput);
       if (!this.errored) this.$emit("created");
+    },
+    async handleMissingField() {
+      return false;
     },
     async onCreateClick() {
       if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         if (this.selectedFile != null) {
           parse(this.selectedFile, {
+            header: true,
+            skipEmptyLines: true,
+            error: this.handleError,
+            complete: this.handleComplete,
+          });
+        } else {
+          const emptyCsv = "name,ra,dec,radius,filter\n";
+          parse(emptyCsv, {
             header: true,
             skipEmptyLines: true,
             error: this.handleError,

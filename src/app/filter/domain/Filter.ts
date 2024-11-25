@@ -30,7 +30,7 @@ export class WatchlistFilter implements IWatchlistFilter {
     for (let i = 0; i < _steps.length; i++) {
       const fields_set: Set<Field> = new Set();
       fieldsList.forEach((fields) => {
-          fields[_steps[i]]!.forEach((field) => fields_set.add(field));
+        fields[_steps[i]]!.forEach((field) => fields_set.add(field));
       });
       result[_steps[i]] = Array.from(fields_set);
     }

@@ -8,6 +8,7 @@ export type Getters = {
   detailError(state: WatchlistState): Record<string, unknown>;
   errored(state: WatchlistState): boolean;
   csvError(state: WatchlistState): Error | null;
+  getNumbersOfWatchlist(state: WatchlistState): number;
 };
 
 export const getters: GetterTree<WatchlistState, IRootState> & Getters = {
@@ -39,5 +40,9 @@ export const getters: GetterTree<WatchlistState, IRootState> & Getters = {
   },
   errored: (state) => {
     return state.error !== null;
+  },
+  getNumbersOfWatchlist: (state) => {
+    const numbersWatchlists = state.watchlists.length;
+    return numbersWatchlists;
   },
 };
