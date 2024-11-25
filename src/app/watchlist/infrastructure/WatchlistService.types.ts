@@ -1,3 +1,5 @@
+import { FilterType, IFilterParams } from "@/app/filter/domain/Filter.types";
+
 export interface WatchlistRequestModel {
   title: string;
   owner: string;
@@ -63,4 +65,11 @@ export interface CreateWatchlistTargetApiResult {
 export interface EditWatchlistRequestModel {
   title: string;
   notification_rate: string;
+}
+
+export interface EditTargetsOneWatchlist {
+  filters: {
+    type: FilterType;
+    params: IFilterParams;
+  }[];
 }

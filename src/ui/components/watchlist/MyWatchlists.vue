@@ -18,13 +18,15 @@
                 <v-list-item-title v-text="item.title"></v-list-item-title>
               </v-list-item-content>
               <v-list-item-action>
-                <v-btn
-                  v-show="index === watchlist"
-                  @click="clickDeleteWatchlist"
-                  icon
-                >
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
+                <v-row>
+                  <v-btn
+                    v-show="index === watchlist"
+                    @click="clickDeleteWatchlist"
+                    icon
+                  >
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-row>
               </v-list-item-action>
             </template>
           </v-list-item>
