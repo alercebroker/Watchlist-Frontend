@@ -225,10 +225,11 @@ export class MockUserApi extends HttpService {
       return [200, JSON.stringify(response)];
     });
     this.mock.onPut(/\/watchlists\/\w+\/targets\/\w+/).reply((_config: any) => {
-      return [200, JSON.stringify("{")];
+      const response = {};
+      return [200, JSON.stringify(response)];
     });
     this.mock.onPost(/\/watchlists\/\w+\/targets\//).reply(() => {
-      return [200, JSON.stringify("{")];
+      return [200, JSON.stringify({})];
     });
     this.mock.onGet("users/social/o/google-oauth2").reply(() => {
       return [200, JSON.stringify({ unknown_field: "unknown_value" })];

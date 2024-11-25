@@ -21,15 +21,6 @@ export interface IWatchlistList {
   prev: string;
 }
 
-export interface OneFilter {
-  filters: {
-    type: string;
-    url: string;
-    watchlist_id: number;
-    params: any;
-  }[];
-}
-
 export interface IWatchlistRepository {
   getAllWatchlists(
     params?: any
@@ -49,7 +40,4 @@ export interface IWatchlistRepository {
   editWatchlist(
     params: any
   ): Promise<Result<IWatchlistData, ParseError | HttpError>>;
-  editTargetsWatchlist(
-    params: any
-  ): Promise<Result<OneFilter, ParseError | HttpError>>;
 }

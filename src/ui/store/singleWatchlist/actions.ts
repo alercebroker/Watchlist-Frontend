@@ -14,7 +14,6 @@ import { ParseError } from "@/shared/error/ParseError";
 
 export enum ActionTypes {
   editWatchlist = "editWatchlist",
-  editTargetsWatchlist = "editTargetsWatchlist",
 }
 
 export type EditWatchlistPayload = {
@@ -57,41 +56,6 @@ export const actions: ActionTree<SingleWatchlistState, IRootState> = {
         commit(MutationTypes.SET_LOADING, false);
       },
     };
-    await interactor.execute(payload, callbacks);
-  },
-
-  async [ActionTypes.editTargetsWatchlist]({ commit }, payload) {
-    commit(MutationTypes.SET_LOADING, true);
-    const interactor = container.get<UseCaseInteractor>(
-      cid.EditTargetsWatchlist
-    );
-    const callbacks: Callbacks = {
-      respondWithSuccess: (watchlist: IWatchlistData) => {
-        commit(
-          "watchlists/" + WatchlistMutationType.UPDATE_WATCHLIST,
-          watchlist,
-          { root: true }
-        );
-        commit("watchlists/" + WatchlistMutationType.SET_LOADING, false, {
-          root: true,
-        });
-        commit(MutationTypes.SET_ERROR, null);
-        commit(MutationTypes.SET_LOADING, false);
-      },
-      respondWithClientError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error);
-        commit(MutationTypes.SET_LOADING, false);
-      },
-      respondWithServerError: (error: HttpError) => {
-        commit(MutationTypes.SET_ERROR, error);
-        commit(MutationTypes.SET_LOADING, false);
-      },
-      respondWithParseError: (error: ParseError) => {
-        commit(MutationTypes.SET_ERROR, error);
-        commit(MutationTypes.SET_LOADING, false);
-      },
-    };
-
     await interactor.execute(payload, callbacks);
   },
 };

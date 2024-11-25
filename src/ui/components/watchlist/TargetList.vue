@@ -18,7 +18,6 @@
 
         <button-download-targets />
         <button-bulk-update />
-        <v-btn
           color="primary"
           small
           dark
@@ -252,10 +251,10 @@ export default Vue.extend({
   },
   computed: {
     ...watchlistHelper.mapState({
-      watchlistId(state: SingleWatchlistState): number {
+      watchlistId: function (state: SingleWatchlistState): number {
         return state.id;
       },
-      targetsUrl(state: SingleWatchlistState): string {
+      targetsUrl: function (state: SingleWatchlistState): string {
         return state.targets;
       },
     }),
@@ -265,24 +264,24 @@ export default Vue.extend({
       },
     }),
     ...targetsHelper.mapState({
-      targets(state: TargetsState): ITargetData[] {
+      targets: function (state: TargetsState): ITargetData[] {
         return state.targets;
       },
-      targetCount(state: TargetsState): number {
+      targetCount: function (state: TargetsState): number {
         return state.count;
       },
-      nextPage(state: TargetsState): string | null {
+      nextPage: function (state: TargetsState): string | null {
         return state.nextPage;
       },
-      prevPage(state: TargetsState): string | null {
+      prevPage: function (state: TargetsState): string | null {
         return state.prevPage;
       },
-      loading(state: TargetsState): boolean {
+      loading: function (state: TargetsState): boolean {
         return state.loading;
       },
     }),
     ...targetsHelper.mapGetters(["genericError", "detailError", "errored"]),
-    formTitle(): string {
+    formTitle: function (): string {
       return this.editedIndex === -1 ? "New Target" : "Edit Target";
     },
   },
@@ -310,30 +309,26 @@ export default Vue.extend({
       });
     },
     async save() {
-      const filter = this.parseToFilter();
       if (this.editedIndex > -1) {
-        await this.editTarget({
-          target: {
-            ...this.editedItem,
-            filter,
-            id: this.targets[this.editedIndex].id,
-          },
+        const payload: EditTargetPayload = {
+          target: { ...this.editedItem, id: this.targets[this.editedIndex].id },
           watchlist: this.watchlistId,
-        });
+        };
+        await this.editTarget(payload);
       } else {
-        await this.createTarget({
-          target: { ...this.editedItem, filter },
+        const payload: CreateTargetPayload = {
+          target: this.editedItem,
           watchlist: this.watchlistId,
-        });
+        };
+        await this.createTarget(payload);
       }
-      this.close();
+      if (!this.errored) this.close();
     },
     close() {
       this.SET_ERROR(null);
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedFilter = Object.assign({}, this.defaultFilter);
         this.editedIndex = -1;
       });
     },
@@ -341,13 +336,11 @@ export default Vue.extend({
     editItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
       this.editedItem = Object.assign({}, item);
-      this.editedFilter = Object.assign({}, this.parseFromFilter(item.filter));
       this.dialog = true;
     },
     deleteItem(item: ITargetData) {
       this.editedIndex = this.targets.findIndex((t) => t.id === item.id);
       this.editedItem = Object.assign({}, item);
-      this.editedFilter = Object.assign({}, this.parseFromFilter(item.filter));
       this.dialogDelete = true;
     },
     deleteItemConfirm() {
@@ -362,7 +355,6 @@ export default Vue.extend({
       this.dialogDelete = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedFilter = Object.assign({}, this.defaultFilter);
         this.editedIndex = -1;
       });
     },

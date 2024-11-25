@@ -25,10 +25,6 @@ const targetArray: ITargetData[] = [
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
-    filter: {
-      fields: {},
-      filters: [],
-    },
     nMatches: 0,
     lastMatch: new Date().toISOString(),
   },
@@ -39,10 +35,6 @@ const targetArray: ITargetData[] = [
     radius: 1.0,
     ra: 1.0,
     dec: 1.0,
-    filter: {
-      fields: {},
-      filters: [],
-    },
     nMatches: 0,
     lastMatch: new Date().toISOString(),
   },
