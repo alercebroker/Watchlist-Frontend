@@ -19,6 +19,7 @@ export class TargetParser {
         radius: response.radius,
         dec: response.dec,
         ra: response.ra,
+        // eslint-disable-next-line prettier/prettier
         filter: response.filter ? response.filter : { "fields": {}, "filters": [] },
         nMatches: "n_matches" in response ? response.n_matches : 0,
         lastMatch: "last_match" in response ? response.last_match : "",
