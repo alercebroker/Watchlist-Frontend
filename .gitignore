@@ -27,4 +27,6 @@ pnpm-debug.log*
 /coverage
 .dir-locals.el
 
-.env
+# Nix
+flake.nix
+flake.lock
